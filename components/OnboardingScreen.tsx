@@ -486,7 +486,7 @@ function GrowthIntro({ onNext }: { onNext: () => void }) {
   return (
     <div className="relative h-[calc(100%_-_58px)] overflow-hidden px-[34px] pt-[32px]">
       <ProgressBars active={0} />
-      <h1 className="mt-[33px] text-[65px] font-semibold leading-[0.94] text-left" style={{ color: 'var(--app-accent)' }}>
+      <h1 className="relative z-10 mt-[33px] text-[65px] sm:text-[clamp(40px,12vw,65px)] font-semibold leading-[0.94] text-left" style={{ color: 'var(--app-accent)' }}>
         GO FOR
         <br />
         BUSINESS
@@ -497,7 +497,7 @@ function GrowthIntro({ onNext }: { onNext: () => void }) {
         <br />
         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">PAL</span>
       </h1>
-      <Mascot priority className="absolute -right-[266px] bottom-[-52px] w-[496px] max-w-none" />
+      <Mascot priority className="absolute -right-[40%] bottom-[-5%] w-[120%] max-w-[450px] z-0 opacity-90 mix-blend-multiply dark:mix-blend-normal" />
       <button
         type="button"
         onClick={onNext}
@@ -521,7 +521,7 @@ function ManageIntro({ onNext }: { onNext: () => void }) {
     >
       <ProgressBars active={1} />
       <BrandLogo className="mt-[48px] h-auto w-[168px] ml-[34px]" />
-      <h1 className="mt-[7px] text-[58px] font-semibold leading-[0.96] text-left ml-[34px]" style={{ color: 'var(--onb-heading)' }}>
+      <h1 className="relative z-10 mt-[7px] text-[58px] sm:text-[clamp(40px,11vw,58px)] font-semibold leading-[0.96] text-left ml-[34px]" style={{ color: 'var(--onb-heading)' }}>
         Tracks
         <br />
         Manage
@@ -532,7 +532,7 @@ function ManageIntro({ onNext }: { onNext: () => void }) {
         <br />
         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">Place.</span>
       </h1>
-      <Mascot priority className="absolute -right-[250px] bottom-[-270px] w-[600px] max-w-none" />
+      <Mascot priority className="absolute -right-[30%] bottom-[-15%] w-[130%] max-w-[500px] z-0 opacity-90 mix-blend-multiply dark:mix-blend-normal pointer-events-none" />
     </button>
   );
 }
@@ -562,7 +562,7 @@ function TogetherIntro({ onNext }: { onNext: () => void }) {
             <span className="font-semibold text-[#0a438a]">PAL is with you. Let&apos;s go 🚀</span>
           </li>
         </ul>
-        <Mascot className="absolute -bottom-[83px] left-[118px] z-20 w-[96px]" />
+        <Mascot className="absolute -bottom-[60px] right-[-20px] z-20 w-[100px] sm:w-[120px]" />
       </div>
       <button
         type="button"
@@ -615,7 +615,7 @@ function PersonaScreen({
             );
           })}
         </div>
-        <Mascot className="absolute -bottom-[68px] left-[119px] z-20 w-[97px]" />
+        <Mascot className="absolute -bottom-[50px] right-[-10px] z-20 w-[90px] sm:w-[100px]" />
       </div>
       <button 
         type="button" 

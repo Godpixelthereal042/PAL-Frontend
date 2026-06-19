@@ -12,11 +12,12 @@ export async function GET() {
         if (supabaseServer) {
             const { data: { user }, error } = await supabaseServer.auth.getUser();
             if (user && !error) {
-                let dbUser = await db.get("SELECT id, name, email, role FROM users WHERE id = ?", [user.id]);
-                
-                // Automatically sync authenticated user to SQLite if not present
-                if (!dbUser) {
-                    try {
+                let dbUser = null;
+                try {
+                    dbUser = await db.get("SELECT id, name, email, role FROM users WHERE id = ?", [user.id]);
+                    
+                    // Automatically sync authenticated user to SQLite if not present
+                    if (!dbUser) {
                         const nowMs = Date.now();
                         const fullName = user.user_metadata?.fullName || user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
                         const email = user.email || "";
@@ -50,18 +51,18 @@ export async function GET() {
                             email: email,
                             role: "Business Owner"
                         };
-                    } catch (syncErr) {
-                        console.error("Session sync error:", syncErr);
                     }
+                } catch (dbErr) {
+                    console.warn("Could not sync user to database (tables might be missing):", dbErr);
                 }
 
                 return NextResponse.json({
                     authenticated: true,
                     user: {
                         id: user.id,
-                        name: dbUser?.name || user.user_metadata?.fullName || "User",
+                        name: dbUser?.name || user.user_metadata?.fullName || user.email?.split("@")[0] || "User",
                         email: user.email || "",
-                        role: dbUser?.role || user.user_metadata?.role || "Member"
+                        role: dbUser?.role || user.user_metadata?.role || "Business Owner"
                     }
                 });
             }
