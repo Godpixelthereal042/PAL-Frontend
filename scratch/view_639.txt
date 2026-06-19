@@ -1,0 +1,109 @@
+Created At: 2026-06-13T23:37:58Z
+Completed At: 2026-06-13T23:37:58Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 800 to 900
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:               <div className="flex items-center gap-[10px]">
+801:                 <span className="text-[24px] leading-none">{flag}</span>
+802:                 <span>{name}</span>
+803:               </div>
+804:               {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+805:             </button>
+806:           ))}
+807:         </div>
+808:       </section>
+809:       <button 
+810:         type="button" 
+811:         onClick={onNext} 
+812:         disabled={!selected}
+813:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+814:       >
+815:         Next
+816:       </button>
+817:     </div>
+818:   );
+819: }
+820: 
+821: interface SignupScreenProps {
+822:   fullName: string;
+823:   setFullName: (v: string) => void;
+824:   email: string;
+825:   setEmail: (v: string) => void;
+826:   password: string;
+827:   setPassword: (v: string) => void;
+828:   confirmPassword: string;
+829:   setConfirmPassword: (v: string) => void;
+830:   persona: string;
+831:   industry: string;
+832:   country: string;
+833:   language: string;
+834:   onLogin: () => void;
+835:   onNext: () => void;
+836:   onGoogle: () => void;
+837:   onBase: () => void;
+838: }
+839: 
+840: function SignupScreen({ 
+841:   fullName, setFullName,
+842:   email, setEmail,
+843:   password, setPassword,
+844:   confirmPassword, setConfirmPassword,
+845:   persona, industry, country, language,
+846:   onLogin, onNext, onGoogle, onBase
+847: }: SignupScreenProps) {
+848:   const [errorMsg, setErrorMsg] = useState("");
+849:   const [hasError, setHasError] = useState({
+850:     fullName: false,
+851:     email: false,
+852:     password: false,
+853:     confirmPassword: false
+854:   });
+855:   const [loading, setLoading] = useState(false);
+856: 
+857:   const handleRegister = async (e: FormEvent) => {
+858:     e.preventDefault();
+859:     setErrorMsg("");
+860:     setHasError({ fullName: false, email: false, password: false, confirmPassword: false });
+861: 
+862:     if (!fullName.trim()) {
+863:       setErrorMsg("Full name is required");
+864:       setHasError(prev => ({ ...prev, fullName: true }));
+865:       return;
+866:     }
+867:     if (!email.trim()) {
+868:       setErrorMsg("Email is required");
+869:       setHasError(prev => ({ ...prev, email: true }));
+870:       return;
+871:     }
+872:     if (!password) {
+873:       setErrorMsg("Password is required");
+874:       setHasError(prev => ({ ...prev, password: true }));
+875:       return;
+876:     }
+877:     if (password.length < 6) {
+878:       setErrorMsg("Password must be at least 6 characters");
+879:       setHasError(prev => ({ ...prev, password: true }));
+880:       return;
+881:     }
+882:     if (password !== confirmPassword) {
+883:       setErrorMsg("Passwords do not match");
+884:       setHasError(prev => ({ ...prev, password: true, confirmPassword: true }));
+885:       return;
+886:     }
+887: 
+888:     setLoading(true);
+889:     try {
+890:       const res = await fetch("/api/auth/signup", {
+891:         method: "POST",
+892:         headers: { "Content-Type": "application/json" },
+893:         body: JSON.stringify({
+894:           fullName,
+895:           email,
+896:           password,
+897:           role: persona || "Business Owner",
+898:           industry: industry || "Technology and Innovation",
+899:           country: country || "United States",
+900:           language: language || "English"
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

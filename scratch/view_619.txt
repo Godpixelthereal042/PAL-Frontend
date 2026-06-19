@@ -1,0 +1,58 @@
+Created At: 2026-06-13T23:37:27Z
+Completed At: 2026-06-13T23:37:27Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 300 to 349
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+300:             email: profilePayload.email,
+301:             password: password || "password123",
+302:             role: profilePayload.role,
+303:             industry: profilePayload.industry,
+304:             country: profilePayload.country,
+305:             language: profilePayload.language
+306:           })
+307:         });
+308: 
+309:         if (res.ok) {
+310:           localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+311:           router.push("/");
+312:         } else {
+313:           const err = await res.json();
+314:           alert(err.error || "Registration failed");
+315:         }
+316:       } catch (e) {
+317:         console.error("Signup fetch failed", e);
+318:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+319:         router.push("/");
+320:       }
+321:     }
+322:   };
+323: 
+324:   return (
+325:     <div className="phone-stage">
+326:       <section className={cn("phone")} aria-label="PAL app">
+327:         <StatusBar tone="dark" />
+328: 
+329:         {screen === "growth" && <GrowthIntro onNext={() => setScreen("manage")} />}
+330:         {screen === "manage" && <ManageIntro onNext={() => setScreen("together")} />}
+331:         {screen === "together" && <TogetherIntro onNext={() => setScreen("persona")} />}
+332:         
+333:         {screen === "persona" && (
+334:           <PersonaScreen
+335:             value={persona}
+336:             onChange={setPersona}
+337:             onNext={() => setScreen("industry")}
+338:           />
+339:         )}
+340:         
+341:         {screen === "industry" && (
+342:           <IndustryScreen 
+343:             value={industry} 
+344:             onChange={setIndustry} 
+345:             onNext={() => setScreen("country")} 
+346:           />
+347:         )}
+348:         
+349:         {screen === "country" && (
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

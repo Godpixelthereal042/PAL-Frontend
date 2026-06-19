@@ -1,0 +1,808 @@
+Created At: 2026-06-16T00:16:47Z
+Completed At: 2026-06-16T00:16:47Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1436
+Total Bytes: 50130
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React, { useState, useEffect, useMemo, ReactNode, FormEvent } from "react";
+4: import Image from "next/image";
+5: import { useRouter } from "next/navigation";
+6: import {
+7:   ArrowLeft,
+8:   BriefcaseBusiness,
+9:   Check,
+10:   ChevronDown,
+11:   CircleDollarSign,
+12:   Eye,
+13:   EyeOff,
+14:   Home,
+15:   Lightbulb,
+16:   Moon,
+17:   Search,
+18:   Sparkles,
+19:   Sun,
+20:   Zap
+21: } from "lucide-react";
+22: import { useTheme } from "@/components/ThemeProvider";
+23: import { supabase } from "@/lib/supabaseClient";
+24: 
+25: type Screen =
+26:   | "growth"
+27:   | "manage"
+28:   | "together"
+29:   | "persona"
+30:   | "industry"
+31:   | "country"
+32:   | "language"
+33:   | "signup"
+34:   | "login"
+35:   | "otp";
+36: 
+37: type Tone = "light" | "dark";
+38: 
+39: // Utility function matching pal-app.tsx
+40: function cn(...classes: Array<string | false | null | undefined>) {
+41:   return classes.filter(Boolean).join(" ");
+42: }
+43: 
+44: const industries = [
+45:   { icon: BriefcaseBusiness, label: "Consumer and Retail" },
+46:   { icon: CircleDollarSign, label: "Financial services" },
+47:   { icon: Home, label: "Real Estate" },
+48:   { icon: BriefcaseBusiness, label: "Transportation and Logistics" },
+49:   { icon: Lightbulb, label: "Technology and Innovation" },
+50:   { icon: Sparkles, label: "others" }
+51: ];
+52: 
+53: const countries = [
+54:   ["🇦🇫", "Afghanistan"],
+55:   ["🇦🇱", "Albania"],
+56:   ["🇩🇿", "Algeria"],
+57:   ["🇦🇩", "Andorra"],
+58:   ["🇦🇴", "Angola"],
+59:   ["🇦🇷", "Argentina"],
+60:   ["🇦🇲", "Armenia"],
+61:   ["🇦🇺", "Australia"],
+62:   ["🇦🇹", "Austria"],
+63:   ["🇧🇪", "Belgium"],
+64:   ["🇧🇷", "Brazil"],
+65:   ["🇨🇦", "Canada"],
+66:   ["🇨🇱", "Chile"],
+67:   ["🇨🇳", "China"],
+68:   ["🇨🇴", "Colombia"],
+69:   ["🇩🇰", "Denmark"],
+70:   ["🇪🇬", "Egypt"],
+71:   ["🇫🇮", "Finland"],
+72:   ["🇫🇷", "France"],
+73:   ["🇩🇪", "Germany"],
+74:   ["🇬🇭", "Ghana"],
+75:   ["🇬🇷", "Greece"],
+76:   ["🇮🇳", "India"],
+77:   ["🇮🇩", "Indonesia"],
+78:   ["🇮🇪", "Ireland"],
+79:   ["🇮🇱", "Israel"],
+80:   ["🇮🇹", "Italy"],
+81:   ["🇯🇵", "Japan"],
+82:   ["🇰🇪", "Kenya"],
+83:   ["🇲🇽", "Mexico"],
+84:   ["🇳🇱", "Netherlands"],
+85:   ["🇳🇿", "New Zealand"],
+86:   ["🇳🇬", "Nigeria"],
+87:   ["🇳🇴", "Norway"],
+88:   ["🇵🇰", "Pakistan"],
+89:   ["🇵🇭", "Philippines"],
+90:   ["🇵🇱", "Poland"],
+91:   ["🇵🇹", "Portugal"],
+92:   ["🇷🇺", "Russia"],
+93:   ["🇸🇬", "Singapore"],
+94:   ["🇿🇦", "South Africa"],
+95:   ["🇪🇸", "Spain"],
+96:   ["🇸🇪", "Sweden"],
+97:   ["🇨🇭", "Switzerland"],
+98:   ["🇹🇷", "Turkey"],
+99:   ["🇺🇦", "Ukraine"],
+100:   ["🇦🇪", "United Arab Emirates"],
+101:   ["🇬🇧", "United Kingdom"],
+102:   ["🇺🇸", "United States"],
+103:   ["🇻🇳", "Vietnam"]
+104: ];
+105: 
+106: const languages = [
+107:   ["🇸🇦", "Arabic"],
+108:   ["🇧🇩", "Bengali"],
+109:   ["🇬🇧", "English"],
+110:   ["🇫🇷", "French"],
+111:   ["🇩🇪", "German"],
+112:   ["🇮🇳", "Hindi"],
+113:   ["🇮🇹", "Italian"],
+114:   ["🇯🇵", "Japanese"],
+115:   ["🇵🇹", "Portuguese"]
+116: ];
+117: 
+118: export default function OnboardingScreen() {
+119:   const router = useRouter();
+120:   const { theme, toggleTheme } = useTheme();
+121:   const [screen, setScreenState] = useState<Screen>("growth");
+122:   
+123:   // Custom states to collect user data during onboarding
+124:   const [persona, setPersona] = useState("");
+125:   const [industry, setIndustry] = useState("Technology and Innovation");
+126:   const [country, setCountry] = useState("");
+127:   const [language, setLanguage] = useState("");
+128:   const [searchCountry, setSearchCountry] = useState("");
+129: 
+130:   // Input states for Auth
+131:   const [fullName, setFullName] = useState("");
+132:   const [email, setEmail] = useState("");
+133:   const [password, setPassword] = useState("");
+134:   const [confirmPassword, setConfirmPassword] = useState("");
+135: 
+136:   const isDark = theme === "dark";
+137: 
+138:   const setScreen = (nextScreen: Screen) => {
+139:     setScreenState(nextScreen);
+140:   };
+141: 
+142:   const handleSocialSignIn = async (provider: "google" | "base") => {
+143:     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+144:     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+145:     const useSupabase = supabaseUrl && supabaseAnonKey && 
+146:                         !supabaseUrl.includes("dummy-url") && 
+147:                         !supabaseAnonKey.includes("dummy-key");
+148: 
+149:     if (useSupabase) {
+150:       try {
+151:         const { error } = await supabase.auth.signInWithOAuth({
+152:           provider: "google", // both Google and Base buttons map to Google OAuth in production
+153:           options: {
+154:             redirectTo: `${window.location.origin}/api/auth/callback?next=/`
+155:           }
+156:         });
+157:         if (error) {
+158:           alert(error.message);
+159:         }
+160:       } catch (err: any) {
+161:         console.error("OAuth sign in error:", err);
+162:         alert("OAuth initialization failed. Please check your Supabase configuration.");
+163:       }
+164:       return;
+165:     }
+166: 
+167:     const mockEmail = provider === "google" ? "google.user@gmail.com" : "base.user@base.org";
+168:     const mockName = provider === "google" ? "Google User" : "Base User";
+169:     const mockPassword = "social_login_password_123_safe";
+170: 
+171:     const signupPayload = {
+172:       fullName: mockName,
+173:       email: mockEmail,
+174:       password: mockPassword,
+175:       role: persona || "Business Owner",
+176:       industry: industry || "Technology and Innovation",
+177:       country: country || "United States",
+178:       language: language || "English"
+179:     };
+180: 
+181:     try {
+182:       const signupRes = await fetch("/api/auth/signup", {
+183:         method: "POST",
+184:         headers: { "Content-Type": "application/json" },
+185:         body: JSON.stringify(signupPayload)
+186:       });
+187: 
+188:       if (signupRes.ok) {
+189:         const profilePayload = {
+190:           fullName: mockName,
+191:           email: mockEmail,
+192:           role: signupPayload.role,
+193:           industry: signupPayload.industry,
+194:           country: signupPayload.country,
+195:           language: signupPayload.language,
+196:           onboardingCompleted: true,
+197:           creditsSaved: 0,
+198:           computeBalance: 0,
+199:           companyName: "",
+200:           targetAudience: "",
+201:           primaryKPI: "",
+202:           selectedPersona: "growth"
+203:         };
+204:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+205:         router.push("/");
+206:         return;
+207:       }
+208: 
+209:       const loginRes = await fetch("/api/auth/login", {
+210:         method: "POST",
+211:         headers: { "Content-Type": "application/json" },
+212:         body: JSON.stringify({ email: mockEmail, password: mockPassword })
+213:       });
+214: 
+215:       if (loginRes.ok) {
+216:         const loginData = await loginRes.json();
+217:         const profilePayload = {
+218:           fullName: loginData.user.name,
+219:           email: loginData.user.email,
+220:           role: loginData.user.role,
+221:           industry: "Technology and Innovation",
+222:           country: "United States",
+223:           language: "English",
+224:           onboardingCompleted: true,
+225:           creditsSaved: 0,
+226:           computeBalance: 0,
+227:           companyName: "",
+228:           targetAudience: "",
+229:           primaryKPI: "",
+230:           selectedPersona: "growth"
+231:         };
+232:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+233:         router.push("/");
+234:       } else {
+235:         const err = await loginRes.json();
+236:         alert(err.error || "Social authentication failed");
+237:       }
+238:     } catch (e) {
+239:       console.error("Social sign in error", e);
+240:       alert("Social authentication failed. Please try again.");
+241:     }
+242:   };
+243: 
+244:   const handleOnboardingFinish = async () => {
+245:     const isLoginFlow = screen === "login";
+246: 
+247:     const profilePayload = {
+248:       fullName: fullName || "New User",
+249:       email: email || "",
+250:       role: persona || "Business Owner",
+251:       industry: industry || "Technology and Innovation",
+252:       country: country || "United States",
+253:       language: language || "English",
+254:       onboardingCompleted: true,
+255:       creditsSaved: 0,
+256:       computeBalance: 0,
+257:       companyName: "",
+258:       targetAudience: "",
+259:       primaryKPI: "",
+260:       selectedPersona: "growth"
+261:     };
+262: 
+263:     if (isLoginFlow) {
+264:       try {
+265:         const res = await fetch("/api/auth/login", {
+266:           method: "POST",
+267:           headers: { "Content-Type": "application/json" },
+268:           body: JSON.stringify({
+269:             email,
+270:             password
+271:           })
+272:         });
+273: 
+274:         if (res.ok) {
+275:           const data = await res.json();
+276:           const updatedPayload = {
+277:             ...profilePayload,
+278:             fullName: data.user.name,
+279:             email: data.user.email,
+280:             role: data.user.role
+281:           };
+282:           localStorage.setItem("pal_user_profile", JSON.stringify(updatedPayload));
+283:           router.push("/");
+284:         } else {
+285:           const err = await res.json();
+286:           alert(err.error || "Login failed");
+287:         }
+288:       } catch (e) {
+289:         console.error("Login fetch failed", e);
+290:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+291:         router.push("/");
+292:       }
+293:     } else {
+294:       try {
+295:         const res = await fetch("/api/auth/signup", {
+296:           method: "POST",
+297:           headers: { "Content-Type": "application/json" },
+298:           body: JSON.stringify({
+299:             fullName: profilePayload.fullName,
+300:             email: profilePayload.email,
+301:             password: password || "password123",
+302:             role: profilePayload.role,
+303:             industry: profilePayload.industry,
+304:             country: profilePayload.country,
+305:             language: profilePayload.language
+306:           })
+307:         });
+308: 
+309:         if (res.ok) {
+310:           localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+311:           router.push("/");
+312:         } else {
+313:           const err = await res.json();
+314:           alert(err.error || "Registration failed");
+315:         }
+316:       } catch (e) {
+317:         console.error("Signup fetch failed", e);
+318:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+319:         router.push("/");
+320:       }
+321:     }
+322:   };
+323: 
+324:   return (
+325:     <div className="phone-stage">
+326:       <section className={cn("phone")} aria-label="PAL app">
+327:         <StatusBar tone="dark" />
+328: 
+329:         {screen === "growth" && <GrowthIntro onNext={() => setScreen("manage")} />}
+330:         {screen === "manage" && <ManageIntro onNext={() => setScreen("together")} />}
+331:         {screen === "together" && <TogetherIntro onNext={() => setScreen("persona")} />}
+332:         
+333:         {screen === "persona" && (
+334:           <PersonaScreen
+335:             value={persona}
+336:             onChange={setPersona}
+337:             onNext={() => setScreen("industry")}
+338:           />
+339:         )}
+340:         
+341:         {screen === "industry" && (
+342:           <IndustryScreen 
+343:             value={industry} 
+344:             onChange={setIndustry} 
+345:             onNext={() => setScreen("country")} 
+346:           />
+347:         )}
+348:         
+349:         {screen === "country" && (
+350:           <CountryScreen
+351:             selected={country}
+352:             query={searchCountry}
+353:             onQuery={setSearchCountry}
+354:             onSelect={setCountry}
+355:             onNext={() => setScreen("language")}
+356:           />
+357:         )}
+358:         
+359:         {screen === "language" && (
+360:           <LanguageScreen 
+361:             selected={language} 
+362:             onSelect={setLanguage} 
+363:             onNext={() => setScreen("signup")} 
+364:           />
+365:         )}
+366:         
+367:         {screen === "signup" && (
+368:           <div className="h-[calc(100%_-_47px)] overflow-y-auto scrollbar-hide pb-10">
+369:             <SignupScreen 
+370:               fullName={fullName}
+371:               setFullName={setFullName}
+372:               email={email}
+373:               setEmail={setEmail}
+374:               password={password}
+375:               setPassword={setPassword}
+376:               confirmPassword={confirmPassword}
+377:               setConfirmPassword={setConfirmPassword}
+378:               persona={persona}
+379:               industry={industry}
+380:               country={country}
+381:               language={language}
+382:               onLogin={() => setScreen("login")} 
+383:               onNext={() => setScreen("otp")} 
+384:               onGoogle={() => handleSocialSignIn("google")}
+385:               onBase={() => handleSocialSignIn("base")}
+386:             />
+387:           </div>
+388:         )}
+389:         
+390:         {screen === "login" && (
+391:           <div className="h-[calc(100%_-_47px)] overflow-y-auto scrollbar-hide pb-10">
+392:             <LoginScreen 
+393:               email={email}
+394:               setEmail={setEmail}
+395:               password={password}
+396:               setPassword={setPassword}
+397:               onSignup={() => setScreen("signup")} 
+398:               onNext={() => router.push("/")} 
+399:               onGoogle={() => handleSocialSignIn("google")}
+400:               onBase={() => handleSocialSignIn("base")}
+401:             />
+402:           </div>
+403:         )}
+404:         
+405:         {screen === "otp" && (
+406:           <OtpScreen 
+407:             email={email}
+408:             onNext={() => router.push("/")} 
+409:           />
+410:         )}
+411:       </section>
+412:     </div>
+413:   );
+414: }
+415: 
+416: // ---------------- Helper Components exact from pal-app.tsx ----------------
+417: 
+418: function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => void }) {
+419:   return (
+420:     <div className={cn("status-bar", tone === "dark" && "status-dark")}>
+421:       <span>9:41</span>
+422:       {tone === "light" && <span className="dynamic-island" aria-hidden="true" />}
+423:       <div className="status-icons" aria-hidden="true">
+424:         <span className="signal">
+425:           <span />
+426:           <span />
+427:           <span />
+428:           <span />
+429:         </span>
+430:         <span className="wifi">
+431:           <span className="wifi-dot" />
+432:         </span>
+433:         <span className="battery" />
+434:         {onToggleTheme && (
+435:           <button
+436:             type="button"
+437:             onClick={onToggleTheme}
+438:             className="theme-toggle"
+439:             aria-label={tone === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+440:           >
+441:             {tone === "dark" ? <Sun size={15} strokeWidth={2.5} /> : <Moon size={15} strokeWidth={2.5} />}
+442:           </button>
+443:         )}
+444:       </div>
+445:     </div>
+446:   );
+447: }
+448: 
+449: function ProgressBars({ active }: { active: number }) {
+450:   return (
+451:     <div className="progress-bars" aria-hidden="true">
+452:       {[0, 1, 2].map((index) => (
+453:         <span key={index} className={index === active ? "active" : ""} />
+454:       ))}
+455:     </div>
+456:   );
+457: }
+458: 
+459: function BrandLogo({ className }: { className?: string }) {
+460:   return (
+461:     <div className={cn("relative", className)}>
+462:       <Image
+463:         src="/assets/pal-logo.png"
+464:         alt="PAL"
+465:         width={170}
+466:         height={80}
+467:         priority
+468:         className="h-auto w-full"
+469:       />
+470:     </div>
+471:   );
+472: }
+473: 
+474: // Peak mascot overlay
+475: function Mascot({ className, priority = false }: { className?: string; priority?: boolean }) {
+476:   return (
+477:     <div className={cn("pointer-events-none select-none mascot-peek", className)}>
+478:       <Image
+479:         src="/assets/pal-mascot.png"
+480:         alt=""
+481:         width={691}
+482:         height={642}
+483:         priority={priority}
+484:         className="w-full h-auto"
+485:       />
+486:     </div>
+487:   );
+488: }
+489: 
+490: function GrowthIntro({ onNext }: { onNext: () => void }) {
+491:   return (
+492:     <div className="relative h-[calc(100%_-_58px)] overflow-hidden px-[34px] pt-[32px]">
+493:       <ProgressBars active={0} />
+494:       <h1 className="mt-[33px] text-[65px] font-semibold leading-[0.94] text-left onb-growth-header" style={{ color: 'var(--app-accent)' }}>
+495:         GO FOR
+496:         <br />
+497:         BUSINESS
+498:         <br />
+499:         GROWTH
+500:         <br />
+501:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">WITH</span>
+502:         <br />
+503:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">PAL</span>
+504:       </h1>
+505:       <Mascot priority className="absolute -right-[266px] bottom-[-52px] w-[496px] max-w-none onb-growth-mascot" />
+506:       <button
+507:         type="button"
+508:         onClick={onNext}
+509:         className="absolute bottom-[42px] left-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[17px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
+510:       >
+511:         It&apos;s more fun and quick
+512:         <br />
+513:         when we do it together!
+514:       </button>
+515:     </div>
+516:   );
+517: }
+518: 
+519: function ManageIntro({ onNext }: { onNext: () => void }) {
+520:   return (
+521:     <button
+522:       type="button"
+523:       onClick={onNext}
+524:       className="relative flex h-[calc(100%_-_58px)] w-full flex-col items-start overflow-hidden px-[34px] pt-[32px] text-left cursor-pointer border-0 outline-none"
+525:       aria-label="Continue onboarding"
+526:     >
+527:       <ProgressBars active={1} />
+528:       <BrandLogo className="mt-[48px] h-auto w-[168px] ml-[34px] onb-manage-logo" />
+529:       <h1 className="mt-[7px] text-[58px] font-semibold leading-[0.96] text-left ml-[34px] onb-manage-header" style={{ color: 'var(--onb-heading)' }}>
+530:         Tracks
+531:         <br />
+532:         Manage
+533:         <br />
+534:         &amp; Grow
+535:         <br />
+536:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">All In One</span>
+537:         <br />
+538:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">Place.</span>
+539:       </h1>
+540:       <Mascot priority className="absolute -right-[250px] bottom-[-270px] w-[600px] max-w-none onb-manage-mascot" />
+541:     </button>
+542:   );
+543: }
+544: 
+545: function TogetherIntro({ onNext }: { onNext: () => void }) {
+546:   return (
+547:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[32px]">
+548:       <ProgressBars active={2} />
+549:       <div className="pal-card-stack relative mt-[82px] rounded-[31px] bg-white px-[38px] pb-[31px] pt-[30px] shadow-pal text-left onb-card">
+550:         <ul className="relative z-10 list-disc space-y-[22px] pl-[18px] text-[17px] leading-[1.25] marker:text-[#3b5a7c]" style={{ color: '#3b5a7c' }}>
+551:           <li>
+552:             <span className="font-semibold text-[#0a438a]">Log sales, expenses,</span> and project updates
+553:             effortlessly. PAL remembers everything so you can focus on what matters.
+554:           </li>
+555:           <li>
+556:             <span className="font-semibold text-[#0a438a]">Get daily insights on profit,</span> spending, and growth.
+557:             PAL breaks it down in simple terms just for you.
+558:           </li>
+559:           <li>
+560:             <span className="font-semibold text-[#0a438a]">Tech? Retail? Services?</span>
+561:             <br />
+562:             PAL adapts to your hustle, your flow, your way.
+563:           </li>
+564:           <li>
+565:             You don&apos;t have to do it alone anymore.
+566:             <br />
+567:             <span className="font-semibold text-[#0a438a]">PAL is with you. Let&apos;s go 🚀</span>
+568:           </li>
+569:         </ul>
+570:         <Mascot className="absolute -bottom-[83px] left-[118px] z-20 w-[96px] onb-together-mascot" />
+571:       </div>
+572:       <button
+573:         type="button"
+574:         onClick={onNext}
+575:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer"
+576:       >
+577:         Let&apos;s go 🚀
+578:       </button>
+579:     </div>
+580:   );
+581: }
+582: 
+583: function PersonaScreen({
+584:   value,
+585:   onChange,
+586:   onNext
+587: }: {
+588:   value: string;
+589:   onChange: (value: string) => void;
+590:   onNext: () => void;
+591: }) {
+592:   const options = ["🚀 Startup or Big brand", "🎨 Freelancer / Creative", "🛍️ Business Owner", "🧩 Or others"];
+593: 
+594:   return (
+595:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+596:       <p className="text-[23px] font-semibold leading-none" style={{ color: 'var(--onb-subtext)' }}>Hey welcome!</p>
+597:       <h1 className="mt-[12px] text-[30px] font-extrabold leading-[1.12]" style={{ color: 'var(--onb-heading)' }}>
+598:         Tell us who you are?
+599:       </h1>
+600:       <div className="pal-card-stack relative mt-[61px] rounded-[31px] bg-white px-[29px] pb-[31px] pt-[31px] shadow-pal onb-card onb-persona-card" style={{ color: '#111827' }}>
+601:         <div className="relative z-10 grid gap-[16px] onb-persona-grid">
+602:           {options.map((option) => {
+603:             const cleanVal = option.replace(/^[^ ]+ /, "");
+604:             return (
+605:               <button
+606:                 key={option}
+607:                 type="button"
+608:                 onClick={() => onChange(cleanVal)}
+609:                 className={cn(
+610:                   "h-[85px] rounded-[16px] text-[16px] font-bold transition cursor-pointer border onb-persona-btn"
+611:                 )}
+612:                 style={{
+613:                   backgroundColor: value === cleanVal ? '#000000' : '#f3f4f6',
+614:                   color: value === cleanVal ? '#ffffff' : '#111827',
+615:                   borderColor: value === cleanVal ? '#000000' : '#d1d5db'
+616:                 }}
+617:               >
+618:                 {option}
+619:               </button>
+620:             );
+621:           })}
+622:         </div>
+623:         <Mascot className="absolute -bottom-[68px] left-[119px] z-20 w-[97px] onb-persona-mascot" />
+624:       </div>
+625:       <button 
+626:         type="button" 
+627:         onClick={onNext} 
+628:         disabled={!value}
+629:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+630:       >
+631:         Next
+632:       </button>
+633:     </div>
+634:   );
+635: }
+636: 
+637: function IndustryScreen({
+638:   value,
+639:   onChange,
+640:   onNext
+641: }: {
+642:   value: string;
+643:   onChange: (value: string) => void;
+644:   onNext: () => void;
+645: }) {
+646:   return (
+647:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+648:       <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+649:         Choose your Industry
+650:       </h1>
+651:       <p className="mt-[6px] max-w-[340px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+652:         Please choose your profession from the list below.
+653:       </p>
+654:       <div className="mt-[25px] grid grid-cols-2 gap-[12px] w-full">
+655:         {industries.map(({ icon: Icon, label }) => (
+656:           <button
+657:             key={label}
+658:             type="button"
+659:             onClick={() => onChange(label)}
+660:             className={cn(
+661:               "flex flex-col items-center justify-center gap-[8px] rounded-[16px] border p-[12px] text-center text-[13px] font-bold transition cursor-pointer shadow-sm"
+662:             )}
+663:             style={{
+664:               backgroundColor: value === label ? 'var(--app-accent)' : 'var(--app-card-alt)',
+665:               borderColor: value === label ? 'var(--app-accent)' : 'var(--app-card-border)',
+666:               color: value === label ? '#ffffff' : 'var(--app-text-secondary)',
+667:               textAlign: 'center',
+668:               height: '100px'
+669:             }}
+670:           >
+671:             <Icon 
+672:               size={22} 
+673:               style={{ color: value === label ? '#ffffff' : 'var(--app-text-secondary)' }}
+674:               strokeWidth={2.2} 
+675:             />
+676:             <span className="leading-tight">{label}</span>
+677:           </button>
+678:         ))}
+679:       </div>
+680:       <button 
+681:         type="button" 
+682:         onClick={onNext} 
+683:         disabled={!value}
+684:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+685:       >
+686:         Next
+687:       </button>
+688:     </div>
+689:   );
+690: }
+691: 
+692: function CountryScreen({
+693:   selected,
+694:   query,
+695:   onQuery,
+696:   onSelect,
+697:   onNext
+698: }: {
+699:   selected: string;
+700:   query: string;
+701:   onQuery: (value: string) => void;
+702:   onSelect: (value: string) => void;
+703:   onNext: () => void;
+704: }) {
+705:   const filtered = useMemo(
+706:     () => countries.filter((country) => country[1].toLowerCase().includes(query.toLowerCase())),
+707:     [query]
+708:   );
+709: 
+710:   return (
+711:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+712:       <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+713:         Choose your country
+714:       </h1>
+715:       <p className="mt-[6px] max-w-[350px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+716:         Please choose your preferred country from the list below.
+717:       </p>
+718:       <section className="mt-[25px] h-[340px] overflow-hidden rounded-[30px] px-[16px] pt-[12px] shadow-pal bg-white border border-gray-100">
+719:         <label className="relative block w-full">
+720:           <span className="sr-only">Search country</span>
+721:           <input
+722:             value={query}
+723:             onChange={(event) => onQuery(event.target.value)}
+724:             className="h-[40px] w-full rounded-full border border-gray-300 bg-gray-50 px-[23px] pr-[48px] text-[15px] text-black outline-none placeholder:text-gray-400"
+725:             placeholder="Search here"
+726:           />
+727:           <Search className="absolute right-[20px] top-[9px] text-gray-400" size={22} />
+728:         </label>
+729:         <div className="mt-[16px] h-[250px] overflow-y-auto pb-[20px] pl-[6px] pr-[7px] scrollbar-hide text-black">
+730:           {filtered.map(([flag, name]) => (
+731:             <button
+732:               key={name}
+733:               type="button"
+734:               onClick={() => onSelect(name)}
+735:               className={cn(
+736:                 "flex h-[43px] w-full items-center justify-between rounded-[8px] text-[15px] cursor-pointer px-3 transition-colors",
+737:                 selected === name 
+738:                   ? "bg-[var(--app-accent-soft)] font-bold" 
+739:                   : "hover:bg-gray-100"
+740:               )}
+741:               style={{ textAlign: 'left', color: selected === name ? 'var(--app-accent)' : '#1f2937' }}
+742:             >
+743:               <div className="flex items-center gap-[20px]">
+744:                 <span className="text-[29px] leading-none">{flag}</span>
+745:                 <span>{name}</span>
+746:               </div>
+747:               {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+748:             </button>
+749:           ))}
+750:         </div>
+751:       </section>
+752:       <button 
+753:         type="button" 
+754:         onClick={onNext} 
+755:         disabled={!selected}
+756:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+757:       >
+758:         Next
+759:       </button>
+760:     </div>
+761:   );
+762: }
+763: 
+764: function LanguageScreen({
+765:   selected,
+766:   onSelect,
+767:   onNext
+768: }: {
+769:   selected: string;
+770:   onSelect: (value: string) => void;
+771:   onNext: () => void;
+772: }) {
+773:   return (
+774:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+775:       <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+776:         Choose your language
+777:       </h1>
+778:       <p className="mt-[6px] max-w-[350px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+779:         Please choose your preferred Language from the list below.
+780:       </p>
+781:       <button
+782:         type="button"
+783:         className="mt-[26px] h-[54px] w-full rounded-[21px] px-[36px] text-[18px] cursor-default border shadow-sm font-semibold flex items-center justify-between"
+784:         style={{ textAlign: 'left', color: '#111827', backgroundColor: '#ffffff', borderColor: '#d1d5db' }}
+785:       >
+786:         <span>{selected || "Select Language"}</span>
+787:         <ChevronDown size={20} className="text-gray-400" />
+788:       </button>
+789:       <section className="mt-[11px] h-[280px] overflow-hidden rounded-[30px] px-[20px] pt-[12px] shadow-pal bg-white border border-gray-100 text-black">
+790:         <div className="h-full overflow-y-auto scrollbar-hide pb-4">
+791:           {languages.map(([flag, name]) => (
+792:             <button
+793:               key={name}
+794:               type="button"
+795:               onClick={() => onSelect(name)}
+796:               className={cn(
+797:                 "flex h-[56px] w-full items-center justify-between rounded-[10px] text-[16px] cursor-pointer px-3 transition-colors",
+798:                 selected === name 
+799:                   ? "bg-[var(--app-accent-soft)] font-bold" 
+800:                   : "hover:bg-gray-100"
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

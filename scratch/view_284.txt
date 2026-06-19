@@ -1,0 +1,101 @@
+Created At: 2026-06-13T23:09:07Z
+Completed At: 2026-06-13T23:09:07Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/implementation_plan.md`
+Total Lines: 93
+Total Bytes: 5013
+Showing lines 1 to 93
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Hardening Pal Authentication, API Contracts, and Team Features
+2: 
+3: Hardening the Pal application across authentication flow, Gemini error handling, API contract matching, and collaborative features. This plan details transitions from prototype placeholders to robust, production-ready mechanisms for local SQLite and Supabase modes.
+4: 
+5: ## User Review Required
+6: 
+7: > [!IMPORTANT]
+8: > **Consolidated OAuth Redirection**: For Google/Base ID OAuth buttons, if Supabase is active, they will resolve through Google OAuth redirection; otherwise, they will fallback to the local SQLite mock user flow.
+9: 
+10: ---
+11: 
+12: ## Open Questions
+13: 
+14: > [!NOTE]
+15: > There are no outstanding open questions. We have standardized the verification flows and resolved local fallback behaviors based on current database structures.
+16: 
+17: ---
+18: 
+19: ## Proposed Changes
+20: 
+21: ### Database Layer
+22: 
+23: #### [MODIFY] [db.ts](file:///Users/user/Documents/pal-frontend/lib/db.ts)
+24: * Automatically initialize the `otp_codes` table in SQLite fallback mode inside `getDB()` to support secure local OTP flow.
+25: 
+26: ---
+27: 
+28: ### Authentication Hardening
+29: 
+30: #### [NEW] [verify/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/verify/route.ts)
+31: * Create `POST /api/auth/verify` endpoint:
+32:   * In Supabase mode, delegates verification to `supabase.auth.verifyOtp`.
+33:   * In SQLite fallback mode, verifies the code against `otp_codes` table. If correct, deletes the verification code, creates a secure session record, and sets the HTTP-only `pal_session_id` cookie.
+34: 
+35: #### [MODIFY] [signup/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/signup/route.ts)
+36: * For SQLite fallback mode:
+37:   * Remove immediate session creation and cookie setting during registration.
+38:   * Generate a random 5-digit verification code, store it in the `otp_codes` table with a 10-minute expiration, and log it to the server console.
+39: 
+40: #### [MODIFY] [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx)
+41: * Update `OtpScreen`'s `verify` function:
+42:   * Replace the local hardcoded `"11111"` check with a `POST` request to `/api/auth/verify`.
+43:   * Handle loading, error, and success states dynamically based on the API response.
+44: 
+45: ---
+46: 
+47: ### Chat & AI Robustness
+48: 
+49: #### [MODIFY] [chat/route.ts](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts)
+50: * **API Contracts Alignment**: Accept both `text` and `message` request body payload fields in the POST handler.
+51: * **Sanitize Gemini Errors**: Ensure no raw Gemini error payloads (e.g. JSON strings or system diagnostics) are persisted to the database. If the Gemini fetch fails, log the details to the server console only and return a friendly, localized fallback response.
+52: 
+53: #### [MODIFY] [ChatScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ChatScreen.tsx)
+54: * **Disable Send During Upload**: Disable the submit button when any staged attachment is loading (`stagedAttachments.some(att => att.isLoading)`). This prevents data mismatches where messages are sent before image data URLs have finished loading.
+55: 
+56: ---
+57: 
+58: ### Integrations & Collaboration
+59: 
+60: #### [MODIFY] [integrations/route.ts](file:///Users/user/Documents/pal-frontend/app/api/integrations/route.ts)
+61: * **Standardize IDs**: Add an alias resolver inside `GET` and `POST` handlers to map `"google-calendar"` or `"google_calendar"` to `"google"`, and `"twitter"`, `"twitter-x"`, or `"twitter_x"` to `"x"`.
+62: 
+63: #### [NEW] [remind/route.ts](file:///Users/user/Documents/pal-frontend/app/api/projects/[id]/remind/route.ts)
+64: * Create `POST /api/projects/[id]/remind` endpoint:
+65:   * Retrieve project details and all member associations.
+66:   * Write a real unread meeting reminder notification record in the `notifications` table for each member.
+67:   * Log the reminder event to the `logs` table.
+68: 
+69: #### [MODIFY] [ProjectDetailsScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ProjectDetailsScreen.tsx)
+70: * Replace the placeholder alert `alert("Meeting reminder sent to members!")` on the "Send reminder" button with a real `POST` call to `/api/projects/[id]/remind` and trigger a toast notification.
+71: 
+72: ---
+73: 
+74: ## Verification Plan
+75: 
+76: ### Automated Tests
+77: * Run `node --test tests/ideaEngine.test.mjs` to ensure the core idea engine remains unaffected.
+78: * Perform type check check:
+79:   ```bash
+80:   npx tsc --noEmit
+81:   ```
+82: * Perform compilation/build check:
+83:   ```bash
+84:   npm run build
+85:   ```
+86: 
+87: ### Manual Verification
+88: * Go through the onboarding sign-up flow, confirm the console prints the 5-digit local OTP code, enter it, and verify transition to dashboard.
+89: * Verify `/api/integrations?source=google-calendar` resolves successfully to the Google integration status.
+90: * Select a project, click the "Members" button, and verify inviting a new teammate works.
+91: * Test clicking the "Send reminder" button inside the project details page, and verify a toast displays and a new notification is generated.
+92: * Send a chat message with an image upload and confirm that the Send button is disabled until the upload progress finishes, ensuring the image is saved properly.
+93: 
+The above content shows the entire, complete file contents of the requested file.

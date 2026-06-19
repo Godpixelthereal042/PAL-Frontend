@@ -1,0 +1,48 @@
+Created At: 2026-06-15T23:51:28Z
+Completed At: 2026-06-15T23:51:28Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1435
+Total Bytes: 49923
+Showing lines 1 to 40
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React, { useState, useEffect, useMemo, ReactNode, FormEvent } from "react";
+4: import Image from "next/image";
+5: import { useRouter } from "next/navigation";
+6: import {
+7:   ArrowLeft,
+8:   BriefcaseBusiness,
+9:   Check,
+10:   ChevronDown,
+11:   CircleDollarSign,
+12:   Eye,
+13:   EyeOff,
+14:   Home,
+15:   Lightbulb,
+16:   Moon,
+17:   Search,
+18:   Sparkles,
+19:   Sun,
+20:   Zap
+21: } from "lucide-react";
+22: import { useTheme } from "@/components/ThemeProvider";
+23: import { supabase } from "@/lib/supabaseClient";
+24: 
+25: type Screen =
+26:   | "growth"
+27:   | "manage"
+28:   | "together"
+29:   | "persona"
+30:   | "industry"
+31:   | "country"
+32:   | "language"
+33:   | "signup"
+34:   | "login"
+35:   | "otp";
+36: 
+37: type Tone = "light" | "dark";
+38: 
+39: // Utility function matching pal-app.tsx
+40: function cn(...classes: Array<string | false | null | undefined>) {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

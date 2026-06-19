@@ -1,0 +1,34 @@
+Created At: 2026-06-15T23:51:37Z
+Completed At: 2026-06-15T23:51:37Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1435
+Total Bytes: 49923
+Showing lines 840 to 865
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+840:   onGoogle: () => void;
+841:   onBase: () => void;
+842: }
+843: 
+844: function SignupScreen({ 
+845:   fullName, setFullName,
+846:   email, setEmail,
+847:   password, setPassword,
+848:   confirmPassword, setConfirmPassword,
+849:   persona, industry, country, language,
+850:   onLogin, onNext, onGoogle, onBase
+851: }: SignupScreenProps) {
+852:   const [errorMsg, setErrorMsg] = useState("");
+853:   const [hasError, setHasError] = useState({
+854:     fullName: false,
+855:     email: false,
+856:     password: false,
+857:     confirmPassword: false
+858:   });
+859:   const [loading, setLoading] = useState(false);
+860: 
+861:   const handleRegister = async (e: FormEvent) => {
+862:     e.preventDefault();
+863:     setErrorMsg("");
+864:     setHasError({ fullName: false, email: false, password: false, confirmPassword: false });
+865: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

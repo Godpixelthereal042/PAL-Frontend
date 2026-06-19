@@ -1,0 +1,38 @@
+Created At: 2026-06-16T00:37:03Z
+Completed At: 2026-06-16T00:37:03Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 835
+Total Bytes: 16798
+Showing lines 796 to 825
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+796: }
+797: 
+798: .onb-together-mascot {
+799:   width: clamp(60px, 12svh, 96px) !important;
+800:   bottom: clamp(-50px, -10svh, -83px) !important;
+801:   left: clamp(80px, 16svh, 118px) !important;
+802: }
+803: 
+804: .onb-persona-card {
+805:   margin-top: clamp(15px, 7.5svh, 61px) !important;
+806:   padding-top: clamp(15px, 3.5svh, 31px) !important;
+807:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+808:   padding-left: clamp(20px, 4.5svh, 29px) !important;
+809:   padding-right: clamp(20px, 4.5svh, 29px) !important;
+810:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+811: }
+812: 
+813: .onb-persona-grid {
+814:   gap: clamp(8px, 1.8svh, 16px) !important;
+815: }
+816: 
+817: .onb-persona-btn {
+818:   height: clamp(50px, 10svh, 85px) !important;
+819:   border-radius: clamp(10px, 2svh, 16px) !important;
+820: }
+821: 
+822: .onb-persona-mascot {
+823:   width: clamp(60px, 12svh, 97px) !important;
+824:   bottom: clamp(-42px, -8svh, -68px) !important;
+825:   left: clamp(80px, 16svh, 119px) !important;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

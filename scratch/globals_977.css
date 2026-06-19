@@ -1,0 +1,34 @@
+Created At: 2026-06-16T00:36:58Z
+Completed At: 2026-06-16T00:36:58Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 835
+Total Bytes: 16798
+Showing lines 770 to 795
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+770:   font-size: clamp(32px, 7.5svh, 58px) !important;
+771:   line-height: 0.96 !important;
+772:   margin-top: clamp(5px, 2svh, 15px) !important;
+773: }
+774: 
+775: .onb-manage-mascot {
+776:   width: clamp(320px, 75svh, 600px) !important;
+777:   right: clamp(-160px, -35svh, -250px) !important;
+778:   bottom: clamp(-170px, -35svh, -270px) !important;
+779: }
+780: 
+781: .onb-together-card {
+782:   margin-top: clamp(15px, 9svh, 82px) !important;
+783:   padding-top: clamp(15px, 3.5svh, 30px) !important;
+784:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+785:   padding-left: clamp(20px, 5svh, 38px) !important;
+786:   padding-right: clamp(20px, 5svh, 38px) !important;
+787:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+788: }
+789: 
+790: .onb-together-list {
+791:   gap: clamp(10px, 2svh, 22px) !important;
+792: }
+793: 
+794: .onb-together-list > li + li {
+795:   margin-top: clamp(10px, 2svh, 22px) !important;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,39 @@
+Created At: 2026-06-13T23:01:25Z
+Completed At: 2026-06-13T23:01:25Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1410
+Total Bytes: 48719
+Showing lines 1200 to 1230
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1200:         try {
+1201:           await fetch("/api/profile", {
+1202:             method: "POST",
+1203:             headers: { "Content-Type": "application/json" },
+1204:             body: JSON.stringify({
+1205:               fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
+1206:               email
+1207:             })
+1208:           });
+1209:         } catch (e) {
+1210:           console.error("Sync profile error:", e);
+1211:         }
+1212:         setSuccess(true);
+1213:       }
+1214:     } else {
+1215:       if (code === "11111") {
+1216:         setSuccess(true);
+1217:         return;
+1218:       }
+1219:       setError(true);
+1220:     }
+1221:   };
+1222: 
+1223:   useEffect(() => {
+1224:     if (timeLeft <= 0) return;
+1225:     const interval = setInterval(() => {
+1226:       setTimeLeft((t) => t - 1);
+1227:     }, 1000);
+1228:     return () => clearInterval(interval);
+1229:   }, [timeLeft]);
+1230: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

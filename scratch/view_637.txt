@@ -1,0 +1,109 @@
+Created At: 2026-06-13T23:37:54Z
+Completed At: 2026-06-13T23:37:54Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 500 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+500:       </h1>
+501:       <Mascot priority className="absolute -right-[266px] bottom-[-52px] w-[496px] max-w-none" />
+502:       <button
+503:         type="button"
+504:         onClick={onNext}
+505:         className="absolute bottom-[42px] left-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[17px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
+506:       >
+507:         It&apos;s more fun and quick
+508:         <br />
+509:         when we do it together!
+510:       </button>
+511:     </div>
+512:   );
+513: }
+514: 
+515: function ManageIntro({ onNext }: { onNext: () => void }) {
+516:   return (
+517:     <button
+518:       type="button"
+519:       onClick={onNext}
+520:       className="relative flex h-[calc(100%_-_58px)] w-full flex-col items-start overflow-hidden px-[34px] pt-[32px] text-left cursor-pointer border-0 outline-none"
+521:       aria-label="Continue onboarding"
+522:     >
+523:       <ProgressBars active={1} />
+524:       <BrandLogo className="mt-[48px] h-auto w-[168px] ml-[34px]" />
+525:       <h1 className="mt-[7px] text-[58px] font-semibold leading-[0.96] text-left ml-[34px]" style={{ color: 'var(--onb-heading)' }}>
+526:         Tracks
+527:         <br />
+528:         Manage
+529:         <br />
+530:         &amp; Grow
+531:         <br />
+532:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">All In One</span>
+533:         <br />
+534:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">Place.</span>
+535:       </h1>
+536:       <Mascot priority className="absolute -right-[250px] bottom-[-270px] w-[600px] max-w-none" />
+537:     </button>
+538:   );
+539: }
+540: 
+541: function TogetherIntro({ onNext }: { onNext: () => void }) {
+542:   return (
+543:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[32px]">
+544:       <ProgressBars active={2} />
+545:       <div className="pal-card-stack relative mt-[82px] rounded-[31px] bg-white px-[38px] pb-[31px] pt-[30px] shadow-pal text-left onb-card">
+546:         <ul className="relative z-10 list-disc space-y-[22px] pl-[18px] text-[17px] leading-[1.25] marker:text-[#3b5a7c]" style={{ color: '#3b5a7c' }}>
+547:           <li>
+548:             <span className="font-semibold text-[#0a438a]">Log sales, expenses,</span> and project updates
+549:             effortlessly. PAL remembers everything so you can focus on what matters.
+550:           </li>
+551:           <li>
+552:             <span className="font-semibold text-[#0a438a]">Get daily insights on profit,</span> spending, and growth.
+553:             PAL breaks it down in simple terms just for you.
+554:           </li>
+555:           <li>
+556:             <span className="font-semibold text-[#0a438a]">Tech? Retail? Services?</span>
+557:             <br />
+558:             PAL adapts to your hustle, your flow, your way.
+559:           </li>
+560:           <li>
+561:             You don&apos;t have to do it alone anymore.
+562:             <br />
+563:             <span className="font-semibold text-[#0a438a]">PAL is with you. Let&apos;s go 🚀</span>
+564:           </li>
+565:         </ul>
+566:         <Mascot className="absolute -bottom-[83px] left-[118px] z-20 w-[96px]" />
+567:       </div>
+568:       <button
+569:         type="button"
+570:         onClick={onNext}
+571:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer"
+572:       >
+573:         Let&apos;s go 🚀
+574:       </button>
+575:     </div>
+576:   );
+577: }
+578: 
+579: function PersonaScreen({
+580:   value,
+581:   onChange,
+582:   onNext
+583: }: {
+584:   value: string;
+585:   onChange: (value: string) => void;
+586:   onNext: () => void;
+587: }) {
+588:   const options = ["🚀 Startup or Big brand", "🎨 Freelancer / Creative", "🛍️ Business Owner", "🧩 Or others"];
+589: 
+590:   return (
+591:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+592:       <p className="text-[23px] font-semibold leading-none" style={{ color: 'var(--onb-subtext)' }}>Hey welcome!</p>
+593:       <h1 className="mt-[12px] text-[30px] font-extrabold leading-[1.12]" style={{ color: 'var(--onb-heading)' }}>
+594:         Tell us who you are?
+595:       </h1>
+596:       <div className="pal-card-stack relative mt-[61px] rounded-[31px] bg-white px-[29px] pb-[31px] pt-[31px] shadow-pal onb-card" style={{ color: '#111827' }}>
+597:         <div className="relative z-10 grid gap-[16px]">
+598:           {options.map((option) => {
+599:             const cleanVal = option.replace(/^[^ ]+ /, "");
+600:             return (
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

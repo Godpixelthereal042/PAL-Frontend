@@ -1,0 +1,158 @@
+Created At: 2026-06-13T23:11:44Z
+Completed At: 2026-06-13T23:11:44Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 700
+Total Bytes: 13400
+Showing lines 1 to 150
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: @import "tailwindcss";
+2: 
+3: @font-face {
+4:   font-family: 'Fractul';
+5:   src: local('Fractul'), local('Fractul Regular'), local('Fractul-Regular');
+6: }
+7: 
+8: :root {
+9:   --background: #000000;
+10:   --foreground: #ffffff;
+11: 
+12:   /* ===== THEME TOKENS ===== */
+13:   /* Default (light) */
+14:   --app-bg: #f0f4f8;
+15:   --app-bg-gradient: linear-gradient(180deg, #f0f4f8 0%, #e8eef5 100%);
+16:   --app-surface: #ffffff;
+17:   --app-card: #ffffff;
+18:   --app-card-alt: #f5f7fa;
+19:   --app-card-border: #e5e7eb;
+20:   --app-input-bg: #f9fafb;
+21:   --app-input-border: #d1d5db;
+22:   --app-text: #111827;
+23:   --app-text-secondary: #4b5563;
+24:   --app-text-muted: #9ca3af;
+25:   --app-text-inverse: #ffffff;
+26:   --app-icon: #6b7280;
+27:   --app-divider: #e5e7eb;
+28:   --app-header-bg: rgba(240, 244, 248, 0.85);
+29:   --app-overlay: rgba(0, 0, 0, 0.4);
+30:   --app-glass: rgba(255, 255, 255, 0.7);
+31:   --app-glass-border: rgba(0, 0, 0, 0.06);
+32:   --app-nav-bg: rgba(255, 255, 255, 0.92);
+33:   --app-nav-border: #e5e7eb;
+34:   --app-nav-active: #2d7fe0;
+35:   --app-nav-inactive: #9ca3af;
+36:   --app-badge-bg: #ef4444;
+37:   --app-shadow: rgba(0, 0, 0, 0.08);
+38:   --app-shadow-lg: rgba(0, 0, 0, 0.12);
+39:   --app-accent: #2d7fe0;
+40:   --app-accent-soft: rgba(45, 127, 224, 0.12);
+41:   --app-success: #22c55e;
+42:   --app-danger: #ef4444;
+43:   --app-warning: #f59e0b;
+44: 
+45:   /* Onboarding-specific */
+46:   --onb-bg: linear-gradient(180deg, #d3f9ff 0%, #6ed0eb 47%, #c9f6ff 100%);
+47:   --onb-heading: #0a438a;
+48:   --onb-subtext: #3b5a7c;
+49:   --onb-status-color: #050505;
+50: }
+51: 
+52: [data-theme="dark"] {
+53:   --app-bg: #000000;
+54:   --app-bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0f 100%);
+55:   --app-surface: #111117;
+56:   --app-card: #18191f;
+57:   --app-card-alt: #1e1f26;
+58:   --app-card-border: rgba(255, 255, 255, 0.06);
+59:   --app-input-bg: #1a1b22;
+60:   --app-input-border: rgba(255, 255, 255, 0.12);
+61:   --app-text: #ffffff;
+62:   --app-text-secondary: #a1a1aa;
+63:   --app-text-muted: #6b7280;
+64:   --app-text-inverse: #000000;
+65:   --app-icon: #9ca3af;
+66:   --app-divider: rgba(255, 255, 255, 0.08);
+67:   --app-header-bg: rgba(0, 0, 0, 0.8);
+68:   --app-overlay: rgba(0, 0, 0, 0.7);
+69:   --app-glass: rgba(20, 20, 20, 0.6);
+70:   --app-glass-border: rgba(255, 255, 255, 0.08);
+71:   --app-nav-bg: rgba(18, 18, 24, 0.95);
+72:   --app-nav-border: rgba(255, 255, 255, 0.06);
+73:   --app-nav-active: #48b9ff;
+74:   --app-nav-inactive: #6b7280;
+75:   --app-badge-bg: #ef4444;
+76:   --app-shadow: rgba(0, 0, 0, 0.3);
+77:   --app-shadow-lg: rgba(0, 0, 0, 0.5);
+78:   --app-accent: #48b9ff;
+79:   --app-accent-soft: rgba(72, 185, 255, 0.15);
+80:   --app-success: #34d399;
+81:   --app-danger: #f87171;
+82:   --app-warning: #fbbf24;
+83: 
+84:   /* Onboarding-specific dark */
+85:   --onb-bg: linear-gradient(180deg, #050a12 0%, #0a1628 47%, #0c1e35 100%);
+86:   --onb-heading: #e0eaff;
+87:   --onb-subtext: #8ba3c4;
+88:   --onb-status-color: #ffffff;
+89: }
+90: 
+91: html, body, main {
+92:   height: 100dvh;
+93:   overflow: hidden;
+94: }
+95: 
+96: body {
+97:   background: var(--background);
+98:   color: var(--foreground);
+99:   font-family: 'Fractul', var(--font-outfit), sans-serif;
+100: }
+101: 
+102: /* Glass panel — reusable surface */
+103: .glass-panel {
+104:   background: var(--app-glass);
+105:   backdrop-filter: blur(16px);
+106:   -webkit-backdrop-filter: blur(16px);
+107:   border: 1px solid var(--app-glass-border);
+108: }
+109: 
+110: /* Scrollbar hide */
+111: .scrollbar-hide::-webkit-scrollbar {
+112:   display: none;
+113: }
+114: .scrollbar-hide {
+115:   -ms-overflow-style: none;
+116:   scrollbar-width: none;
+117: }
+118: 
+119: /* Font alias */
+120: .font-outfit {
+121:   font-family: 'Fractul', var(--font-outfit), sans-serif;
+122: }
+123: 
+124: /* ====== ANIMATIONS ====== */
+125: 
+126: /* Winking animation */
+127: @keyframes wink {
+128:   0%, 90%, 100% {
+129:     height: 1.25rem;
+130:     border-radius: 0.5rem;
+131:   }
+132:   95% {
+133:     height: 0.25rem;
+134:     border-radius: 0.125rem;
+135:   }
+136: }
+137: .animate-wink {
+138:   animation: wink 3s ease-in-out infinite;
+139: }
+140: 
+141: /* Slow spin animation for waves */
+142: @keyframes spin-slow {
+143:   from { transform: rotate(0deg); }
+144:   to { transform: rotate(360deg); }
+145: }
+146: 
+147: /* Wave animations */
+148: @keyframes wave-rotate {
+149:   from { transform: rotate(0deg) scale(1); }
+150:   50% { transform: rotate(180deg) scale(1.1); }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

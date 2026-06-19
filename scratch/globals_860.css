@@ -1,0 +1,808 @@
+Created At: 2026-06-16T00:16:39Z
+Completed At: 2026-06-16T00:16:39Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 815
+Total Bytes: 16420
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: @import "tailwindcss";
+2: 
+3: @font-face {
+4:   font-family: 'Fractul';
+5:   src: local('Fractul'), local('Fractul Regular'), local('Fractul-Regular');
+6: }
+7: 
+8: :root {
+9:   --background: #000000;
+10:   --foreground: #ffffff;
+11: 
+12:   /* ===== THEME TOKENS ===== */
+13:   /* Default (light) */
+14:   --app-bg: #f0f4f8;
+15:   --app-bg-gradient: linear-gradient(180deg, #f0f4f8 0%, #e8eef5 100%);
+16:   --app-surface: #ffffff;
+17:   --app-card: #ffffff;
+18:   --app-card-alt: #f5f7fa;
+19:   --app-card-border: #e5e7eb;
+20:   --app-input-bg: #f9fafb;
+21:   --app-input-border: #d1d5db;
+22:   --app-text: #111827;
+23:   --app-text-secondary: #4b5563;
+24:   --app-text-muted: #9ca3af;
+25:   --app-text-inverse: #ffffff;
+26:   --app-icon: #6b7280;
+27:   --app-divider: #e5e7eb;
+28:   --app-header-bg: rgba(240, 244, 248, 0.85);
+29:   --app-overlay: rgba(0, 0, 0, 0.4);
+30:   --app-glass: rgba(255, 255, 255, 0.7);
+31:   --app-glass-border: rgba(0, 0, 0, 0.06);
+32:   --app-nav-bg: rgba(255, 255, 255, 0.92);
+33:   --app-nav-border: #e5e7eb;
+34:   --app-nav-active: #2d7fe0;
+35:   --app-nav-inactive: #9ca3af;
+36:   --app-badge-bg: #ef4444;
+37:   --app-shadow: rgba(0, 0, 0, 0.08);
+38:   --app-shadow-lg: rgba(0, 0, 0, 0.12);
+39:   --app-accent: #2d7fe0;
+40:   --app-accent-soft: rgba(45, 127, 224, 0.12);
+41:   --app-success: #22c55e;
+42:   --app-danger: #ef4444;
+43:   --app-warning: #f59e0b;
+44: 
+45:   /* Onboarding-specific */
+46:   --onb-bg: linear-gradient(180deg, #d3f9ff 0%, #6ed0eb 47%, #c9f6ff 100%);
+47:   --onb-heading: #0a438a;
+48:   --onb-subtext: #3b5a7c;
+49:   --onb-status-color: #050505;
+50: }
+51: 
+52: [data-theme="dark"] {
+53:   --app-bg: #000000;
+54:   --app-bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a0f 100%);
+55:   --app-surface: #111117;
+56:   --app-card: #18191f;
+57:   --app-card-alt: #1e1f26;
+58:   --app-card-border: rgba(255, 255, 255, 0.06);
+59:   --app-input-bg: #1a1b22;
+60:   --app-input-border: rgba(255, 255, 255, 0.12);
+61:   --app-text: #ffffff;
+62:   --app-text-secondary: #a1a1aa;
+63:   --app-text-muted: #6b7280;
+64:   --app-text-inverse: #000000;
+65:   --app-icon: #9ca3af;
+66:   --app-divider: rgba(255, 255, 255, 0.08);
+67:   --app-header-bg: rgba(0, 0, 0, 0.8);
+68:   --app-overlay: rgba(0, 0, 0, 0.7);
+69:   --app-glass: rgba(20, 20, 20, 0.6);
+70:   --app-glass-border: rgba(255, 255, 255, 0.08);
+71:   --app-nav-bg: rgba(18, 18, 24, 0.95);
+72:   --app-nav-border: rgba(255, 255, 255, 0.06);
+73:   --app-nav-active: #48b9ff;
+74:   --app-nav-inactive: #6b7280;
+75:   --app-badge-bg: #ef4444;
+76:   --app-shadow: rgba(0, 0, 0, 0.3);
+77:   --app-shadow-lg: rgba(0, 0, 0, 0.5);
+78:   --app-accent: #48b9ff;
+79:   --app-accent-soft: rgba(72, 185, 255, 0.15);
+80:   --app-success: #34d399;
+81:   --app-danger: #f87171;
+82:   --app-warning: #fbbf24;
+83: 
+84:   /* Onboarding-specific dark */
+85:   --onb-bg: linear-gradient(180deg, #050a12 0%, #0a1628 47%, #0c1e35 100%);
+86:   --onb-heading: #e0eaff;
+87:   --onb-subtext: #8ba3c4;
+88:   --onb-status-color: #ffffff;
+89: }
+90: 
+91: html, body, main {
+92:   height: 100dvh;
+93:   overflow: hidden;
+94: }
+95: 
+96: body {
+97:   background: var(--background);
+98:   color: var(--foreground);
+99:   font-family: 'Fractul', var(--font-outfit), sans-serif;
+100: }
+101: 
+102: /* Glass panel — reusable surface */
+103: .glass-panel {
+104:   background: var(--app-glass);
+105:   backdrop-filter: blur(16px);
+106:   -webkit-backdrop-filter: blur(16px);
+107:   border: 1px solid var(--app-glass-border);
+108: }
+109: 
+110: /* Scrollbar hide */
+111: .scrollbar-hide::-webkit-scrollbar {
+112:   display: none;
+113: }
+114: .scrollbar-hide {
+115:   -ms-overflow-style: none;
+116:   scrollbar-width: none;
+117: }
+118: 
+119: /* Font alias */
+120: .font-outfit {
+121:   font-family: 'Fractul', var(--font-outfit), sans-serif;
+122: }
+123: 
+124: /* ====== ANIMATIONS ====== */
+125: 
+126: /* Winking animation */
+127: @keyframes wink {
+128:   0%, 90%, 100% {
+129:     height: 1.25rem;
+130:     border-radius: 0.5rem;
+131:   }
+132:   95% {
+133:     height: 0.25rem;
+134:     border-radius: 0.125rem;
+135:   }
+136: }
+137: .animate-wink {
+138:   animation: wink 3s ease-in-out infinite;
+139: }
+140: 
+141: /* Slow spin animation for waves */
+142: @keyframes spin-slow {
+143:   from { transform: rotate(0deg); }
+144:   to { transform: rotate(360deg); }
+145: }
+146: 
+147: /* Wave animations */
+148: @keyframes wave-rotate {
+149:   from { transform: rotate(0deg) scale(1); }
+150:   50% { transform: rotate(180deg) scale(1.1); }
+151:   to { transform: rotate(360deg) scale(1); }
+152: }
+153: .animate-wave-slow {
+154:   animation: wave-rotate 10s linear infinite;
+155: }
+156: .animate-wave-slower {
+157:   animation: wave-rotate 15s linear infinite reverse;
+158: }
+159: 
+160: /* Bottom sheet slide-up animation */
+161: @keyframes slide-up {
+162:   from {
+163:     transform: translateY(100%);
+164:     opacity: 0;
+165:   }
+166:   to {
+167:     transform: translateY(0);
+168:     opacity: 1;
+169:   }
+170: }
+171: .animate-slide-up {
+172:   animation: slide-up 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+173: }
+174: 
+175: /* Bottom sheet backdrop fade */
+176: @keyframes fade-in {
+177:   from { opacity: 0; }
+178:   to { opacity: 1; }
+179: }
+180: .animate-fade-in {
+181:   animation: fade-in 0.2s ease-out forwards;
+182: }
+183: 
+184: /* Typing indicator dots */
+185: @keyframes typing-bounce {
+186:   0%, 60%, 100% {
+187:     transform: translateY(0);
+188:     opacity: 0.4;
+189:   }
+190:   30% {
+191:     transform: translateY(-6px);
+192:     opacity: 1;
+193:   }
+194: }
+195: .typing-dot {
+196:   animation: typing-bounce 1.4s ease-in-out infinite;
+197: }
+198: .typing-dot:nth-child(2) {
+199:   animation-delay: 0.2s;
+200: }
+201: .typing-dot:nth-child(3) {
+202:   animation-delay: 0.4s;
+203: }
+204: 
+205: /* Watermark background for Research screen */
+206: .research-page-bg {
+207:   background: linear-gradient(to bottom, #010103 0%, #051c36 40%, #0c3364 75%, #185092 100%);
+208:   position: relative;
+209: }
+210: .research-page-bg::before {
+211:   content: '';
+212:   position: absolute;
+213:   inset: 0;
+214:   background-image: url('/research-bg.png');
+215:   background-size: cover;
+216:   background-position: center;
+217:   opacity: 0.22;
+218:   pointer-events: none;
+219:   z-index: 0;
+220: }
+221: .research-page-bg > * {
+222:   position: relative;
+223:   z-index: 1;
+224: }
+225: 
+226: /* Pulse glow for active elements */
+227: @keyframes pulse-glow {
+228:   0%, 100% {
+229:     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+230:   }
+231:   50% {
+232:     box-shadow: 0 0 20px 4px rgba(59, 130, 246, 0.2);
+233:   }
+234: }
+235: .animate-pulse-glow {
+236:   animation: pulse-glow 2s ease-in-out infinite;
+237: }
+238: 
+239: /* Hide Next.js dev indicators / toolbar */
+240: next-dev-portal,
+241: #next-dev-portal,
+242: .__next-dev-indicator,
+243: #__next-dev-indicator {
+244:   display: none !important;
+245:   visibility: hidden !important;
+246:   opacity: 0 !important;
+247:   pointer-events: none !important;
+248: }:root {
+249:   color-scheme: light;
+250:   --pal-blue: #2d7fe0;
+251:   --pal-navy: #0a438a;
+252:   --pal-sky: #72d3ec;
+253:   --pal-mist: #cff6ff;
+254:   --pal-soft: #edf1f6;
+255: }
+256: 
+257: * {
+258:   box-sizing: border-box;
+259: }
+260: 
+261: html,
+262: body {
+263:   min-height: 100%;
+264: }
+265: 
+266: body {
+267:   margin: 0;
+268:   background:
+269:     radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 34rem),
+270:     linear-gradient(135deg, #dffaff 0%, #61cce8 54%, #0c3778 100%);
+271:   color: #080808;
+272:   font-family: "Poppins", "Avenir Next", "Nunito Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+273:   letter-spacing: 0;
+274: }
+275: 
+276: button,
+277: input {
+278:   font: inherit;
+279:   letter-spacing: 0;
+280: }
+281: 
+282: input, select, textarea, .auth-input {
+283:   font-size: 16px !important;
+284: }
+285: 
+286: button {
+287:   appearance: none;
+288:   background: transparent;
+289:   border: 0 solid transparent;
+290:   color: inherit;
+291:   padding: 0;
+292:   text-align: center;
+293:   touch-action: manipulation;
+294: }
+295: 
+296: .phone-stage {
+297:   min-height: 100svh;
+298:   display: flex;
+299:   align-items: center;
+300:   justify-content: center;
+301:   padding: 0;
+302: }
+303: 
+304: .phone {
+305:   position: relative;
+306:   width: min(100vw, 430px);
+307:   height: 100svh;
+308:   overflow: hidden;
+309:   background: var(--onb-bg);
+310:   box-shadow: none;
+311:   isolation: isolate;
+312: }
+313: 
+314: .screen-scroll {
+315:   height: calc(100% - 54px);
+316:   overflow-y: auto;
+317:   overscroll-behavior: contain;
+318:   scrollbar-width: none;
+319: }
+320: 
+321: .screen-scroll::-webkit-scrollbar {
+322:   display: none;
+323: }
+324: 
+325: .app-scroll {
+326:   height: 100%;
+327:   overflow-y: auto;
+328:   overscroll-behavior: contain;
+329:   scrollbar-width: none;
+330:   animation: screen-in 260ms ease both;
+331: }
+332: 
+333: .app-scroll::-webkit-scrollbar {
+334:   display: none;
+335: }
+336: 
+337: .scrollbar-hide {
+338:   scrollbar-width: none;
+339: }
+340: 
+341: .scrollbar-hide::-webkit-scrollbar {
+342:   display: none;
+343: }
+344: 
+345: .status-bar {
+346:   position: relative;
+347:   z-index: 40;
+348:   height: env(safe-area-inset-top, 47px);
+349:   padding: 0;
+350: }
+351: 
+352: .status-bar > * {
+353:   display: none !important;
+354: }
+355: 
+356: .status-dark {
+357:   color: #fff;
+358: }
+359: 
+360: .dynamic-island {
+361:   justify-self: center;
+362:   width: 126px;
+363:   height: 37px;
+364:   margin-top: -6px;
+365:   border-radius: 999px;
+366:   background: #1c1c1b;
+367: }
+368: 
+369: .status-icons {
+370:   justify-self: end;
+371:   display: flex;
+372:   align-items: center;
+373:   gap: 7px;
+374:   padding-top: 1px;
+375: }
+376: 
+377: .signal {
+378:   display: flex;
+379:   gap: 2px;
+380:   align-items: end;
+381:   height: 15px;
+382: }
+383: 
+384: .signal span {
+385:   display: block;
+386:   width: 3px;
+387:   border-radius: 2px;
+388:   background: currentColor;
+389: }
+390: 
+391: .signal span:nth-child(1) {
+392:   height: 5px;
+393: }
+394: 
+395: .signal span:nth-child(2) {
+396:   height: 8px;
+397: }
+398: 
+399: .signal span:nth-child(3) {
+400:   height: 12px;
+401: }
+402: 
+403: .signal span:nth-child(4) {
+404:   height: 15px;
+405: }
+406: 
+407: .wifi {
+408:   position: relative;
+409:   width: 17px;
+410:   height: 13px;
+411: }
+412: 
+413: .wifi::before,
+414: .wifi::after {
+415:   content: "";
+416:   position: absolute;
+417:   left: 50%;
+418:   border: 3px solid currentColor;
+419:   border-color: currentColor transparent transparent transparent;
+420:   border-radius: 999px;
+421:   transform: translateX(-50%);
+422: }
+423: 
+424: .wifi::before {
+425:   top: 0;
+426:   width: 22px;
+427:   height: 16px;
+428: }
+429: 
+430: .wifi::after {
+431:   top: 5px;
+432:   width: 13px;
+433:   height: 10px;
+434: }
+435: 
+436: .wifi-dot {
+437:   position: absolute;
+438:   left: 50%;
+439:   bottom: 0;
+440:   width: 4px;
+441:   height: 4px;
+442:   border-radius: 999px;
+443:   background: currentColor;
+444:   transform: translateX(-50%);
+445: }
+446: 
+447: .battery {
+448:   position: relative;
+449:   width: 25px;
+450:   height: 13px;
+451:   border: 1.7px solid currentColor;
+452:   border-radius: 4px;
+453: }
+454: 
+455: .battery::before {
+456:   content: "";
+457:   position: absolute;
+458:   right: -4px;
+459:   top: 3px;
+460:   width: 2px;
+461:   height: 6px;
+462:   border-radius: 2px;
+463:   background: currentColor;
+464: }
+465: 
+466: .battery::after {
+467:   content: "";
+468:   position: absolute;
+469:   inset: 2px 4px 2px 2px;
+470:   border-radius: 2px;
+471:   background: currentColor;
+472:   opacity: 0.72;
+473: }
+474: 
+475: .progress-bars {
+476:   display: flex;
+477:   gap: 5px;
+478:   width: 144px;
+479:   height: 6px;
+480:   margin-left: 34px;
+481: }
+482: 
+483: .progress-bars span {
+484:   height: 6px;
+485:   flex: 1;
+486:   border-radius: 999px;
+487:   background: rgba(47, 127, 224, 0.28);
+488: }
+489: 
+490: .progress-bars span.active {
+491:   flex: 2.35;
+492:   background: var(--pal-blue);
+493: }
+494: 
+495: .primary-pill {
+496:   height: 56px;
+497:   border-radius: 999px;
+498:   background: var(--pal-blue);
+499:   color: #fff;
+500:   font-weight: 600;
+501:   transition: transform 160ms ease, filter 160ms ease;
+502: }
+503: 
+504: .primary-pill:active {
+505:   transform: scale(0.98);
+506:   filter: brightness(0.95);
+507: }
+508: 
+509: .primary-pill:disabled {
+510:   background: rgba(45, 127, 224, 0.58);
+511: }
+512: 
+513: .pal-card-stack::before,
+514: .pal-card-stack::after {
+515:   content: "";
+516:   position: absolute;
+517:   left: 28px;
+518:   right: 28px;
+519:   height: 92px;
+520:   border-radius: 31px 31px 0 0;
+521:   background: rgba(255, 255, 255, 0.22);
+522: }
+523: 
+524: .pal-card-stack::before {
+525:   top: -28px;
+526: }
+527: 
+528: .pal-card-stack::after {
+529:   top: -53px;
+530:   left: 58px;
+531:   right: 58px;
+532: }
+533: 
+534: .mascot-peek {
+535:   filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.95));
+536: }
+537: 
+538: .soft-field {
+539:   background: var(--app-card-alt, #f0f3f7);
+540:   border: 1px solid transparent;
+541: }
+542: 
+543: [data-theme="dark"] .soft-field {
+544:   background: #1a2438;
+545:   border-color: rgba(255, 255, 255, 0.1);
+546:   color: #e0eaff;
+547: }
+548: 
+549: .auth-input {
+550:   height: 46px;
+551:   width: 100%;
+552:   border: 1px solid #dedede;
+553:   border-radius: 8px;
+554:   padding: 0 13px;
+555:   outline: none;
+556:   color: #222;
+557:   background: #fff;
+558: }
+559: 
+560: [data-theme="dark"] .auth-input {
+561:   background: #1a2438;
+562:   border-color: rgba(255, 255, 255, 0.15);
+563:   color: #e0eaff;
+564: }
+565: 
+566: [data-theme="dark"] .auth-input::placeholder {
+567:   color: #5a6a80;
+568: }
+569: 
+570: .auth-input::placeholder {
+571:   color: #999ca5;
+572: }
+573: 
+574: .dark-round-button {
+575:   border: 1.3px solid rgba(255, 255, 255, 0.55);
+576:   background: rgba(255, 255, 255, 0.16);
+577:   color: #fff;
+578:   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+579: }
+580: 
+581: .keyboard-grid {
+582:   display: grid;
+583:   grid-template-columns: repeat(3, 1fr);
+584:   gap: 6px;
+585:   background: #d0dee7;
+586:   padding: 6px 6px 20px;
+587: }
+588: 
+589: [data-theme="dark"] .keyboard-grid {
+590:   background: #1a2030;
+591: }
+592: 
+593: .keyboard-key {
+594:   height: 47px;
+595:   border-radius: 5px;
+596:   background: #fff;
+597:   color: #070707;
+598:   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.32);
+599:   font-size: 26px;
+600:   line-height: 0.86;
+601: }
+602: 
+603: [data-theme="dark"] .keyboard-key {
+604:   background: #2a3448;
+605:   color: #e0eaff;
+606:   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+607: }
+608: 
+609: .keyboard-key small {
+610:   display: block;
+611:   margin-top: 3px;
+612:   font-size: 9px;
+613:   font-weight: 800;
+614:   letter-spacing: 1.2px;
+615: }
+616: 
+617: /* Theme toggle button */
+618: .theme-toggle {
+619:   display: flex;
+620:   align-items: center;
+621:   justify-content: center;
+622:   width: 32px;
+623:   height: 32px;
+624:   border-radius: 50%;
+625:   background: rgba(255, 255, 255, 0.25);
+626:   backdrop-filter: blur(8px);
+627:   cursor: pointer;
+628:   transition: transform 200ms ease, background 200ms ease;
+629:   border: 1px solid rgba(255, 255, 255, 0.3);
+630: }
+631: 
+632: .theme-toggle:active {
+633:   transform: scale(0.9);
+634: }
+635: 
+636: [data-theme="dark"] .theme-toggle {
+637:   background: rgba(255, 255, 255, 0.1);
+638:   border-color: rgba(255, 255, 255, 0.15);
+639: }
+640: 
+641: /* Dark mode card overrides for onboarding removed to keep them white */
+642: 
+643: [data-theme="dark"] .progress-bars span {
+644:   background: rgba(72, 185, 255, 0.2);
+645: }
+646: 
+647: [data-theme="dark"] .progress-bars span.active {
+648:   background: #48b9ff;
+649: }
+650: 
+651: [data-theme="dark"] body {
+652:   background: var(--app-bg, #000000) !important;
+653:   color: var(--app-text, #ffffff) !important;
+654: }
+655: 
+656: .onb-card ul {
+657:   list-style-type: disc !important;
+658: }
+659: 
+660: .onb-card li::marker {
+661:   color: var(--onb-subtext) !important;
+662: }
+663: 
+664: 
+665: @keyframes screen-in {
+666:   from {
+667:     opacity: 0;
+668:     transform: translateY(10px);
+669:   }
+670: 
+671:   to {
+672:     opacity: 1;
+673:     transform: translateY(0);
+674:   }
+675: }
+676: 
+677: .animate-sheet-up {
+678:   animation: sheet-up 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+679: }
+680: 
+681: @keyframes sheet-up {
+682:   from {
+683:     opacity: 0;
+684:     transform: translateY(42px);
+685:   }
+686: 
+687:   to {
+688:     opacity: 1;
+689:     transform: translateY(0);
+690:   }
+691: }
+692: 
+693: /* Media query phone layout overrides removed to unify size with the main app */
+694: 
+695: @media (max-width: 374px) {
+696:   .status-bar {
+697:     padding-left: 24px;
+698:     padding-right: 24px;
+699:   }
+700: }
+701: 
+702: @media print {
+703:   html, body, main {
+704:     height: auto !important;
+705:     overflow: visible !important;
+706:     background: white !important;
+707:     color: black !important;
+708:   }
+709:   body * {
+710:     visibility: hidden;
+711:   }
+712:   .printable-invoice, .printable-invoice * {
+713:     visibility: visible;
+714:   }
+715:   .printable-invoice {
+716:     position: absolute;
+717:     left: 0;
+718:     top: 0;
+719:     width: 100% !important;
+720:     max-width: 100% !important;
+721:     margin: 0 !important;
+722:     padding: 30px !important;
+723:     background: white !important;
+724:     color: black !important;
+725:     box-shadow: none !important;
+726:     border: 1px solid #ddd !important;
+727:     border-radius: 12px !important;
+728:   }
+729:   /* Fix colors in printing */
+730:   .printable-invoice span, .printable-invoice h4, .printable-invoice div {
+731:     color: black !important;
+732:     background: transparent !important;
+733:     border-color: #eee !important;
+734:   }
+735: }
+736: 
+737: /* Onboarding Height-Responsive Styling */
+738: 
+739: .onb-growth-header {
+740:   font-size: clamp(34px, 8.5svh, 65px) !important;
+741:   line-height: 0.94 !important;
+742:   margin-top: clamp(15px, 4.5svh, 33px) !important;
+743: }
+744: 
+745: .onb-growth-mascot {
+746:   width: clamp(260px, 62svh, 496px) !important;
+747:   right: clamp(-180px, -42svh, -266px) !important;
+748:   bottom: clamp(-30px, -7svh, -52px) !important;
+749: }
+750: 
+751: .onb-manage-logo {
+752:   margin-top: clamp(15px, 6svh, 48px) !important;
+753:   width: clamp(120px, 20svh, 168px) !important;
+754: }
+755: 
+756: .onb-manage-header {
+757:   font-size: clamp(32px, 7.5svh, 58px) !important;
+758:   line-height: 0.96 !important;
+759:   margin-top: clamp(5px, 2svh, 15px) !important;
+760: }
+761: 
+762: .onb-manage-mascot {
+763:   width: clamp(320px, 75svh, 600px) !important;
+764:   right: clamp(-160px, -35svh, -250px) !important;
+765:   bottom: clamp(-170px, -35svh, -270px) !important;
+766: }
+767: 
+768: .onb-together-card {
+769:   margin-top: clamp(15px, 9svh, 82px) !important;
+770:   padding-top: clamp(15px, 3.5svh, 30px) !important;
+771:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+772:   padding-left: clamp(20px, 5svh, 38px) !important;
+773:   padding-right: clamp(20px, 5svh, 38px) !important;
+774:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+775: }
+776: 
+777: .onb-together-list {
+778:   gap: clamp(10px, 2svh, 22px) !important;
+779: }
+780: 
+781: .onb-together-list > li + li {
+782:   margin-top: clamp(10px, 2svh, 22px) !important;
+783: }
+784: 
+785: .onb-together-mascot {
+786:   width: clamp(60px, 12svh, 96px) !important;
+787:   bottom: clamp(-50px, -10svh, -83px) !important;
+788:   left: clamp(80px, 16svh, 118px) !important;
+789: }
+790: 
+791: .onb-persona-card {
+792:   margin-top: clamp(15px, 7.5svh, 61px) !important;
+793:   padding-top: clamp(15px, 3.5svh, 31px) !important;
+794:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+795:   padding-left: clamp(20px, 4.5svh, 29px) !important;
+796:   padding-right: clamp(20px, 4.5svh, 29px) !important;
+797:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+798: }
+799: 
+800: .onb-persona-grid {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

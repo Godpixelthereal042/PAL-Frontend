@@ -1,0 +1,58 @@
+Created At: 2026-06-13T23:37:24Z
+Completed At: 2026-06-13T23:37:24Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 350 to 399
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+350:           <CountryScreen
+351:             selected={country}
+352:             query={searchCountry}
+353:             onQuery={setSearchCountry}
+354:             onSelect={setCountry}
+355:             onNext={() => setScreen("language")}
+356:           />
+357:         )}
+358:         
+359:         {screen === "language" && (
+360:           <LanguageScreen 
+361:             selected={language} 
+362:             onSelect={setLanguage} 
+363:             onNext={() => setScreen("signup")} 
+364:           />
+365:         )}
+366:         
+367:         {screen === "signup" && (
+368:           <SignupScreen 
+369:             fullName={fullName}
+370:             setFullName={setFullName}
+371:             email={email}
+372:             setEmail={setEmail}
+373:             password={password}
+374:             setPassword={setPassword}
+375:             confirmPassword={confirmPassword}
+376:             setConfirmPassword={setConfirmPassword}
+377:             persona={persona}
+378:             industry={industry}
+379:             country={country}
+380:             language={language}
+381:             onLogin={() => setScreen("login")} 
+382:             onNext={() => setScreen("otp")} 
+383:             onGoogle={() => handleSocialSignIn("google")}
+384:             onBase={() => handleSocialSignIn("base")}
+385:           />
+386:         )}
+387:         
+388:         {screen === "login" && (
+389:           <LoginScreen 
+390:             email={email}
+391:             setEmail={setEmail}
+392:             password={password}
+393:             setPassword={setPassword}
+394:             onSignup={() => setScreen("signup")} 
+395:             onNext={() => router.push("/")} 
+396:             onGoogle={() => handleSocialSignIn("google")}
+397:             onBase={() => handleSocialSignIn("base")}
+398:           />
+399:         )}
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

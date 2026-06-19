@@ -1,0 +1,39 @@
+Created At: 2026-06-15T23:46:36Z
+Completed At: 2026-06-15T23:46:36Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1424
+Total Bytes: 49306
+Showing lines 1180 to 1210
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1180:     setError(false);
+1181:     setCode((value) => (value.length < 5 ? `${value}${digit}` : value));
+1182:   };
+1183: 
+1184:   const verify = async () => {
+1185:     if (code.length < 5) return;
+1186: 
+1187:     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+1188:     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+1189:     const useSupabase = supabaseUrl && supabaseAnonKey && 
+1190:                         !supabaseUrl.includes("dummy-url") && 
+1191:                         !supabaseAnonKey.includes("dummy-key");
+1192: 
+1193:     if (useSupabase) {
+1194:       const { data, error: err } = await supabase.auth.verifyOtp({
+1195:         email,
+1196:         token: code,
+1197:         type: "signup"
+1198:       });
+1199:       if (err) {
+1200:         setError(true);
+1201:         console.error("OTP verification error:", err.message);
+1202:       } else {
+1203:         // Sync local profile metadata
+1204:         try {
+1205:           await fetch("/api/profile", {
+1206:             method: "POST",
+1207:             headers: { "Content-Type": "application/json" },
+1208:             body: JSON.stringify({
+1209:               fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
+1210:               email
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

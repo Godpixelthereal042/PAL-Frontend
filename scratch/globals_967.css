@@ -1,0 +1,44 @@
+Created At: 2026-06-16T00:36:26Z
+Completed At: 2026-06-16T00:36:26Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 835
+Total Bytes: 16798
+Showing lines 340 to 375
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+340:   overflow-y: auto;
+341:   overscroll-behavior: contain;
+342:   scrollbar-width: none;
+343:   animation: screen-in 260ms ease both;
+344: }
+345: 
+346: .app-scroll::-webkit-scrollbar {
+347:   display: none;
+348: }
+349: 
+350: .scrollbar-hide {
+351:   scrollbar-width: none;
+352: }
+353: 
+354: .scrollbar-hide::-webkit-scrollbar {
+355:   display: none;
+356: }
+357: 
+358: .status-bar {
+359:   position: relative;
+360:   z-index: 40;
+361:   height: env(safe-area-inset-top, 47px);
+362:   padding: 0;
+363: }
+364: 
+365: .status-bar > * {
+366:   display: none !important;
+367: }
+368: 
+369: .status-dark {
+370:   color: #fff;
+371: }
+372: 
+373: .dynamic-island {
+374:   justify-self: center;
+375:   width: 126px;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

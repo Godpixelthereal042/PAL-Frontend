@@ -1,0 +1,59 @@
+Created At: 2026-06-13T23:37:22Z
+Completed At: 2026-06-13T23:37:22Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 400 to 450
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+400:         
+401:         {screen === "otp" && (
+402:           <OtpScreen 
+403:             email={email}
+404:             onNext={() => router.push("/")} 
+405:           />
+406:         )}
+407:       </section>
+408:     </div>
+409:   );
+410: }
+411: 
+412: // ---------------- Helper Components exact from pal-app.tsx ----------------
+413: 
+414: function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => void }) {
+415:   return (
+416:     <div className={cn("status-bar", tone === "dark" && "status-dark")}>
+417:       <span>9:41</span>
+418:       {tone === "light" && <span className="dynamic-island" aria-hidden="true" />}
+419:       <div className="status-icons" aria-hidden="true">
+420:         <span className="signal">
+421:           <span />
+422:           <span />
+423:           <span />
+424:           <span />
+425:         </span>
+426:         <span className="wifi">
+427:           <span className="wifi-dot" />
+428:         </span>
+429:         <span className="battery" />
+430:         {onToggleTheme && (
+431:           <button
+432:             type="button"
+433:             onClick={onToggleTheme}
+434:             className="theme-toggle"
+435:             aria-label={tone === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+436:           >
+437:             {tone === "dark" ? <Sun size={15} strokeWidth={2.5} /> : <Moon size={15} strokeWidth={2.5} />}
+438:           </button>
+439:         )}
+440:       </div>
+441:     </div>
+442:   );
+443: }
+444: 
+445: function ProgressBars({ active }: { active: number }) {
+446:   return (
+447:     <div className="progress-bars" aria-hidden="true">
+448:       {[0, 1, 2].map((index) => (
+449:         <span key={index} className={index === active ? "active" : ""} />
+450:       ))}
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

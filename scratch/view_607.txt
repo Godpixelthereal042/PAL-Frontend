@@ -1,0 +1,59 @@
+Created At: 2026-06-13T23:35:31Z
+Completed At: 2026-06-13T23:35:31Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/walkthrough.md`
+Total Lines: 51
+Total Bytes: 4344
+Showing lines 1 to 51
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Hardening Pal Features - Walkthrough
+2: 
+3: We have successfully implemented and verified all the technical hardening tasks outlined in the technical plan.
+4: 
+5: ## Changes Made
+6: 
+7: ### 1. Hardened Authentication & Local OTP Verification
+8: *   **Database Initializer**: Modified [db.ts](file:///Users/user/Documents/pal-frontend/lib/db.ts) to automatically create the `otp_codes` table when running locally.
+9: *   **Verification API**: Created the [verify/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/verify/route.ts) (`POST /api/auth/verify`) endpoint to check the generated local OTP against the database and securely issue the session cookie.
+10: *   **Sign-Up Flow**: Modified [signup/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/signup/route.ts) to generate and save a secure random 5-digit verification code into the database and print it in the server console, instead of setting session cookies immediately.
+11: *   **Onboarding screen**: Updated `OtpScreen` inside [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx) to fetch the verify API, eliminating the hardcoded `"11111"` check.
+12: 
+13: ### 2. aligned API Contracts
+14: *   **Chat Naming Matcher**: Modified [chat/route.ts](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts) (`POST /api/chat`) to accept both `{ text: "..." }` and `{ message: "..." }` in the request body.
+15: 
+16: ### 3. Sanitized Gemini Errors
+17: *   **Error Trapping**: Modified the Gemini API response checks inside [chat/route.ts](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts), [generate-roadmap/route.ts](file:///Users/user/Documents/pal-frontend/app/api/projects/generate-roadmap/route.ts), and [research/route.ts](file:///Users/user/Documents/pal-frontend/app/api/research/route.ts). They now explicitly detect error payloads returned inside `200` responses and return sanitized, human-friendly canned statements instead of raw provider diagnostic payloads.
+18: 
+19: ### 4. Hardened Image Upload UX
+20: *   **Send Lock**: Updated [ChatScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ChatScreen.tsx) to disable the Send button when any attachment is in an `isLoading` state, ensuring messages can only be sent once base64 Data URLs are fully generated.
+21: 
+22: ### 5. Standardized Integration IDs
+23: *   **Alias Mapper**: Updated [integrations/route.ts](file:///Users/user/Documents/pal-frontend/app/api/integrations/route.ts) to resolve integration ID queries like `"google-calendar"` or `"google_calendar"` to `"google"`, and `"twitter-x"` or `"twitter"` to `"x"`.
+24: 
+25: ### 6. Implemented Project Meeting Reminders
+26: *   **Reminder API**: Created [remind/route.ts](file:///Users/user/Documents/pal-frontend/app/api/projects/[id]/remind/route.ts) (`POST /api/projects/[id]/remind`) to retrieve members, create a real notification in the `notifications` table for each member, and write a system activity record to the `logs` table.
+27: *   **Project Detail Screen**: Hooked up the "Send reminder" button inside [ProjectDetailsScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ProjectDetailsScreen.tsx) to invoke the remind endpoint and trigger a success toast.
+28: 
+29: ---
+30: 
+31: ## Verification Results
+32: 
+33: ### Automated Tests
+34: *   **Node.js Tests**: Ran the unit test suite successfully:
+35:     ```bash
+36:     ✔ validates idea input with helpful errors
+37:     ✔ normalizes roadmaps into PAL task statuses
+38:     ✔ creates a project and persisted tasks from an idea
+39:     ℹ tests 3 | pass 3 | fail 0
+40:     ```
+41: *   **TypeScript Check**: Running `npx tsc --noEmit` verified that all files type-check with zero compilation errors.
+42: *   **Build Optimization**: Running `npm run build` compiled all server routes and static pages successfully.
+43: 
+44: ### 7. Vercel Production Deployment
+45: *   **Vercel Project Setup**: Linked and deployed the project directly using Vercel CLI.
+46: *   **Vercel Deployment Links**:
+47:     *   **Preview URL**: [pal-frontend-g1vd3p70a-godpixelthereal-gmailcoms-projects.vercel.app](https://pal-frontend-g1vd3p70a-godpixelthereal-gmailcoms-projects.vercel.app)
+48:     *   **Production Production URL**: [pal-frontend-prc3nkfdx-godpixelthereal-gmailcoms-projects.vercel.app](https://pal-frontend-prc3nkfdx-godpixelthereal-gmailcoms-projects.vercel.app)
+49:     *   **Production Alias**: [pal-frontend-xi.vercel.app](https://pal-frontend-xi.vercel.app)
+50: 
+51: 
+The above content shows the entire, complete file contents of the requested file.

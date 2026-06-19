@@ -1,0 +1,24 @@
+Created At: 2026-06-13T23:37:45Z
+Completed At: 2026-06-13T23:37:45Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 735
+Total Bytes: 14259
+Showing lines 270 to 285
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+270:     linear-gradient(135deg, #dffaff 0%, #61cce8 54%, #0c3778 100%);
+271:   color: #080808;
+272:   font-family: "Poppins", "Avenir Next", "Nunito Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+273:   letter-spacing: 0;
+274: }
+275: 
+276: button,
+277: input {
+278:   font: inherit;
+279:   letter-spacing: 0;
+280: }
+281: 
+282: button {
+283:   appearance: none;
+284:   background: transparent;
+285:   border: 0 solid transparent;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

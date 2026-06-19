@@ -1,0 +1,33 @@
+Created At: 2026-06-16T00:06:05Z
+Completed At: 2026-06-16T00:06:05Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1436
+Total Bytes: 49953
+Showing lines 490 to 514
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+490: function GrowthIntro({ onNext }: { onNext: () => void }) {
+491:   return (
+492:     <div className="relative h-[calc(100%_-_58px)] overflow-hidden px-[34px] pt-[32px]">
+493:       <ProgressBars active={0} />
+494:       <h1 className="mt-[33px] text-[65px] font-semibold leading-[0.94] text-left" style={{ color: 'var(--app-accent)' }}>
+495:         GO FOR
+496:         <br />
+497:         BUSINESS
+498:         <br />
+499:         GROWTH
+500:         <br />
+501:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">WITH</span>
+502:         <br />
+503:         <span style={{ color: 'var(--onb-heading)' }} className="font-bold">PAL</span>
+504:       </h1>
+505:       <Mascot priority className="absolute -right-[266px] bottom-[-52px] w-[496px] max-w-none" />
+506:       <button
+507:         type="button"
+508:         onClick={onNext}
+509:         className="absolute bottom-[42px] left-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[17px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
+510:       >
+511:         It&apos;s more fun and quick
+512:         <br />
+513:         when we do it together!
+514:       </button>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

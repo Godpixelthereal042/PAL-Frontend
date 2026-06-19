@@ -1,0 +1,619 @@
+Created At: 2026-06-13T22:56:32Z
+Completed At: 2026-06-13T22:56:32Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1410
+Total Bytes: 48719
+Showing lines 800 to 1410
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:               <div className="flex items-center gap-[10px]">
+801:                 <span className="text-[24px] leading-none">{flag}</span>
+802:                 <span>{name}</span>
+803:               </div>
+804:               {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+805:             </button>
+806:           ))}
+807:         </div>
+808:       </section>
+809:       <button 
+810:         type="button" 
+811:         onClick={onNext} 
+812:         disabled={!selected}
+813:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+814:       >
+815:         Next
+816:       </button>
+817:     </div>
+818:   );
+819: }
+820: 
+821: interface SignupScreenProps {
+822:   fullName: string;
+823:   setFullName: (v: string) => void;
+824:   email: string;
+825:   setEmail: (v: string) => void;
+826:   password: string;
+827:   setPassword: (v: string) => void;
+828:   confirmPassword: string;
+829:   setConfirmPassword: (v: string) => void;
+830:   persona: string;
+831:   industry: string;
+832:   country: string;
+833:   language: string;
+834:   onLogin: () => void;
+835:   onNext: () => void;
+836:   onGoogle: () => void;
+837:   onBase: () => void;
+838: }
+839: 
+840: function SignupScreen({ 
+841:   fullName, setFullName,
+842:   email, setEmail,
+843:   password, setPassword,
+844:   confirmPassword, setConfirmPassword,
+845:   persona, industry, country, language,
+846:   onLogin, onNext, onGoogle, onBase
+847: }: SignupScreenProps) {
+848:   const [errorMsg, setErrorMsg] = useState("");
+849:   const [hasError, setHasError] = useState({
+850:     fullName: false,
+851:     email: false,
+852:     password: false,
+853:     confirmPassword: false
+854:   });
+855:   const [loading, setLoading] = useState(false);
+856: 
+857:   const handleRegister = async (e: FormEvent) => {
+858:     e.preventDefault();
+859:     setErrorMsg("");
+860:     setHasError({ fullName: false, email: false, password: false, confirmPassword: false });
+861: 
+862:     if (!fullName.trim()) {
+863:       setErrorMsg("Full name is required");
+864:       setHasError(prev => ({ ...prev, fullName: true }));
+865:       return;
+866:     }
+867:     if (!email.trim()) {
+868:       setErrorMsg("Email is required");
+869:       setHasError(prev => ({ ...prev, email: true }));
+870:       return;
+871:     }
+872:     if (!password) {
+873:       setErrorMsg("Password is required");
+874:       setHasError(prev => ({ ...prev, password: true }));
+875:       return;
+876:     }
+877:     if (password.length < 6) {
+878:       setErrorMsg("Password must be at least 6 characters");
+879:       setHasError(prev => ({ ...prev, password: true }));
+880:       return;
+881:     }
+882:     if (password !== confirmPassword) {
+883:       setErrorMsg("Passwords do not match");
+884:       setHasError(prev => ({ ...prev, password: true, confirmPassword: true }));
+885:       return;
+886:     }
+887: 
+888:     setLoading(true);
+889:     try {
+890:       const res = await fetch("/api/auth/signup", {
+891:         method: "POST",
+892:         headers: { "Content-Type": "application/json" },
+893:         body: JSON.stringify({
+894:           fullName,
+895:           email,
+896:           password,
+897:           role: persona || "Business Owner",
+898:           industry: industry || "Technology and Innovation",
+899:           country: country || "United States",
+900:           language: language || "English"
+901:         })
+902:       });
+903: 
+904:       if (res.ok) {
+905:         const profilePayload = {
+906:           fullName,
+907:           email,
+908:           role: persona || "Business Owner",
+909:           industry: industry || "Technology and Innovation",
+910:           country: country || "United States",
+911:           language: language || "English",
+912:           onboardingCompleted: true,
+913:           creditsSaved: 0,
+914:           computeBalance: 0,
+915:           companyName: "",
+916:           targetAudience: "",
+917:           primaryKPI: "",
+918:           selectedPersona: "growth"
+919:         };
+920:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+921:         onNext();
+922:       } else {
+923:         const err = await res.json();
+924:         setErrorMsg(err.error || "Registration failed");
+925:         setHasError(prev => ({ ...prev, email: true }));
+926:       }
+927:     } catch (err: any) {
+928:       setErrorMsg("Registration failed. Please try again.");
+929:     } finally {
+930:       setLoading(false);
+931:     }
+932:   };
+933: 
+934:   return (
+935:     <AuthShell offset="mt-[10px]">
+936:       <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
+937:       <form onSubmit={handleRegister} className="mt-[28px] grid gap-[14px]">
+938:         <AuthField label="Full Name" placeholder="Enter your name" value={fullName} onChange={setFullName} error={hasError.fullName} />
+939:         <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
+940:         <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
+941:         <AuthField label="Confirm Password" placeholder="Enter your password" password value={confirmPassword} onChange={setConfirmPassword} error={hasError.confirmPassword} />
+942:         {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
+943:         <AuthMeta />
+944:         <AuthButtons primaryLabel={loading ? "Registering..." : "Register"} onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
+945:       </form>
+946:       <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
+947:         Already have an account?{" "}
+948:         <button type="button" onClick={onLogin} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
+949:           Log in
+950:         </button>
+951:       </p>
+952:     </AuthShell>
+953:   );
+954: }
+955: 
+956: interface LoginScreenProps {
+957:   email: string;
+958:   setEmail: (v: string) => void;
+959:   password: string;
+960:   setPassword: (v: string) => void;
+961:   onSignup: () => void;
+962:   onNext: () => void;
+963:   onGoogle: () => void;
+964:   onBase: () => void;
+965: }
+966: 
+967: function LoginScreen({ 
+968:   email, setEmail,
+969:   password, setPassword,
+970:   onSignup, onNext, onGoogle, onBase 
+971: }: LoginScreenProps) {
+972:   const [errorMsg, setErrorMsg] = useState("");
+973:   const [hasError, setHasError] = useState({ email: false, password: false });
+974:   const [loading, setLoading] = useState(false);
+975: 
+976:   const handleLogin = async (e: FormEvent) => {
+977:     e.preventDefault();
+978:     setErrorMsg("");
+979:     setHasError({ email: false, password: false });
+980: 
+981:     if (!email.trim()) {
+982:       setErrorMsg("Email is required");
+983:       setHasError(prev => ({ ...prev, email: true }));
+984:       return;
+985:     }
+986:     if (!password) {
+987:       setErrorMsg("Password is required");
+988:       setHasError(prev => ({ ...prev, password: true }));
+989:       return;
+990:     }
+991: 
+992:     setLoading(true);
+993:     try {
+994:       const res = await fetch("/api/auth/login", {
+995:         method: "POST",
+996:         headers: { "Content-Type": "application/json" },
+997:         body: JSON.stringify({ email, password })
+998:       });
+999: 
+1000:       if (res.ok) {
+1001:         const data = await res.json();
+1002:         const profilePayload = {
+1003:           fullName: data.user.name,
+1004:           email: data.user.email,
+1005:           role: data.user.role,
+1006:           industry: "Technology and Innovation",
+1007:           country: "United States",
+1008:           language: "English",
+1009:           onboardingCompleted: true,
+1010:           creditsSaved: 0,
+1011:           computeBalance: 0,
+1012:           companyName: "",
+1013:           targetAudience: "",
+1014:           primaryKPI: "",
+1015:           selectedPersona: "growth"
+1016:         };
+1017:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+1018:         onNext();
+1019:       } else {
+1020:         const err = await res.json();
+1021:         setErrorMsg(err.error || "Login failed");
+1022:         setHasError({ email: true, password: true });
+1023:       }
+1024:     } catch (err: any) {
+1025:       setErrorMsg("Login failed. Please try again.");
+1026:     } finally {
+1027:       setLoading(false);
+1028:     }
+1029:   };
+1030: 
+1031:   return (
+1032:     <AuthShell offset="mt-[92px]">
+1033:       <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
+1034:       <form onSubmit={handleLogin} className="mt-[31px] grid gap-[16px]">
+1035:         <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
+1036:         <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
+1037:         {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
+1038:         <AuthMeta />
+1039:         <AuthButtons primaryLabel={loading ? "Logging in..." : "Log in"} onPrimary={handleLogin} onGoogle={onGoogle} onBase={onBase} />
+1040:       </form>
+1041:       <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
+1042:         Don&apos;t have an account?{" "}
+1043:         <button type="button" onClick={onSignup} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
+1044:           Sign up
+1045:         </button>
+1046:       </p>
+1047:     </AuthShell>
+1048:   );
+1049: }
+1050: 
+1051: function AuthShell({ children, offset }: { children: ReactNode; offset: string }) {
+1052:   return (
+1053:     <div className={cn("mx-[20px] rounded-[30px] px-[30px] pb-[25px] pt-[25px] shadow-pal onb-white-card", offset)} style={{ color: 'var(--app-text)' }}>
+1054:       {children}
+1055:     </div>
+1056:   );
+1057: }
+1058: 
+1059: function AuthField({
+1060:   label,
+1061:   placeholder,
+1062:   value,
+1063:   onChange,
+1064:   type = "text",
+1065:   password = false,
+1066:   error = false
+1067: }: {
+1068:   label: string;
+1069:   placeholder: string;
+1070:   value: string;
+1071:   onChange: (v: string) => void;
+1072:   type?: string;
+1073:   password?: boolean;
+1074:   error?: boolean;
+1075: }) {
+1076:   const [showPassword, setShowPassword] = useState(false);
+1077: 
+1078:   return (
+1079:     <label className="block text-[12px] text-[var(--app-text)] text-left">
+1080:       {label}
+1081:       <span className="relative mt-[7px] block">
+1082:         <input 
+1083:           className={cn(
+1084:             "auth-input bg-[var(--app-input-bg)] border-[var(--app-input-border)] text-[var(--app-text)]",
+1085:             error && "border-red-500"
+1086:           )}
+1087:           style={error ? { borderColor: '#ef4444' } : undefined}
+1088:           placeholder={placeholder} 
+1089:           type={password ? (showPassword ? "text" : "password") : type} 
+1090:           value={value}
+1091:           onChange={(e) => onChange(e.target.value)}
+1092:           required
+1093:         />
+1094:         {password && (
+1095:           <button
+1096:             type="button"
+1097:             onClick={() => setShowPassword(!showPassword)}
+1098:             className="absolute right-[12px] top-[14px] text-[var(--app-text-secondary)] hover:text-[var(--app-text)] cursor-pointer"
+1099:             style={{ background: 'none', border: 'none', padding: 0 }}
+1100:           >
+1101:             {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+1102:           </button>
+1103:         )}
+1104:       </span>
+1105:     </label>
+1106:   );
+1107: }
+1108: 
+1109: function AuthMeta() {
+1110:   return (
+1111:     <div className="mt-[11px] flex items-center justify-between text-[12px] text-[var(--app-text-secondary)] select-none">
+1112:       <label className="flex items-center gap-[9px] cursor-pointer">
+1113:         <span className="grid h-[16px] w-[16px] place-items-center rounded-[4px] border border-[var(--app-input-border)] bg-[var(--app-input-bg)] text-[10px]">
+1114:           <Check size={12} className="text-[var(--app-accent)]" />
+1115:         </span>
+1116:         Remember me
+1117:       </label>
+1118:       <button type="button" onClick={() => alert("Password reset link sent!")} className="cursor-pointer hover:text-[var(--app-text)]">Forgot password?</button>
+1119:     </div>
+1120:   );
+1121: }
+1122: 
+1123: function AuthButtons({ 
+1124:   primaryLabel, 
+1125:   onPrimary,
+1126:   onGoogle,
+1127:   onBase
+1128: }: { 
+1129:   primaryLabel: string; 
+1130:   onPrimary: (e: FormEvent) => void;
+1131:   onGoogle: () => void;
+1132:   onBase: () => void;
+1133: }) {
+1134:   return (
+1135:     <div className="mt-[24px] grid gap-[12px] w-full">
+1136:       <button 
+1137:         type="submit" 
+1138:         onClick={(e) => onPrimary(e)}
+1139:         className="primary-pill h-[43px] text-[13px] w-full cursor-pointer flex items-center justify-center"
+1140:       >
+1141:         {primaryLabel}
+1142:       </button>
+1143:       <button
+1144:         type="button"
+1145:         onClick={onGoogle}
+1146:         className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[11px]"
+1147:       >
+1148:         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+1149:           <path fillRule="evenodd" clipRule="evenodd" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.3-4.74 3.3-8.09z" fill="#4285F4"/>
+1150:           <path fillRule="evenodd" clipRule="evenodd" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+1151:           <path fillRule="evenodd" clipRule="evenodd" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+1152:           <path fillRule="evenodd" clipRule="evenodd" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+1153:         </svg>
+1154:         <span>Sign in with Google</span>
+1155:       </button>
+1156:       <button
+1157:         type="button"
+1158:         onClick={onBase}
+1159:         className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[10px]"
+1160:       >
+1161:         <span className="inline-block h-[14px] w-[14px] rounded-[3.5px] bg-[#0052ff]" />
+1162:         <span>Sign in with Base ID</span>
+1163:       </button>
+1164:     </div>
+1165:   );
+1166: }
+1167: 
+1168: function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
+1169:   const [code, setCode] = useState("");
+1170:   const [error, setError] = useState(false);
+1171:   const [success, setSuccess] = useState(false);
+1172:   const [timeLeft, setTimeLeft] = useState(60);
+1173:   const keyboardVisible = true; // Always visible for a mobile app mockup
+1174: 
+1175:   const pressDigit = (digit: string) => {
+1176:     setError(false);
+1177:     setCode((value) => (value.length < 5 ? `${value}${digit}` : value));
+1178:   };
+1179: 
+1180:   const verify = async () => {
+1181:     if (code.length < 5) return;
+1182: 
+1183:     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+1184:     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+1185:     const useSupabase = supabaseUrl && supabaseAnonKey && 
+1186:                         !supabaseUrl.includes("dummy-url") && 
+1187:                         !supabaseAnonKey.includes("dummy-key");
+1188: 
+1189:     if (useSupabase) {
+1190:       const { data, error: err } = await supabase.auth.verifyOtp({
+1191:         email,
+1192:         token: code,
+1193:         type: "signup"
+1194:       });
+1195:       if (err) {
+1196:         setError(true);
+1197:         console.error("OTP verification error:", err.message);
+1198:       } else {
+1199:         // Sync local profile metadata
+1200:         try {
+1201:           await fetch("/api/profile", {
+1202:             method: "POST",
+1203:             headers: { "Content-Type": "application/json" },
+1204:             body: JSON.stringify({
+1205:               fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
+1206:               email
+1207:             })
+1208:           });
+1209:         } catch (e) {
+1210:           console.error("Sync profile error:", e);
+1211:         }
+1212:         setSuccess(true);
+1213:       }
+1214:     } else {
+1215:       if (code === "11111") {
+1216:         setSuccess(true);
+1217:         return;
+1218:       }
+1219:       setError(true);
+1220:     }
+1221:   };
+1222: 
+1223:   useEffect(() => {
+1224:     if (timeLeft <= 0) return;
+1225:     const interval = setInterval(() => {
+1226:       setTimeLeft((t) => t - 1);
+1227:     }, 1000);
+1228:     return () => clearInterval(interval);
+1229:   }, [timeLeft]);
+1230: 
+1231:   useEffect(() => {
+1232:     const handleKeyDown = (e: KeyboardEvent) => {
+1233:       if (success) return;
+1234:       if (e.key >= "0" && e.key <= "9") {
+1235:         setError(false);
+1236:         setCode((value) => (value.length < 5 ? `${value}${e.key}` : value));
+1237:       } else if (e.key === "Backspace") {
+1238:         setError(false);
+1239:         setCode((value) => value.slice(0, -1));
+1240:       } else if (e.key === "Enter") {
+1241:         if (code.length === 5) {
+1242:           verify();
+1243:         }
+1244:       }
+1245:     };
+1246:     window.addEventListener("keydown", handleKeyDown);
+1247:     return () => window.removeEventListener("keydown", handleKeyDown);
+1248:   }, [code, success]);
+1249: 
+1250:   const handleResendCode = () => {
+1251:     setCode("");
+1252:     setError(false);
+1253:     setTimeLeft(60);
+1254:   };
+1255: 
+1256:   const formatTime = (seconds: number) => {
+1257:     const mins = Math.floor(seconds / 60);
+1258:     const secs = seconds % 60;
+1259:     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+1260:   };
+1261: 
+1262:   return (
+1263:     <div className="relative h-[calc(100%_-_58px)] text-left">
+1264:       <section className="mx-[20px] mt-[32px] rounded-[30px] px-[26px] pb-[32px] pt-[31px] shadow-pal onb-white-card" style={{ color: 'var(--app-text)' }}>
+1265:         <h1 className="text-[25px] font-extrabold" style={{ color: 'var(--onb-heading)' }}>Enter code</h1>
+1266:         <p className="mt-[13px] text-[14px] leading-[1.2] text-[var(--app-text-secondary)]">
+1267:           We&apos;ve sent an email with an activation code
+1268:           <br />
+1269:           to your email <span className="text-[var(--app-text)] font-semibold">{email || "your email"}</span>
+1270:         </p>
+1271:         <div className="mt-[16px] flex justify-between gap-1 w-full">
+1272:           {[0, 1, 2, 3, 4].map((index) => (
+1273:             <button
+1274:               key={index}
+1275:               type="button"
+1276:               onClick={() => pressDigit("1")}
+1277:               className={cn(
+1278:                 "grid h-[60px] w-[50px] place-items-center rounded-[14px] border text-[24px] font-extrabold cursor-pointer transition-all duration-200 outline-none",
+1279:                 error 
+1280:                   ? "border-[#ff3030] text-[#ff3030] bg-[#fff5f5]" 
+1281:                   : (index === code.length && !success)
+1282:                     ? "border-[var(--app-accent)] ring-2 ring-[var(--app-accent)]/20 bg-white shadow-md scale-105" 
+1283:                     : code[index] 
+1284:                       ? "border-gray-300 text-gray-900 bg-white font-bold" 
+1285:                       : "border-gray-200 text-gray-400 bg-gray-50/50"
+1286:               )}
+1287:             >
+1288:               {code[index] ?? ""}
+1289:             </button>
+1290:           ))}
+1291:         </div>
+1292:         {error && <p className="mt-[16px] text-center text-[12px] text-[#ff3030] font-bold">Wrong code, please try again</p>}
+1293:         <p className={cn("text-center text-[15px]", error ? "mt-[20px]" : "mt-[26px]")}>
+1294:           <button 
+1295:             type="button" 
+1296:             onClick={handleResendCode}
+1297:             disabled={timeLeft > 0}
+1298:             className={cn(
+1299:               "font-extrabold cursor-pointer",
+1300:               timeLeft > 0 
+1301:                 ? "text-gray-400 cursor-not-allowed" 
+1302:                 : "text-[var(--app-accent)] hover:underline"
+1303:             )}
+1304:             style={{ color: timeLeft > 0 ? '#9ca3af' : 'var(--app-accent)' }}
+1305:           >
+1306:             Send code again
+1307:           </button>{" "}
+1308:           <span className="text-[var(--app-text-secondary)] font-mono font-semibold" style={{ color: '#6b7280' }}>
+1309:             {formatTime(timeLeft)}
+1310:           </span>
+1311:         </p>
+1312:       </section>
+1313: 
+1314:       <button
+1315:         type="button"
+1316:         onClick={verify}
+1317:         disabled={code.length < 5}
+1318:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] z-20 w-[calc(100%_-_68px)] cursor-pointer"
+1319:       >
+1320:         Verify
+1321:       </button>
+1322: 
+1323:       {/* Numerical Keyboard */}
+1324:       {keyboardVisible && (
+1325:         <NumberKeyboard 
+1326:           onDigit={pressDigit} 
+1327:           onBackspace={() => setCode((value) => value.slice(0, -1))} 
+1328:         />
+1329:       )}
+1330:       
+1331:       {/* Congrats Popup Modal */}
+1332:       {success && <SuccessModal onNext={onNext} />}
+1333:     </div>
+1334:   );
+1335: }
+1336: 
+1337: function NumberKeyboard({
+1338:   onDigit,
+1339:   onBackspace
+1340: }: {
+1341:   onDigit: (digit: string) => void;
+1342:   onBackspace: () => void;
+1343: }) {
+1344:   const keys = [
+1345:     ["1", ""],
+1346:     ["2", "ABC"],
+1347:     ["3", "DEF"],
+1348:     ["4", "GHI"],
+1349:     ["5", "JKL"],
+1350:     ["6", "MNO"],
+1351:     ["7", "PQRS"],
+1352:     ["8", "TUV"],
+1353:     ["9", "WXYZ"]
+1354:   ];
+1355: 
+1356:   return (
+1357:     <div className="absolute bottom-0 left-0 right-0 z-10">
+1358:       <div className="keyboard-grid">
+1359:         {keys.map(([digit, letters]) => (
+1360:           <button key={digit} type="button" onClick={() => onDigit(digit)} className="keyboard-key cursor-pointer">
+1361:             {digit}
+1362:             {letters && <small>{letters}</small>}
+1363:           </button>
+1364:         ))}
+1365:         <button type="button" className="h-[47px] text-[20px] text-[var(--app-text-secondary)] cursor-default opacity-50">
+1366:           +*#
+1367:         </button>
+1368:         <button type="button" onClick={() => onDigit("0")} className="keyboard-key cursor-pointer">
+1369:           0
+1370:         </button>
+1371:         <button type="button" onClick={onBackspace} className="grid h-[47px] place-items-center text-[var(--app-text)] cursor-pointer active:scale-95">
+1372:           ⌫
+1373:         </button>
+1374:       </div>
+1375:       <div className="grid h-[35px] place-items-center bg-[var(--app-card-alt)] border-t border-[var(--app-card-border)]">
+1376:         <span className="h-[4px] w-[135px] rounded-full bg-[var(--app-text)]" />
+1377:       </div>
+1378:     </div>
+1379:   );
+1380: }
+1381: 
+1382: function SuccessModal({ onNext }: { onNext: () => void }) {
+1383:   return (
+1384:     <div className="absolute inset-0 z-30 bg-[#0a4072]/72 backdrop-blur-[3px] flex items-end">
+1385:       <div className="w-full rounded-t-[26px] bg-[var(--app-surface)] px-[34px] pb-[49px] pt-[25px] text-center text-[var(--app-text)] shadow-2xl">
+1386:         <div className="mx-auto grid h-[132px] w-[132px] place-items-center rounded-full bg-[#e0f4ff]/10 border border-[#e0f4ff]/25">
+1387:           <span className="text-[72px] leading-none">🎉</span>
+1388:         </div>
+1389:         <h2 className="mt-[26px] text-[22px] font-extrabold leading-[1.45] text-[var(--app-text)]">
+1390:           Congrats!
+1391:           <br />
+1392:           you are all set up.
+1393:         </h2>
+1394:         <p className="mt-[11px] text-[16px] leading-[1.55] text-[var(--app-text-secondary)]">
+1395:           Get ready for a showdown!
+1396:           <br />
+1397:           Your <span className="font-bold text-[var(--app-accent)]">PAL</span> assistant is excited to help.💪
+1398:         </p>
+1399:         <button 
+1400:           type="button" 
+1401:           onClick={onNext} 
+1402:           className="primary-pill mt-[28px] w-full cursor-pointer flex items-center justify-center"
+1403:         >
+1404:           Next
+1405:         </button>
+1406:       </div>
+1407:     </div>
+1408:   );
+1409: }
+1410: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

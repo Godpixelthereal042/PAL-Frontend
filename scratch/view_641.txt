@@ -1,0 +1,89 @@
+Created At: 2026-06-13T23:38:01Z
+Completed At: 2026-06-13T23:38:02Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 900 to 980
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+900:           language: language || "English"
+901:         })
+902:       });
+903: 
+904:       if (res.ok) {
+905:         const profilePayload = {
+906:           fullName,
+907:           email,
+908:           role: persona || "Business Owner",
+909:           industry: industry || "Technology and Innovation",
+910:           country: country || "United States",
+911:           language: language || "English",
+912:           onboardingCompleted: true,
+913:           creditsSaved: 0,
+914:           computeBalance: 0,
+915:           companyName: "",
+916:           targetAudience: "",
+917:           primaryKPI: "",
+918:           selectedPersona: "growth"
+919:         };
+920:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+921:         onNext();
+922:       } else {
+923:         const err = await res.json();
+924:         setErrorMsg(err.error || "Registration failed");
+925:         setHasError(prev => ({ ...prev, email: true }));
+926:       }
+927:     } catch (err: any) {
+928:       setErrorMsg("Registration failed. Please try again.");
+929:     } finally {
+930:       setLoading(false);
+931:     }
+932:   };
+933: 
+934:   return (
+935:     <AuthShell offset="mt-[10px]">
+936:       <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
+937:       <form onSubmit={handleRegister} className="mt-[28px] grid gap-[14px]">
+938:         <AuthField label="Full Name" placeholder="Enter your name" value={fullName} onChange={setFullName} error={hasError.fullName} />
+939:         <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
+940:         <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
+941:         <AuthField label="Confirm Password" placeholder="Enter your password" password value={confirmPassword} onChange={setConfirmPassword} error={hasError.confirmPassword} />
+942:         {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
+943:         <AuthMeta />
+944:         <AuthButtons primaryLabel={loading ? "Registering..." : "Register"} onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
+945:       </form>
+946:       <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
+947:         Already have an account?{" "}
+948:         <button type="button" onClick={onLogin} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
+949:           Log in
+950:         </button>
+951:       </p>
+952:     </AuthShell>
+953:   );
+954: }
+955: 
+956: interface LoginScreenProps {
+957:   email: string;
+958:   setEmail: (v: string) => void;
+959:   password: string;
+960:   setPassword: (v: string) => void;
+961:   onSignup: () => void;
+962:   onNext: () => void;
+963:   onGoogle: () => void;
+964:   onBase: () => void;
+965: }
+966: 
+967: function LoginScreen({ 
+968:   email, setEmail,
+969:   password, setPassword,
+970:   onSignup, onNext, onGoogle, onBase 
+971: }: LoginScreenProps) {
+972:   const [errorMsg, setErrorMsg] = useState("");
+973:   const [hasError, setHasError] = useState({ email: false, password: false });
+974:   const [loading, setLoading] = useState(false);
+975: 
+976:   const handleLogin = async (e: FormEvent) => {
+977:     e.preventDefault();
+978:     setErrorMsg("");
+979:     setHasError({ email: false, password: false });
+980: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

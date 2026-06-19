@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+const nextConfig = {
+  devIndicators: false,
+  serverExternalPackages: ["sqlite3", "sqlite"],
+} as any;
 
 export default nextConfig;

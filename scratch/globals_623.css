@@ -1,0 +1,179 @@
+Created At: 2026-06-13T23:37:32Z
+Completed At: 2026-06-13T23:37:32Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 735
+Total Bytes: 14259
+Showing lines 280 to 450
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+280: }
+281: 
+282: button {
+283:   appearance: none;
+284:   background: transparent;
+285:   border: 0 solid transparent;
+286:   color: inherit;
+287:   padding: 0;
+288:   text-align: center;
+289:   touch-action: manipulation;
+290: }
+291: 
+292: .phone-stage {
+293:   min-height: 100svh;
+294:   display: flex;
+295:   align-items: center;
+296:   justify-content: center;
+297:   padding: 0;
+298: }
+299: 
+300: .phone {
+301:   position: relative;
+302:   width: min(100vw, 430px);
+303:   height: 100svh;
+304:   overflow: hidden;
+305:   background: var(--onb-bg);
+306:   box-shadow: none;
+307:   isolation: isolate;
+308: }
+309: 
+310: .screen-scroll {
+311:   height: calc(100% - 54px);
+312:   overflow-y: auto;
+313:   overscroll-behavior: contain;
+314:   scrollbar-width: none;
+315: }
+316: 
+317: .screen-scroll::-webkit-scrollbar {
+318:   display: none;
+319: }
+320: 
+321: .app-scroll {
+322:   height: 100%;
+323:   overflow-y: auto;
+324:   overscroll-behavior: contain;
+325:   scrollbar-width: none;
+326:   animation: screen-in 260ms ease both;
+327: }
+328: 
+329: .app-scroll::-webkit-scrollbar {
+330:   display: none;
+331: }
+332: 
+333: .scrollbar-hide {
+334:   scrollbar-width: none;
+335: }
+336: 
+337: .scrollbar-hide::-webkit-scrollbar {
+338:   display: none;
+339: }
+340: 
+341: .status-bar {
+342:   position: relative;
+343:   z-index: 40;
+344:   height: 58px;
+345:   display: grid;
+346:   grid-template-columns: 1fr 1fr 1fr;
+347:   align-items: start;
+348:   padding: 18px 32px 0;
+349:   color: var(--onb-status-color);
+350:   font-weight: 700;
+351:   font-size: 17px;
+352:   line-height: 1;
+353: }
+354: 
+355: .status-dark {
+356:   color: #fff;
+357: }
+358: 
+359: .dynamic-island {
+360:   justify-self: center;
+361:   width: 126px;
+362:   height: 37px;
+363:   margin-top: -6px;
+364:   border-radius: 999px;
+365:   background: #1c1c1b;
+366: }
+367: 
+368: .status-icons {
+369:   justify-self: end;
+370:   display: flex;
+371:   align-items: center;
+372:   gap: 7px;
+373:   padding-top: 1px;
+374: }
+375: 
+376: .signal {
+377:   display: flex;
+378:   gap: 2px;
+379:   align-items: end;
+380:   height: 15px;
+381: }
+382: 
+383: .signal span {
+384:   display: block;
+385:   width: 3px;
+386:   border-radius: 2px;
+387:   background: currentColor;
+388: }
+389: 
+390: .signal span:nth-child(1) {
+391:   height: 5px;
+392: }
+393: 
+394: .signal span:nth-child(2) {
+395:   height: 8px;
+396: }
+397: 
+398: .signal span:nth-child(3) {
+399:   height: 12px;
+400: }
+401: 
+402: .signal span:nth-child(4) {
+403:   height: 15px;
+404: }
+405: 
+406: .wifi {
+407:   position: relative;
+408:   width: 17px;
+409:   height: 13px;
+410: }
+411: 
+412: .wifi::before,
+413: .wifi::after {
+414:   content: "";
+415:   position: absolute;
+416:   left: 50%;
+417:   border: 3px solid currentColor;
+418:   border-color: currentColor transparent transparent transparent;
+419:   border-radius: 999px;
+420:   transform: translateX(-50%);
+421: }
+422: 
+423: .wifi::before {
+424:   top: 0;
+425:   width: 22px;
+426:   height: 16px;
+427: }
+428: 
+429: .wifi::after {
+430:   top: 5px;
+431:   width: 13px;
+432:   height: 10px;
+433: }
+434: 
+435: .wifi-dot {
+436:   position: absolute;
+437:   left: 50%;
+438:   bottom: 0;
+439:   width: 4px;
+440:   height: 4px;
+441:   border-radius: 999px;
+442:   background: currentColor;
+443:   transform: translateX(-50%);
+444: }
+445: 
+446: .battery {
+447:   position: relative;
+448:   width: 25px;
+449:   height: 13px;
+450:   border: 1.7px solid currentColor;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

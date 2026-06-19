@@ -1,0 +1,113 @@
+Created At: 2026-06-16T01:20:29Z
+Completed At: 2026-06-16T01:20:29Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 834
+Total Bytes: 16877
+Showing lines 730 to 834
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+730:     top: 0;
+731:     width: 100% !important;
+732:     max-width: 100% !important;
+733:     margin: 0 !important;
+734:     padding: 30px !important;
+735:     background: white !important;
+736:     color: black !important;
+737:     box-shadow: none !important;
+738:     border: 1px solid #ddd !important;
+739:     border-radius: 12px !important;
+740:   }
+741:   /* Fix colors in printing */
+742:   .printable-invoice span, .printable-invoice h4, .printable-invoice div {
+743:     color: black !important;
+744:     background: transparent !important;
+745:     border-color: #eee !important;
+746:   }
+747: }
+748: 
+749: /* Onboarding Height-Responsive Styling */
+750: 
+751: .onb-growth-header {
+752:   font-size: clamp(34px, 8.5svh, 65px) !important;
+753:   line-height: 0.94 !important;
+754:   margin-top: clamp(15px, 4.5svh, 33px) !important;
+755: }
+756: 
+757: .onb-growth-mascot {
+758:   width: clamp(240px, 55svh, 440px) !important;
+759:   right: clamp(-266px, -38svh, -150px) !important;
+760:   bottom: clamp(-52px, -7svh, -30px) !important;
+761: }
+762: 
+763: .onb-manage-logo {
+764:   margin-top: clamp(15px, 6svh, 48px) !important;
+765:   width: clamp(120px, 20svh, 168px) !important;
+766: }
+767: 
+768: .onb-manage-header {
+769:   font-size: clamp(32px, 7.5svh, 58px) !important;
+770:   line-height: 0.96 !important;
+771:   margin-top: clamp(5px, 2svh, 15px) !important;
+772: }
+773: 
+774: .onb-manage-mascot {
+775:   width: clamp(280px, 65svh, 500px) !important;
+776:   right: clamp(-250px, -32svh, -130px) !important;
+777:   bottom: clamp(-250px, -32svh, -130px) !important;
+778: }
+779: 
+780: .onb-together-card {
+781:   margin-top: clamp(15px, 9svh, 82px) !important;
+782:   padding-top: clamp(15px, 3.5svh, 30px) !important;
+783:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+784:   padding-left: clamp(20px, 5svh, 38px) !important;
+785:   padding-right: clamp(20px, 5svh, 38px) !important;
+786:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+787: }
+788: 
+789: .onb-together-list {
+790:   gap: clamp(10px, 2svh, 22px) !important;
+791: }
+792: 
+793: .onb-together-list > li + li {
+794:   margin-top: clamp(10px, 2svh, 22px) !important;
+795: }
+796: 
+797: .onb-together-mascot {
+798:   width: clamp(60px, 12svh, 96px) !important;
+799:   bottom: clamp(-83px, -10svh, -50px) !important;
+800:   left: clamp(80px, 16svh, 118px) !important;
+801: }
+802: 
+803: .onb-persona-card {
+804:   margin-top: clamp(15px, 7.5svh, 61px) !important;
+805:   padding-top: clamp(15px, 3.5svh, 31px) !important;
+806:   padding-bottom: clamp(15px, 3.5svh, 31px) !important;
+807:   padding-left: clamp(20px, 4.5svh, 29px) !important;
+808:   padding-right: clamp(20px, 4.5svh, 29px) !important;
+809:   border-radius: clamp(16px, 3.5svh, 31px) !important;
+810: }
+811: 
+812: .onb-persona-grid {
+813:   gap: clamp(8px, 1.8svh, 16px) !important;
+814: }
+815: 
+816: .onb-persona-btn {
+817:   height: clamp(50px, 10svh, 85px) !important;
+818:   border-radius: clamp(10px, 2svh, 16px) !important;
+819: }
+820: 
+821: .onb-persona-mascot {
+822:   width: clamp(60px, 12svh, 97px) !important;
+823:   bottom: clamp(-68px, -8svh, -42px) !important;
+824:   left: clamp(80px, 16svh, 119px) !important;
+825: }
+826: 
+827: /* Hide status bar icons on actual mobile viewports (where screen width is small) but preserve safe area height spacing */
+828: @media (max-width: 480px) {
+829:   .status-bar > * {
+830:     display: none !important;
+831:   }
+832: }
+833: 
+834: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

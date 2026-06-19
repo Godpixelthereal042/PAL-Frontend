@@ -1,0 +1,29 @@
+Created At: 2026-06-15T23:59:12Z
+Completed At: 2026-06-15T23:59:12Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/task.md`
+Total Lines: 21
+Total Bytes: 1856
+Showing lines 1 to 21
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Execution Task List
+2: 
+3: - [x] Run DDL schema changes in [schema.sql](file:///Users/user/Documents/pal-frontend/schema.sql) and update SQLite dynamic migration in [db.ts](file:///Users/user/Documents/pal-frontend/lib/db.ts)
+4: - [x] Create Google OAuth endpoints:
+5:   - [x] Redirect handler in [google/route.ts](file:///Users/user/Documents/pal-frontend/app/api/connect/google/route.ts)
+6:   - [x] Callback handler in [callback/route.ts](file:///Users/user/Documents/pal-frontend/app/api/connect/google/callback/route.ts)
+7: - [x] Connect Google Calendar API real fetch with refresh token exchange in [google-calendar/route.ts](file:///Users/user/Documents/pal-frontend/app/api/integrations/google-calendar/route.ts)
+8: - [x] Implement Decisions Log backend:
+9:   - [x] Decisions API in [decisions/route.ts](file:///Users/user/Documents/pal-frontend/app/api/projects/[id]/decisions/route.ts)
+10:   - [x] Regex tag parser and AI system instructions in [chat/route.ts](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts)
+11:   - [x] Weekly data integration in [weekly-data/route.ts](file:///Users/user/Documents/pal-frontend/app/api/weekly-data/route.ts)
+12: - [x] Implement Decisions Log frontend:
+13:   - [x] Add decision rendering to [ChatScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ChatScreen.tsx)
+14:   - [x] Add Decisions card list, modal, and manual log form to [ProjectDetailsScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ProjectDetailsScreen.tsx)
+15: - [x] Implement Invoice Refinements:
+16:   - [x] Print styles in [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css)
+17:   - [x] Print button and cash-flow area chart in [QuickInvoiceScreen.tsx](file:///Users/user/Documents/pal-frontend/components/QuickInvoiceScreen.tsx)
+18: - [x] Verify build, types, and run unit tests locally
+19: - [x] Complete Vercel deployment link and setup
+20: 
+21: 
+The above content shows the entire, complete file contents of the requested file.

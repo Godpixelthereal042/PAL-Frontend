@@ -1,0 +1,23 @@
+Created At: 2026-06-16T00:16:45Z
+Completed At: 2026-06-16T00:16:45Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 815
+Total Bytes: 16420
+Showing lines 801 to 815
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+801:   gap: clamp(8px, 1.8svh, 16px) !important;
+802: }
+803: 
+804: .onb-persona-btn {
+805:   height: clamp(50px, 10svh, 85px) !important;
+806:   border-radius: clamp(10px, 2svh, 16px) !important;
+807: }
+808: 
+809: .onb-persona-mascot {
+810:   width: clamp(60px, 12svh, 97px) !important;
+811:   bottom: clamp(-42px, -8svh, -68px) !important;
+812:   left: clamp(80px, 16svh, 119px) !important;
+813: }
+814: 
+815: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

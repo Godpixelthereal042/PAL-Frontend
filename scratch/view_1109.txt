@@ -1,0 +1,97 @@
+Created At: 2026-06-16T01:22:04Z
+Completed At: 2026-06-16T01:22:04Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/implementation_plan.md`
+Total Lines: 89
+Total Bytes: 3161
+Showing lines 1 to 89
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Plan: Onboarding Layout Responsiveness & Mobile Adaptability
+2: 
+3: Make the onboarding screens fully adaptable to any screen height (including mobile devices and when virtual keyboards are active) while preserving the original bottom-peeking mascots and large header design.
+4: 
+5: ## User Review Required
+6: 
+7: > [!IMPORTANT]
+8: > **Preserving Original Layout**: We will strictly maintain the bottom-peeking position of mascots and original font sizes on large screens. Elements will only scale down fluidly on smaller viewport heights using CSS `clamp()` and `svh` units.
+9: > **Mock Status Bar Hiding**: On mobile viewports (screen width <= 480px), the mock top status bar (showing `9:41`) will be hidden. This allows the native mobile system status bar to be visible without duplication and frees up screen space.
+10: 
+11: ---
+12: 
+13: ## Proposed Changes
+14: 
+15: ### Global Layout & Viewport Lock
+16: 
+17: #### [MODIFY] [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css)
+18: * Modify `html, body` properties at line 261 to lock the viewport scale and prevent layout bounce/shifting on input focus:
+19:   ```css
+20:   html,
+21:   body {
+22:     height: 100%;
+23:     height: 100dvh;
+24:     overflow: hidden;
+25:     position: fixed;
+26:     width: 100%;
+27:   }
+28:   ```
+29: * Update `.phone-stage` to ensure it is absolute/fixed and centered:
+30:   ```css
+31:   .phone-stage {
+32:     height: 100%;
+33:     height: 100dvh;
+34:     width: 100%;
+35:     display: flex;
+36:     align-items: center;
+37:     justify-content: center;
+38:     padding: 0;
+39:     position: fixed;
+40:     top: 0;
+41:     left: 0;
+42:     overflow: hidden;
+43:   }
+44:   ```
+45: * Update `.phone` to be a flex container so child screens automatically fill the remaining area dynamically:
+46:   ```css
+47:   .phone {
+48:     position: relative;
+49:     width: min(100vw, 430px);
+50:     height: 100%;
+51:     height: 100svh;
+52:     overflow: hidden;
+53:     background: var(--onb-bg);
+54:     box-shadow: none;
+55:     isolation: isolate;
+56:     display: flex;
+57:     flex-direction: column;
+58:   }
+59:   ```
+60: * Add a media query to hide the mock status bar on mobile screens:
+61:   ```css
+62:   @media (max-width: 480px) {
+63:     .status-bar {
+64:       display: none !important;
+65:     }
+66:   }
+67:   ```
+68: 
+69: ---
+70: 
+71: ### Onboarding Screen Components
+72: 
+73: #### [MODIFY] [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx)
+74: * Replace all hardcoded heights (`h-[calc(100%_-_58px)]` and `h-[calc(100%_-_47px)]`) on onboarding screen containers with dynamic flexbox (`flex-1 min-h-0 relative`). This allows screens to automatically scale to the available height whether the mock status bar is visible (desktop) or hidden (mobile).
+75: * Update the country search input to `text-[16px]` to prevent iOS Safari auto-zooming.
+76: * Add `text-[16px]` to `AuthField` input elements to ensure all forms meet the 16px minimum zoom threshold.
+77: 
+78: ---
+79: 
+80: ## Verification Plan
+81: 
+82: ### Automated Tests
+83: * Run `npm run build && npx tsc --noEmit` to verify code compiles with no TypeScript or build errors.
+84: 
+85: ### Manual Verification
+86: * Deploy to Vercel preview/production.
+87: * Verify on mobile that the mock status bar is hidden and the layout fills the full screen height.
+88: * Verify focusing on inputs in the signup/login screens does not cause the page to zoom in or shift the container out of view.
+89: 
+The above content shows the entire, complete file contents of the requested file.

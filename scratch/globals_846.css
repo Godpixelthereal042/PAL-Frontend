@@ -1,0 +1,35 @@
+Created At: 2026-06-16T00:16:00Z
+Completed At: 2026-06-16T00:16:00Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 736
+Total Bytes: 14228
+Showing lines 710 to 736
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+710:     visibility: hidden;
+711:   }
+712:   .printable-invoice, .printable-invoice * {
+713:     visibility: visible;
+714:   }
+715:   .printable-invoice {
+716:     position: absolute;
+717:     left: 0;
+718:     top: 0;
+719:     width: 100% !important;
+720:     max-width: 100% !important;
+721:     margin: 0 !important;
+722:     padding: 30px !important;
+723:     background: white !important;
+724:     color: black !important;
+725:     box-shadow: none !important;
+726:     border: 1px solid #ddd !important;
+727:     border-radius: 12px !important;
+728:   }
+729:   /* Fix colors in printing */
+730:   .printable-invoice span, .printable-invoice h4, .printable-invoice div {
+731:     color: black !important;
+732:     background: transparent !important;
+733:     border-color: #eee !important;
+734:   }
+735: }
+736: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

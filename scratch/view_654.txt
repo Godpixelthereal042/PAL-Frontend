@@ -1,0 +1,71 @@
+Created At: 2026-06-13T23:38:34Z
+Completed At: 2026-06-13T23:38:34Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 1168 to 1230
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1168: function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
+1169:   const [code, setCode] = useState("");
+1170:   const [error, setError] = useState(false);
+1171:   const [success, setSuccess] = useState(false);
+1172:   const [timeLeft, setTimeLeft] = useState(60);
+1173:   const keyboardVisible = true; // Always visible for a mobile app mockup
+1174: 
+1175:   const pressDigit = (digit: string) => {
+1176:     setError(false);
+1177:     setCode((value) => (value.length < 5 ? `${value}${digit}` : value));
+1178:   };
+1179: 
+1180:   const verify = async () => {
+1181:     if (code.length < 5) return;
+1182: 
+1183:     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+1184:     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+1185:     const useSupabase = supabaseUrl && supabaseAnonKey && 
+1186:                         !supabaseUrl.includes("dummy-url") && 
+1187:                         !supabaseAnonKey.includes("dummy-key");
+1188: 
+1189:     if (useSupabase) {
+1190:       const { data, error: err } = await supabase.auth.verifyOtp({
+1191:         email,
+1192:         token: code,
+1193:         type: "signup"
+1194:       });
+1195:       if (err) {
+1196:         setError(true);
+1197:         console.error("OTP verification error:", err.message);
+1198:       } else {
+1199:         // Sync local profile metadata
+1200:         try {
+1201:           await fetch("/api/profile", {
+1202:             method: "POST",
+1203:             headers: { "Content-Type": "application/json" },
+1204:             body: JSON.stringify({
+1205:               fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
+1206:               email
+1207:             })
+1208:           });
+1209:         } catch (e) {
+1210:           console.error("Sync profile error:", e);
+1211:         }
+1212:         setSuccess(true);
+1213:       }
+1214:     } else {
+1215:       try {
+1216:         const res = await fetch("/api/auth/verify", {
+1217:           method: "POST",
+1218:           headers: { "Content-Type": "application/json" },
+1219:           body: JSON.stringify({ email, code })
+1220:         });
+1221:         if (res.ok) {
+1222:           setSuccess(true);
+1223:         } else {
+1224:           setError(true);
+1225:         }
+1226:       } catch (err) {
+1227:         console.error("Local verification error:", err);
+1228:         setError(true);
+1229:       }
+1230:     }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,136 @@
+Created At: 2026-06-13T23:25:30Z
+Completed At: 2026-06-13T23:25:30Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/implementation_plan.md`
+Total Lines: 128
+Total Bytes: 6794
+Showing lines 1 to 128
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Plan: Production Hardening, Integrations, and Vercel Deployment
+2: 
+3: Implement Google Calendar OAuth, Supabase database migration with Row-Level Security, a Decisions Log tracking chat-flushed items, invoice print refinements, cash-flow charting, and Vercel deployment configurations.
+4: 
+5: ## User Review Required
+6: 
+7: > [!IMPORTANT]
+8: > **Google OAuth Credentials**: The application will require `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` configured in environment variables. If these credentials are not set, a seamless SQLite/Supabase developer fallback will be active, creating mock active tokens so the sync UI works perfectly without any configuration needed.
+9: > **Supabase SQL Schema**: Before deploying to production, run the updated [schema.sql](file:///Users/user/Documents/pal-frontend/schema.sql) in your Supabase SQL Editor. Enable Row-Level Security (RLS) and apply the user ownership policies.
+10: 
+11: ---
+12: 
+13: ## Proposed Changes
+14: 
+15: ### Database & Schema Updates
+16: 
+17: #### [MODIFY] [schema.sql](file:///Users/user/Documents/pal-frontend/schema.sql)
+18: * Update the `integrations` table definition to add columns:
+19:   * `access_token` TEXT
+20:   * `refresh_token` TEXT
+21:   * `token_expires_at` BIGINT
+22: * Add the `decisions` table:
+23:   ```sql
+24:   CREATE TABLE IF NOT EXISTS decisions (
+25:       id TEXT PRIMARY KEY,
+26:       project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+27:       user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+28:       title TEXT NOT NULL,
+29:       description TEXT,
+30:       status TEXT DEFAULT 'decided',
+31:       created_at BIGINT NOT NULL
+32:   );
+33:   ```
+34: 
+35: #### [MODIFY] [db.ts](file:///Users/user/Documents/pal-frontend/lib/db.ts)
+36: * In SQLite initialization, dynamically create the `decisions` table.
+37: * Use `ALTER TABLE` inside try/catch blocks to add `access_token`, `refresh_token`, and `token_expires_at` to the `integrations` table if they do not already exist.
+38: 
+39: ---
+40: 
+41: ### Google OAuth Integration
+42: 
+43: #### [NEW] [route.ts (google connect)](file:///Users/user/Documents/pal-frontend/app/api/connect/google/route.ts)
+44: * Implement `GET` redirect handler:
+45:   * If `GOOGLE_CLIENT_ID` is not set or contains placeholders, redirect directly to `/api/connect/google/callback?code=mock_code`.
+46:   * Otherwise, redirect to Google consent screen: `https://accounts.google.com/o/oauth2/v2/auth` requesting scope `https://www.googleapis.com/auth/calendar.readonly` and access type `offline`.
+47: 
+48: #### [NEW] [route.ts (google callback)](file:///Users/user/Documents/pal-frontend/app/api/connect/google/callback/route.ts)
+49: * Implement `GET` callback handler:
+50:   * If code is `mock_code`, insert/update a dummy active sync token for the user in `integrations`.
+51:   * Otherwise, make a POST to `https://oauth2.googleapis.com/token` to exchange the authorization code for `access_token`, `refresh_token`, and expiration.
+52:   * Store the negotiated tokens in the `integrations` table scoped to the user.
+53:   * Redirect to `/connect/google`.
+54: 
+55: #### [MODIFY] [route.ts (google-calendar api)](file:///Users/user/Documents/pal-frontend/app/api/integrations/google-calendar/route.ts)
+56: * In `GET` and `POST` handlers:
+57:   * Check the database for active Google integration credentials.
+58:   * If credentials (token) exist:
+59:     * Check if token is expired. If so, perform refresh token exchange to retrieve a new access token and update the database.
+60:     * Perform a fetch to the Google Calendar API: `https://www.googleapis.com/calendar/v3/calendars/primary/events`.
+61:     * Insert/upsert retrieved events into `calendar_events` table.
+62:   * If no credentials or mock credentials exist, fall back to seeding/rendering the mock 30-day calendars as a reliable backup.
+63: 
+64: ---
+65: 
+66: ### Decisions Log
+67: 
+68: #### [NEW] [route.ts (decisions api)](file:///Users/user/Documents/pal-frontend/app/api/projects/[id]/decisions/route.ts)
+69: * Implement `GET` route to fetch all logged decisions for a project.
+70: * Implement `POST` route to log a new decision manually.
+71: * Implement `DELETE` route (with `?id=...` parameter) to remove a decision.
+72: 
+73: #### [MODIFY] [route.ts (chat api)](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts)
+74: * Update system instruction for Gemini to explain how to issue decision tags at the end of responses: `||DECISION:{"project_id":"...","title":"...","description":"..."}||` when a clear decision is made.
+75: * Implement a regex tag interceptor inside the POST handler:
+76:   * Extract decision parameters, insert them into the `decisions` database table, and map it to `[DECISION_CARD:...]` tag for UI rendering.
+77: 
+78: #### [MODIFY] [ChatScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ChatScreen.tsx)
+79: * Replace `[DECISION_CARD:...]` tokens in AI message text and render a beautiful styled visual decision card in the chat log.
+80: 
+81: #### [MODIFY] [ProjectDetailsScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ProjectDetailsScreen.tsx)
+82: * Add a Decisions Log card list right below the Tasks section.
+83: * Implement a drawer modal to allow users to log decisions manually.
+84: * Fetch logged decisions on project load.
+85: 
+86: #### [MODIFY] [route.ts (weekly data api)](file:///Users/user/Documents/pal-frontend/app/api/weekly-data/route.ts)
+87: * Include count of decisions logged in the weekly data stats response.
+88: 
+89: ---
+90: 
+91: ### Invoice Improvements
+92: 
+93: #### [MODIFY] [QuickInvoiceScreen.tsx](file:///Users/user/Documents/pal-frontend/components/QuickInvoiceScreen.tsx)
+94: * Add a "Print" button on invoice items (or a modal detailed invoice view) that opens browser print prompt (`window.print()`).
+95: * Add a beautiful SVG/CSS area chart depicting cash-flow trend (Monthly Inflows vs Pending invoices).
+96: 
+97: #### [MODIFY] [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css)
+98: * Add `@media print` rules to hide elements like headers, bottom navbar, and drawers, showing only the printable invoice card with white background and dark text for clean printing/PDF generation.
+99: 
+100: ---
+101: 
+102: ### Supabase & Vercel Production Setup
+103: 
+104: * Enable Row-Level Security (RLS) on all production tables.
+105: * Document the required Supabase schema policies in the project notes.
+106: * Push deployment configs to Vercel via CLI commands.
+107: 
+108: ---
+109: 
+110: ## Verification Plan
+111: 
+112: ### Automated Tests
+113: * Run `node --test tests/ideaEngine.test.mjs` to verify core business logic.
+114: * Run type checks:
+115:   ```bash
+116:   npx tsc --noEmit
+117:   ```
+118: * Perform local build testing:
+119:   ```bash
+120:   npm run build
+121:   ```
+122: 
+123: ### Manual Verification
+124: * Test Google Calendar oauth redirection and callback using mock credentials and real credentials if provided.
+125: * Log decisions in chat (e.g. tell Pal "Let's decide to use a dark theme for the bakery app") and confirm it's captured in the project details screen's Decisions Log.
+126: * Test printing an invoice to a PDF file and verify print layouts are perfectly readable without surrounding UI headers/navs.
+127: * Verify Vercel deployment link resolves and functions.
+128: 
+The above content shows the entire, complete file contents of the requested file.

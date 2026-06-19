@@ -1,0 +1,652 @@
+Created At: 2026-06-16T01:21:22Z
+Completed At: 2026-06-16T01:21:22Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1443
+Total Bytes: 50799
+Showing lines 800 to 1443
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:               key={name}
+801:               type="button"
+802:               onClick={() => onSelect(name)}
+803:               className={cn(
+804:                 "flex h-[56px] w-full items-center justify-between rounded-[10px] text-[16px] cursor-pointer px-3 transition-colors",
+805:                 selected === name 
+806:                   ? "bg-[var(--app-accent-soft)] font-bold" 
+807:                   : "hover:bg-gray-100"
+808:               )}
+809:               style={{ textAlign: 'left', color: selected === name ? 'var(--app-accent)' : '#1f2937' }}
+810:             >
+811:               <div className="flex items-center gap-[10px]">
+812:                 <span className="text-[24px] leading-none">{flag}</span>
+813:                 <span>{name}</span>
+814:               </div>
+815:               {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+816:             </button>
+817:           ))}
+818:         </div>
+819:       </section>
+820:       <button 
+821:         type="button" 
+822:         onClick={onNext} 
+823:         disabled={!selected}
+824:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+825:       >
+826:         Next
+827:       </button>
+828:     </div>
+829:   );
+830: }
+831: 
+832: interface SignupScreenProps {
+833:   fullName: string;
+834:   setFullName: (v: string) => void;
+835:   email: string;
+836:   setEmail: (v: string) => void;
+837:   password: string;
+838:   setPassword: (v: string) => void;
+839:   confirmPassword: string;
+840:   setConfirmPassword: (v: string) => void;
+841:   persona: string;
+842:   industry: string;
+843:   country: string;
+844:   language: string;
+845:   onLogin: () => void;
+846:   onNext: () => void;
+847:   onGoogle: () => void;
+848:   onBase: () => void;
+849: }
+850: 
+851: function SignupScreen({ 
+852:   fullName, setFullName,
+853:   email, setEmail,
+854:   password, setPassword,
+855:   confirmPassword, setConfirmPassword,
+856:   persona, industry, country, language,
+857:   onLogin, onNext, onGoogle, onBase
+858: }: SignupScreenProps) {
+859:   const router = useRouter();
+860:   const [errorMsg, setErrorMsg] = useState("");
+861:   const [hasError, setHasError] = useState({
+862:     fullName: false,
+863:     email: false,
+864:     password: false,
+865:     confirmPassword: false
+866:   });
+867:   const [loading, setLoading] = useState(false);
+868: 
+869:   const handleRegister = async (e: FormEvent) => {
+870:     e.preventDefault();
+871:     setErrorMsg("");
+872:     setHasError({ fullName: false, email: false, password: false, confirmPassword: false });
+873: 
+874:     if (!fullName.trim()) {
+875:       setErrorMsg("Full name is required");
+876:       setHasError(prev => ({ ...prev, fullName: true }));
+877:       return;
+878:     }
+879:     if (!email.trim()) {
+880:       setErrorMsg("Email is required");
+881:       setHasError(prev => ({ ...prev, email: true }));
+882:       return;
+883:     }
+884:     if (!password) {
+885:       setErrorMsg("Password is required");
+886:       setHasError(prev => ({ ...prev, password: true }));
+887:       return;
+888:     }
+889:     if (password.length < 6) {
+890:       setErrorMsg("Password must be at least 6 characters");
+891:       setHasError(prev => ({ ...prev, password: true }));
+892:       return;
+893:     }
+894:     if (password !== confirmPassword) {
+895:       setErrorMsg("Passwords do not match");
+896:       setHasError(prev => ({ ...prev, password: true, confirmPassword: true }));
+897:       return;
+898:     }
+899: 
+900:     setLoading(true);
+901:     try {
+902:       const res = await fetch("/api/auth/signup", {
+903:         method: "POST",
+904:         headers: { "Content-Type": "application/json" },
+905:         body: JSON.stringify({
+906:           fullName,
+907:           email,
+908:           password,
+909:           role: persona || "Business Owner",
+910:           industry: industry || "Technology and Innovation",
+911:           country: country || "United States",
+912:           language: language || "English"
+913:         })
+914:       });
+915: 
+916:       if (res.ok) {
+917:         const profilePayload = {
+918:           fullName,
+919:           email,
+920:           role: persona || "Business Owner",
+921:           industry: industry || "Technology and Innovation",
+922:           country: country || "United States",
+923:           language: language || "English",
+924:           onboardingCompleted: true,
+925:           creditsSaved: 0,
+926:           computeBalance: 0,
+927:           companyName: "",
+928:           targetAudience: "",
+929:           primaryKPI: "",
+930:           selectedPersona: "growth"
+931:         };
+932:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+933:         
+934:         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+935:         const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+936:         const useSupabase = supabaseUrl && supabaseAnonKey && 
+937:                             !supabaseUrl.includes("dummy-url") && 
+938:                             !supabaseAnonKey.includes("dummy-key");
+939:                             
+940:         if (useSupabase) {
+941:           router.push("/");
+942:         } else {
+943:           onNext();
+944:         }
+945:       } else {
+946:         const err = await res.json();
+947:         setErrorMsg(err.error || "Registration failed");
+948:         setHasError(prev => ({ ...prev, email: true }));
+949:       }
+950:     } catch (err: any) {
+951:       setErrorMsg("Registration failed. Please try again.");
+952:     } finally {
+953:       setLoading(false);
+954:     }
+955:   };
+956: 
+957:   return (
+958:     <AuthShell offset="mt-[10px]">
+959:       <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
+960:       <form onSubmit={handleRegister} className="mt-[28px] grid gap-[14px]">
+961:         <AuthField label="Full Name" placeholder="Enter your name" value={fullName} onChange={setFullName} error={hasError.fullName} />
+962:         <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
+963:         <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
+964:         <AuthField label="Confirm Password" placeholder="Enter your password" password value={confirmPassword} onChange={setConfirmPassword} error={hasError.confirmPassword} />
+965:         {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
+966:         <AuthMeta />
+967:         <AuthButtons primaryLabel={loading ? "Registering..." : "Register"} onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
+968:       </form>
+969:       <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
+970:         Already have an account?{" "}
+971:         <button type="button" onClick={onLogin} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
+972:           Log in
+973:         </button>
+974:       </p>
+975:     </AuthShell>
+976:   );
+977: }
+978: 
+979: interface LoginScreenProps {
+980:   email: string;
+981:   setEmail: (v: string) => void;
+982:   password: string;
+983:   setPassword: (v: string) => void;
+984:   onSignup: () => void;
+985:   onNext: () => void;
+986:   onGoogle: () => void;
+987:   onBase: () => void;
+988: }
+989: 
+990: function LoginScreen({ 
+991:   email, setEmail,
+992:   password, setPassword,
+993:   onSignup, onNext, onGoogle, onBase 
+994: }: LoginScreenProps) {
+995:   const [errorMsg, setErrorMsg] = useState("");
+996:   const [hasError, setHasError] = useState({ email: false, password: false });
+997:   const [loading, setLoading] = useState(false);
+998: 
+999:   const handleLogin = async (e: FormEvent) => {
+1000:     e.preventDefault();
+1001:     setErrorMsg("");
+1002:     setHasError({ email: false, password: false });
+1003: 
+1004:     if (!email.trim()) {
+1005:       setErrorMsg("Email is required");
+1006:       setHasError(prev => ({ ...prev, email: true }));
+1007:       return;
+1008:     }
+1009:     if (!password) {
+1010:       setErrorMsg("Password is required");
+1011:       setHasError(prev => ({ ...prev, password: true }));
+1012:       return;
+1013:     }
+1014: 
+1015:     setLoading(true);
+1016:     try {
+1017:       const res = await fetch("/api/auth/login", {
+1018:         method: "POST",
+1019:         headers: { "Content-Type": "application/json" },
+1020:         body: JSON.stringify({ email, password })
+1021:       });
+1022: 
+1023:       if (res.ok) {
+1024:         const data = await res.json();
+1025:         const profilePayload = {
+1026:           fullName: data.user.name,
+1027:           email: data.user.email,
+1028:           role: data.user.role,
+1029:           industry: "Technology and Innovation",
+1030:           country: "United States",
+1031:           language: "English",
+1032:           onboardingCompleted: true,
+1033:           creditsSaved: 0,
+1034:           computeBalance: 0,
+1035:           companyName: "",
+1036:           targetAudience: "",
+1037:           primaryKPI: "",
+1038:           selectedPersona: "growth"
+1039:         };
+1040:         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+1041:         onNext();
+1042:       } else {
+1043:         const err = await res.json();
+1044:         setErrorMsg(err.error || "Login failed");
+1045:         setHasError({ email: true, password: true });
+1046:       }
+1047:     } catch (err: any) {
+1048:       setErrorMsg("Login failed. Please try again.");
+1049:     } finally {
+1050:       setLoading(false);
+1051:     }
+1052:   };
+1053: 
+1054:   return (
+1055:     <AuthShell offset="mt-[92px]">
+1056:       <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
+1057:       <form onSubmit={handleLogin} className="mt-[31px] grid gap-[16px]">
+1058:         <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
+1059:         <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
+1060:         {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
+1061:         <AuthMeta />
+1062:         <AuthButtons primaryLabel={loading ? "Logging in..." : "Log in"} onPrimary={handleLogin} onGoogle={onGoogle} onBase={onBase} />
+1063:       </form>
+1064:       <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
+1065:         Don&apos;t have an account?{" "}
+1066:         <button type="button" onClick={onSignup} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
+1067:           Sign up
+1068:         </button>
+1069:       </p>
+1070:     </AuthShell>
+1071:   );
+1072: }
+1073: 
+1074: function AuthShell({ children, offset }: { children: ReactNode; offset: string }) {
+1075:   return (
+1076:     <div className={cn("mx-[20px] rounded-[30px] px-[30px] pb-[25px] pt-[25px] shadow-pal onb-white-card", offset)} style={{ color: 'var(--app-text)' }}>
+1077:       {children}
+1078:     </div>
+1079:   );
+1080: }
+1081: 
+1082: function AuthField({
+1083:   label,
+1084:   placeholder,
+1085:   value,
+1086:   onChange,
+1087:   type = "text",
+1088:   password = false,
+1089:   error = false
+1090: }: {
+1091:   label: string;
+1092:   placeholder: string;
+1093:   value: string;
+1094:   onChange: (v: string) => void;
+1095:   type?: string;
+1096:   password?: boolean;
+1097:   error?: boolean;
+1098: }) {
+1099:   const [showPassword, setShowPassword] = useState(false);
+1100: 
+1101:   return (
+1102:     <label className="block text-[12px] text-[var(--app-text)] text-left">
+1103:       {label}
+1104:       <span className="relative mt-[7px] block">
+1105:         <input 
+1106:           className={cn(
+1107:             "auth-input text-[16px] bg-[var(--app-input-bg)] border-[var(--app-input-border)] text-[var(--app-text)]",
+1108:             error && "border-red-500"
+1109:           )}
+1110:           style={error ? { borderColor: '#ef4444' } : undefined}
+1111:           placeholder={placeholder} 
+1112:           type={password ? (showPassword ? "text" : "password") : type} 
+1113:           value={value}
+1114:           onChange={(e) => onChange(e.target.value)}
+1115:           required
+1116:         />
+1117:         {password && (
+1118:           <button
+1119:             type="button"
+1120:             onClick={() => setShowPassword(!showPassword)}
+1121:             className="absolute right-[12px] top-[14px] text-[var(--app-text-secondary)] hover:text-[var(--app-text)] cursor-pointer"
+1122:             style={{ background: 'none', border: 'none', padding: 0 }}
+1123:           >
+1124:             {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+1125:           </button>
+1126:         )}
+1127:       </span>
+1128:     </label>
+1129:   );
+1130: }
+1131: 
+1132: function AuthMeta() {
+1133:   return (
+1134:     <div className="mt-[11px] flex items-center justify-between text-[12px] text-[var(--app-text-secondary)] select-none">
+1135:       <label className="flex items-center gap-[9px] cursor-pointer">
+1136:         <span className="grid h-[16px] w-[16px] place-items-center rounded-[4px] border border-[var(--app-input-border)] bg-[var(--app-input-bg)] text-[10px]">
+1137:           <Check size={12} className="text-[var(--app-accent)]" />
+1138:         </span>
+1139:         Remember me
+1140:       </label>
+1141:       <button type="button" onClick={() => alert("Password reset link sent!")} className="cursor-pointer hover:text-[var(--app-text)]">Forgot password?</button>
+1142:     </div>
+1143:   );
+1144: }
+1145: 
+1146: function AuthButtons({ 
+1147:   primaryLabel, 
+1148:   onPrimary,
+1149:   onGoogle,
+1150:   onBase
+1151: }: { 
+1152:   primaryLabel: string; 
+1153:   onPrimary: (e: FormEvent) => void;
+1154:   onGoogle: () => void;
+1155:   onBase: () => void;
+1156: }) {
+1157:   return (
+1158:     <div className="mt-[24px] grid gap-[12px] w-full">
+1159:       <button 
+1160:         type="submit" 
+1161:         onClick={(e) => onPrimary(e)}
+1162:         className="primary-pill h-[43px] text-[13px] w-full cursor-pointer flex items-center justify-center"
+1163:       >
+1164:         {primaryLabel}
+1165:       </button>
+1166:       <button
+1167:         type="button"
+1168:         onClick={onGoogle}
+1169:         className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[11px]"
+1170:       >
+1171:         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+1172:           <path fillRule="evenodd" clipRule="evenodd" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.3-4.74 3.3-8.09z" fill="#4285F4"/>
+1173:           <path fillRule="evenodd" clipRule="evenodd" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+1174:           <path fillRule="evenodd" clipRule="evenodd" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+1175:           <path fillRule="evenodd" clipRule="evenodd" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+1176:         </svg>
+1177:         <span>Sign in with Google</span>
+1178:       </button>
+1179:       <button
+1180:         type="button"
+1181:         onClick={onBase}
+1182:         className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[10px]"
+1183:       >
+1184:         <span className="inline-block h-[14px] w-[14px] rounded-[3.5px] bg-[#0052ff]" />
+1185:         <span>Sign in with Base ID</span>
+1186:       </button>
+1187:     </div>
+1188:   );
+1189: }
+1190: 
+1191: function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
+1192:   const [code, setCode] = useState("");
+1193:   const [error, setError] = useState(false);
+1194:   const [success, setSuccess] = useState(false);
+1195:   const [timeLeft, setTimeLeft] = useState(60);
+1196:   const keyboardVisible = true; // Always visible for a mobile app mockup
+1197: 
+1198:   const pressDigit = (digit: string) => {
+1199:     setError(false);
+1200:     setCode((value) => (value.length < 5 ? `${value}${digit}` : value));
+1201:   };
+1202: 
+1203:   const verify = async () => {
+1204:     if (code.length < 5) return;
+1205: 
+1206:     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+1207:     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+1208:     const useSupabase = supabaseUrl && supabaseAnonKey && 
+1209:                         !supabaseUrl.includes("dummy-url") && 
+1210:                         !supabaseAnonKey.includes("dummy-key");
+1211: 
+1212:     if (useSupabase) {
+1213:       const { data, error: err } = await supabase.auth.verifyOtp({
+1214:         email,
+1215:         token: code,
+1216:         type: "signup"
+1217:       });
+1218:       if (err) {
+1219:         setError(true);
+1220:         console.error("OTP verification error:", err.message);
+1221:       } else {
+1222:         // Sync local profile metadata
+1223:         try {
+1224:           await fetch("/api/profile", {
+1225:             method: "POST",
+1226:             headers: { "Content-Type": "application/json" },
+1227:             body: JSON.stringify({
+1228:               fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
+1229:               email
+1230:             })
+1231:           });
+1232:         } catch (e) {
+1233:           console.error("Sync profile error:", e);
+1234:         }
+1235:         setSuccess(true);
+1236:       }
+1237:     } else {
+1238:       try {
+1239:         const res = await fetch("/api/auth/verify", {
+1240:           method: "POST",
+1241:           headers: { "Content-Type": "application/json" },
+1242:           body: JSON.stringify({ email, code })
+1243:         });
+1244:         if (res.ok) {
+1245:           setSuccess(true);
+1246:         } else {
+1247:           setError(true);
+1248:         }
+1249:       } catch (err) {
+1250:         console.error("Local verification error:", err);
+1251:         setError(true);
+1252:       }
+1253:     }
+1254:   };
+1255: 
+1256:   useEffect(() => {
+1257:     if (timeLeft <= 0) return;
+1258:     const interval = setInterval(() => {
+1259:       setTimeLeft((t) => t - 1);
+1260:     }, 1000);
+1261:     return () => clearInterval(interval);
+1262:   }, [timeLeft]);
+1263: 
+1264:   useEffect(() => {
+1265:     const handleKeyDown = (e: KeyboardEvent) => {
+1266:       if (success) return;
+1267:       if (e.key >= "0" && e.key <= "9") {
+1268:         setError(false);
+1269:         setCode((value) => (value.length < 5 ? `${value}${e.key}` : value));
+1270:       } else if (e.key === "Backspace") {
+1271:         setError(false);
+1272:         setCode((value) => value.slice(0, -1));
+1273:       } else if (e.key === "Enter") {
+1274:         if (code.length === 5) {
+1275:           verify();
+1276:         }
+1277:       }
+1278:     };
+1279:     window.addEventListener("keydown", handleKeyDown);
+1280:     return () => window.removeEventListener("keydown", handleKeyDown);
+1281:   }, [code, success]);
+1282: 
+1283:   const handleResendCode = () => {
+1284:     setCode("");
+1285:     setError(false);
+1286:     setTimeLeft(60);
+1287:   };
+1288: 
+1289:   const formatTime = (seconds: number) => {
+1290:     const mins = Math.floor(seconds / 60);
+1291:     const secs = seconds % 60;
+1292:     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+1293:   };
+1294: 
+1295:   return (
+1296:     <div className="relative flex-1 min-h-0 text-left flex flex-col justify-between">
+1297:       <section className="mx-[20px] mt-[32px] rounded-[30px] px-[26px] pb-[32px] pt-[31px] shadow-pal onb-white-card" style={{ color: 'var(--app-text)' }}>
+1298:         <h1 className="text-[25px] font-extrabold" style={{ color: 'var(--onb-heading)' }}>Enter code</h1>
+1299:         <p className="mt-[13px] text-[14px] leading-[1.2] text-[var(--app-text-secondary)]">
+1300:           We&apos;ve sent an email with an activation code
+1301:           <br />
+1302:           to your email <span className="text-[var(--app-text)] font-semibold">{email || "your email"}</span>
+1303:         </p>
+1304:         <div className="mt-[16px] flex justify-between gap-1 w-full">
+1305:           {[0, 1, 2, 3, 4].map((index) => (
+1306:             <button
+1307:               key={index}
+1308:               type="button"
+1309:               onClick={() => pressDigit("1")}
+1310:               className={cn(
+1311:                 "grid h-[60px] w-[50px] place-items-center rounded-[14px] border text-[24px] font-extrabold cursor-pointer transition-all duration-200 outline-none",
+1312:                 error 
+1313:                   ? "border-[#ff3030] text-[#ff3030] bg-[#fff5f5]" 
+1314:                   : (index === code.length && !success)
+1315:                     ? "border-[var(--app-accent)] ring-2 ring-[var(--app-accent)]/20 bg-white shadow-md scale-105" 
+1316:                     : code[index] 
+1317:                       ? "border-gray-300 text-gray-900 bg-white font-bold" 
+1318:                       : "border-gray-200 text-gray-400 bg-gray-50/50"
+1319:               )}
+1320:             >
+1321:               {code[index] ?? ""}
+1322:             </button>
+1323:           ))}
+1324:         </div>
+1325:         {error && <p className="mt-[16px] text-center text-[12px] text-[#ff3030] font-bold">Wrong code, please try again</p>}
+1326:         <p className={cn("text-center text-[15px]", error ? "mt-[20px]" : "mt-[26px]")}>
+1327:           <button 
+1328:             type="button" 
+1329:             onClick={handleResendCode}
+1330:             disabled={timeLeft > 0}
+1331:             className={cn(
+1332:               "font-extrabold cursor-pointer",
+1333:               timeLeft > 0 
+1334:                 ? "text-gray-400 cursor-not-allowed" 
+1335:                 : "text-[var(--app-accent)] hover:underline"
+1336:             )}
+1337:             style={{ color: timeLeft > 0 ? '#9ca3af' : 'var(--app-accent)' }}
+1338:           >
+1339:             Send code again
+1340:           </button>{" "}
+1341:           <span className="text-[var(--app-text-secondary)] font-mono font-semibold" style={{ color: '#6b7280' }}>
+1342:             {formatTime(timeLeft)}
+1343:           </span>
+1344:         </p>
+1345:       </section>
+1346: 
+1347:       <button
+1348:         type="button"
+1349:         onClick={verify}
+1350:         disabled={code.length < 5}
+1351:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] z-20 w-[calc(100%_-_68px)] cursor-pointer"
+1352:       >
+1353:         Verify
+1354:       </button>
+1355: 
+1356:       {/* Numerical Keyboard */}
+1357:       {keyboardVisible && (
+1358:         <NumberKeyboard 
+1359:           onDigit={pressDigit} 
+1360:           onBackspace={() => setCode((value) => value.slice(0, -1))} 
+1361:         />
+1362:       )}
+1363:       
+1364:       {/* Congrats Popup Modal */}
+1365:       {success && <SuccessModal onNext={onNext} />}
+1366:     </div>
+1367:   );
+1368: }
+1369: 
+1370: function NumberKeyboard({
+1371:   onDigit,
+1372:   onBackspace
+1373: }: {
+1374:   onDigit: (digit: string) => void;
+1375:   onBackspace: () => void;
+1376: }) {
+1377:   const keys = [
+1378:     ["1", ""],
+1379:     ["2", "ABC"],
+1380:     ["3", "DEF"],
+1381:     ["4", "GHI"],
+1382:     ["5", "JKL"],
+1383:     ["6", "MNO"],
+1384:     ["7", "PQRS"],
+1385:     ["8", "TUV"],
+1386:     ["9", "WXYZ"]
+1387:   ];
+1388: 
+1389:   return (
+1390:     <div className="absolute bottom-0 left-0 right-0 z-10">
+1391:       <div className="keyboard-grid">
+1392:         {keys.map(([digit, letters]) => (
+1393:           <button key={digit} type="button" onClick={() => onDigit(digit)} className="keyboard-key cursor-pointer">
+1394:             {digit}
+1395:             {letters && <small>{letters}</small>}
+1396:           </button>
+1397:         ))}
+1398:         <button type="button" className="h-[47px] text-[20px] text-[var(--app-text-secondary)] cursor-default opacity-50">
+1399:           +*#
+1400:         </button>
+1401:         <button type="button" onClick={() => onDigit("0")} className="keyboard-key cursor-pointer">
+1402:           0
+1403:         </button>
+1404:         <button type="button" onClick={onBackspace} className="grid h-[47px] place-items-center text-[var(--app-text)] cursor-pointer active:scale-95">
+1405:           ⌫
+1406:         </button>
+1407:       </div>
+1408:       <div className="grid h-[35px] place-items-center bg-[var(--app-card-alt)] border-t border-[var(--app-card-border)]">
+1409:         <span className="h-[4px] w-[135px] rounded-full bg-[var(--app-text)]" />
+1410:       </div>
+1411:     </div>
+1412:   );
+1413: }
+1414: 
+1415: function SuccessModal({ onNext }: { onNext: () => void }) {
+1416:   return (
+1417:     <div className="absolute inset-0 z-30 bg-[#0a4072]/72 backdrop-blur-[3px] flex items-end">
+1418:       <div className="w-full rounded-t-[26px] bg-[var(--app-surface)] px-[34px] pb-[49px] pt-[25px] text-center text-[var(--app-text)] shadow-2xl">
+1419:         <div className="mx-auto grid h-[132px] w-[132px] place-items-center rounded-full bg-[#e0f4ff]/10 border border-[#e0f4ff]/25">
+1420:           <span className="text-[72px] leading-none">🎉</span>
+1421:         </div>
+1422:         <h2 className="mt-[26px] text-[22px] font-extrabold leading-[1.45] text-[var(--app-text)]">
+1423:           Congrats!
+1424:           <br />
+1425:           you are all set up.
+1426:         </h2>
+1427:         <p className="mt-[11px] text-[16px] leading-[1.55] text-[var(--app-text-secondary)]">
+1428:           Get ready for a showdown!
+1429:           <br />
+1430:           Your <span className="font-bold text-[var(--app-accent)]">PAL</span> assistant is excited to help.💪
+1431:         </p>
+1432:         <button 
+1433:           type="button" 
+1434:           onClick={onNext} 
+1435:           className="primary-pill mt-[28px] w-full cursor-pointer flex items-center justify-center"
+1436:         >
+1437:           Next
+1438:         </button>
+1439:       </div>
+1440:     </div>
+1441:   );
+1442: }
+1443: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

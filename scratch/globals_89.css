@@ -1,0 +1,42 @@
+Created At: 2026-06-13T22:56:39Z
+Completed At: 2026-06-13T22:56:39Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/layout.tsx`
+Total Lines: 34
+Total Bytes: 746
+Showing lines 1 to 34
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import type { Metadata } from "next";
+2: import { Outfit } from "next/font/google";
+3: import "./globals.css";
+4: import { ThemeProvider } from "@/components/ThemeProvider";
+5: 
+6: const outfit = Outfit({
+7:   subsets: ["latin"],
+8:   variable: "--font-outfit",
+9: });
+10: 
+11: export const metadata: Metadata = {
+12:   title: "Pal Dashboard",
+13:   description: "Your personal assistant dashboard",
+14: };
+15: 
+16: export default function RootLayout({
+17:   children,
+18: }: Readonly<{
+19:   children: React.ReactNode;
+20: }>) {
+21:   return (
+22:     <html lang="en" data-theme="dark" suppressHydrationWarning>
+23:       <body
+24:         className={`${outfit.variable} antialiased`}
+25:         suppressHydrationWarning
+26:       >
+27:         <ThemeProvider>
+28:           {children}
+29:         </ThemeProvider>
+30:       </body>
+31:     </html>
+32:   );
+33: }
+34: 
+The above content shows the entire, complete file contents of the requested file.

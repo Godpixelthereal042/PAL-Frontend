@@ -1,0 +1,41 @@
+Created At: 2026-06-16T01:22:02Z
+Completed At: 2026-06-16T01:22:02Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/walkthrough.md`
+Total Lines: 33
+Total Bytes: 3948
+Showing lines 1 to 33
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Walkthrough: Responsive Onboarding & Input Focus Fixes
+2: 
+3: We have successfully resolved the mobile onboarding layout issues, ensured the design scales fluidly to any screen height, and prevented viewport shifting/zooming on input focus, while strictly preserving your original design assets, bottoms-peeking mascots, and typography.
+4: 
+5: ## Changes Made
+6: 
+7: ### 1. Locked Webpage Viewport Scaling
+8: *   **Viewport Constraints**: Modified `html, body` in [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css#L260-L268) to strictly use `height: 100dvh; overflow: hidden; position: fixed; width: 100%;` instead of `min-height: 100%`. This locks the browser viewport in place, preventing iOS from scrolling or bouncing the entire webpage when virtual keyboards are active.
+9: *   **Stage Alignment**: Configured `.phone-stage` in [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css#L293-L309) to be `position: fixed` to completely isolate layout scaling from mobile browser address bar shifts.
+10: 
+11: ### 2. Auto-Hidden Mock Status Bar Content While Preserving Safe Spacing
+12: *   **Mobile Status Bar**: Modified the media query in [globals.css](file:///Users/user/Documents/pal-frontend/app/globals.css#L817-L824) to target `.status-bar > * { display: none !important; }` instead of hiding the status bar wrapper itself. This hides the mock time and mock status icons on actual mobile devices, but *preserves* the status bar's height (`env(safe-area-inset-top, 47px)`) to act as a buffer against the notch, preventing content (like the top progress bar) from being cut off.
+13: *   **Desktop Status Bar**: Formatted `.status-bar` on desktop as a clean flex layout, showing the time and mock icons inside the phone preview wrapper.
+14: 
+15: ### 3. Corrected Mascot Scaling & Clamp Ordering
+16: *   **Swapped Clamp Parameters**: Corrected all negative clamp definitions (`clamp(-170px, -35svh, -270px)`) where the min and max values were swapped (which is mathematically invalid in CSS and caused browsers to behave unpredictably). They now follow correct standard ordering: `clamp(MIN, VAL, MAX)` (e.g. `clamp(-270px, -32svh, -130px)`).
+17: *   **Mascot Size Reductions**: Reduced the maximum scaling width of the `ManageIntro` mascot on mobile from `600px` to `500px` (`width: clamp(280px, 65svh, 500px)`), and adjusted its `bottom` coordinate scaling. As the screen height shrinks, the mascot now scales down proportionally and stays neatly at the bottom-right without overlapping header texts like "Place."
+18: 
+19: ### 4. Converted Layout to Dynamic Flexbox
+20: *   **Dynamic Flex Expansion**: Replaced all hardcoded screen height calculations (`h-[calc(100%_-_58px)]` and `h-[calc(100%_-_47px)]`) with `flex-1 min-h-0` classes in [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx). This ensures screen heights adjust dynamically when the status bar hides or when the virtual keyboard scales down the screen height.
+21: *   **Fluid List Scaling**: Refactored the Country list and Language list sections inside [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx#L701-L715) to use `flex-1 min-h-0 max-h-[340px]/[280px]` with flexboxes. List results now scale down automatically on short devices, keeping action buttons fully visible and non-overlapping.
+22: 
+23: ### 5. Prevented iOS Input Auto-Zoom
+24: *   **Minimum Font Threshold**: Enforced a `text-[16px]` font size class directly on the search input inside [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx#L720-L730) and on `AuthField` inputs. This keeps form sizes above the Safari auto-zoom threshold, preventing the viewport from zooming in on focus.
+25: 
+26: ---
+27: 
+28: ## Verification Results
+29: 
+30: ### Production Deployment
+31: *   The updated layout has been built, type-checked, and deployed to Vercel.
+32: *   **Live App URL**: [https://pal-frontend-xi.vercel.app](https://pal-frontend-xi.vercel.app)
+33: 
+The above content shows the entire, complete file contents of the requested file.

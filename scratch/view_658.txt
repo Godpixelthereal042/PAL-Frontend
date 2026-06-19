@@ -1,0 +1,129 @@
+Created At: 2026-06-13T23:38:42Z
+Completed At: 2026-06-13T23:38:42Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1420
+Total Bytes: 49042
+Showing lines 1300 to 1420
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1300:           ))}
+1301:         </div>
+1302:         {error && <p className="mt-[16px] text-center text-[12px] text-[#ff3030] font-bold">Wrong code, please try again</p>}
+1303:         <p className={cn("text-center text-[15px]", error ? "mt-[20px]" : "mt-[26px]")}>
+1304:           <button 
+1305:             type="button" 
+1306:             onClick={handleResendCode}
+1307:             disabled={timeLeft > 0}
+1308:             className={cn(
+1309:               "font-extrabold cursor-pointer",
+1310:               timeLeft > 0 
+1311:                 ? "text-gray-400 cursor-not-allowed" 
+1312:                 : "text-[var(--app-accent)] hover:underline"
+1313:             )}
+1314:             style={{ color: timeLeft > 0 ? '#9ca3af' : 'var(--app-accent)' }}
+1315:           >
+1316:             Send code again
+1317:           </button>{" "}
+1318:           <span className="text-[var(--app-text-secondary)] font-mono font-semibold" style={{ color: '#6b7280' }}>
+1319:             {formatTime(timeLeft)}
+1320:           </span>
+1321:         </p>
+1322:       </section>
+1323: 
+1324:       <button
+1325:         type="button"
+1326:         onClick={verify}
+1327:         disabled={code.length < 5}
+1328:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] z-20 w-[calc(100%_-_68px)] cursor-pointer"
+1329:       >
+1330:         Verify
+1331:       </button>
+1332: 
+1333:       {/* Numerical Keyboard */}
+1334:       {keyboardVisible && (
+1335:         <NumberKeyboard 
+1336:           onDigit={pressDigit} 
+1337:           onBackspace={() => setCode((value) => value.slice(0, -1))} 
+1338:         />
+1339:       )}
+1340:       
+1341:       {/* Congrats Popup Modal */}
+1342:       {success && <SuccessModal onNext={onNext} />}
+1343:     </div>
+1344:   );
+1345: }
+1346: 
+1347: function NumberKeyboard({
+1348:   onDigit,
+1349:   onBackspace
+1350: }: {
+1351:   onDigit: (digit: string) => void;
+1352:   onBackspace: () => void;
+1353: }) {
+1354:   const keys = [
+1355:     ["1", ""],
+1356:     ["2", "ABC"],
+1357:     ["3", "DEF"],
+1358:     ["4", "GHI"],
+1359:     ["5", "JKL"],
+1360:     ["6", "MNO"],
+1361:     ["7", "PQRS"],
+1362:     ["8", "TUV"],
+1363:     ["9", "WXYZ"]
+1364:   ];
+1365: 
+1366:   return (
+1367:     <div className="absolute bottom-0 left-0 right-0 z-10">
+1368:       <div className="keyboard-grid">
+1369:         {keys.map(([digit, letters]) => (
+1370:           <button key={digit} type="button" onClick={() => onDigit(digit)} className="keyboard-key cursor-pointer">
+1371:             {digit}
+1372:             {letters && <small>{letters}</small>}
+1373:           </button>
+1374:         ))}
+1375:         <button type="button" className="h-[47px] text-[20px] text-[var(--app-text-secondary)] cursor-default opacity-50">
+1376:           +*#
+1377:         </button>
+1378:         <button type="button" onClick={() => onDigit("0")} className="keyboard-key cursor-pointer">
+1379:           0
+1380:         </button>
+1381:         <button type="button" onClick={onBackspace} className="grid h-[47px] place-items-center text-[var(--app-text)] cursor-pointer active:scale-95">
+1382:           ⌫
+1383:         </button>
+1384:       </div>
+1385:       <div className="grid h-[35px] place-items-center bg-[var(--app-card-alt)] border-t border-[var(--app-card-border)]">
+1386:         <span className="h-[4px] w-[135px] rounded-full bg-[var(--app-text)]" />
+1387:       </div>
+1388:     </div>
+1389:   );
+1390: }
+1391: 
+1392: function SuccessModal({ onNext }: { onNext: () => void }) {
+1393:   return (
+1394:     <div className="absolute inset-0 z-30 bg-[#0a4072]/72 backdrop-blur-[3px] flex items-end">
+1395:       <div className="w-full rounded-t-[26px] bg-[var(--app-surface)] px-[34px] pb-[49px] pt-[25px] text-center text-[var(--app-text)] shadow-2xl">
+1396:         <div className="mx-auto grid h-[132px] w-[132px] place-items-center rounded-full bg-[#e0f4ff]/10 border border-[#e0f4ff]/25">
+1397:           <span className="text-[72px] leading-none">🎉</span>
+1398:         </div>
+1399:         <h2 className="mt-[26px] text-[22px] font-extrabold leading-[1.45] text-[var(--app-text)]">
+1400:           Congrats!
+1401:           <br />
+1402:           you are all set up.
+1403:         </h2>
+1404:         <p className="mt-[11px] text-[16px] leading-[1.55] text-[var(--app-text-secondary)]">
+1405:           Get ready for a showdown!
+1406:           <br />
+1407:           Your <span className="font-bold text-[var(--app-accent)]">PAL</span> assistant is excited to help.💪
+1408:         </p>
+1409:         <button 
+1410:           type="button" 
+1411:           onClick={onNext} 
+1412:           className="primary-pill mt-[28px] w-full cursor-pointer flex items-center justify-center"
+1413:         >
+1414:           Next
+1415:         </button>
+1416:       </div>
+1417:     </div>
+1418:   );
+1419: }
+1420: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

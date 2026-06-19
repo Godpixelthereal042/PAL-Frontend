@@ -1,0 +1,21 @@
+Created At: 2026-06-13T23:09:08Z
+Completed At: 2026-06-13T23:09:09Z
+File Path: `file:///Users/user/.gemini/antigravity/brain/684cd71f-b656-4eaf-a286-c42319b454ad/task.md`
+Total Lines: 13
+Total Bytes: 1382
+Showing lines 1 to 13
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Execution Task List
+2: 
+3: - [x] Initialize `otp_codes` table in [db.ts](file:///Users/user/Documents/pal-frontend/lib/db.ts)
+4: - [x] Create `/api/auth/verify` route in [verify/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/verify/route.ts)
+5: - [x] Update `/api/auth/signup` in [signup/route.ts](file:///Users/user/Documents/pal-frontend/app/api/auth/signup/route.ts) to generate and save local OTP code
+6: - [x] Update `OnboardingScreen.tsx`'s `OtpScreen` in [OnboardingScreen.tsx](file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx) to call `/api/auth/verify`
+7: - [x] Align API contracts and sanitize Gemini errors in [chat/route.ts](file:///Users/user/Documents/pal-frontend/app/api/chat/route.ts)
+8: - [x] Disable chat Send button during upload in [ChatScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ChatScreen.tsx)
+9: - [x] Map integration ID aliases in [integrations/route.ts](file:///Users/user/Documents/pal-frontend/app/api/integrations/route.ts)
+10: - [x] Create `/api/projects/[id]/remind` route in [remind/route.ts](file:///Users/user/Documents/pal-frontend/app/api/projects/[id]/remind/route.ts)
+11: - [x] Update `ProjectDetailsScreen.tsx` in [ProjectDetailsScreen.tsx](file:///Users/user/Documents/pal-frontend/components/ProjectDetailsScreen.tsx) to call `/api/projects/[id]/remind`
+12: - [x] Verify changes (type-check, build, run tests)
+13: 
+The above content shows the entire, complete file contents of the requested file.

@@ -1,0 +1,60 @@
+Created At: 2026-06-16T00:06:21Z
+Completed At: 2026-06-16T00:06:22Z
+File Path: `file:///Users/user/Documents/pal-frontend/components/OnboardingScreen.tsx`
+Total Lines: 1436
+Total Bytes: 49953
+Showing lines 636 to 687
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+636: 
+637: function IndustryScreen({
+638:   value,
+639:   onChange,
+640:   onNext
+641: }: {
+642:   value: string;
+643:   onChange: (value: string) => void;
+644:   onNext: () => void;
+645: }) {
+646:   return (
+647:     <div className="relative h-[calc(100%_-_58px)] px-[34px] pt-[8px] text-left">
+648:       <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+649:         Choose your Industry
+650:       </h1>
+651:       <p className="mt-[6px] max-w-[340px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+652:         Please choose your profession from the list below.
+653:       </p>
+654:       <div className="mt-[25px] grid grid-cols-2 gap-[12px] w-full">
+655:         {industries.map(({ icon: Icon, label }) => (
+656:           <button
+657:             key={label}
+658:             type="button"
+659:             onClick={() => onChange(label)}
+660:             className={cn(
+661:               "flex flex-col items-center justify-center gap-[8px] rounded-[16px] border p-[12px] text-center text-[13px] font-bold transition cursor-pointer shadow-sm"
+662:             )}
+663:             style={{
+664:               backgroundColor: value === label ? 'var(--app-accent)' : 'var(--app-card-alt)',
+665:               borderColor: value === label ? 'var(--app-accent)' : 'var(--app-card-border)',
+666:               color: value === label ? '#ffffff' : 'var(--app-text-secondary)',
+667:               textAlign: 'center',
+668:               height: '100px'
+669:             }}
+670:           >
+671:             <Icon 
+672:               size={22} 
+673:               style={{ color: value === label ? '#ffffff' : 'var(--app-text-secondary)' }}
+674:               strokeWidth={2.2} 
+675:             />
+676:             <span className="leading-tight">{label}</span>
+677:           </button>
+678:         ))}
+679:       </div>
+680:       <button 
+681:         type="button" 
+682:         onClick={onNext} 
+683:         disabled={!value}
+684:         className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
+685:       >
+686:         Next
+687:       </button>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,29 @@
+Created At: 2026-06-13T23:16:11Z
+Completed At: 2026-06-13T23:16:11Z
+File Path: `file:///Users/user/Documents/pal-frontend/app/globals.css`
+Total Lines: 700
+Total Bytes: 13400
+Showing lines 680 to 700
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+680: @keyframes sheet-up {
+681:   from {
+682:     opacity: 0;
+683:     transform: translateY(42px);
+684:   }
+685: 
+686:   to {
+687:     opacity: 1;
+688:     transform: translateY(0);
+689:   }
+690: }
+691: 
+692: /* Media query phone layout overrides removed to unify size with the main app */
+693: 
+694: @media (max-width: 374px) {
+695:   .status-bar {
+696:     padding-left: 24px;
+697:     padding-right: 24px;
+698:   }
+699: }
+700: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
