@@ -382,7 +382,7 @@ button {
   justify-self: end;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   padding-top: 1px;
 }
 
@@ -418,7 +418,7 @@ button {
 
 .wifi {
   position: relative;
-  width: 17px;
+  width: 22px;
   height: 13px;
 }
 
@@ -754,7 +754,7 @@ button {
 }
 
 /* Responsive adjustments for onboarding screens on short viewports to prevent overlap/overflow */
-@media (max-height: 740px) {
+@media (max-height: 820px) {
   .growth-heading {
     font-size: 44px !important;
     line-height: 0.95 !important;
@@ -819,13 +819,25 @@ button {
   
   .signup-shell {
     margin-top: 10px !important;
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
   }
+  .signup-shell h1 {
+    font-size: 22px !important;
+  }
+  .signup-shell form {
+    margin-top: 14px !important;
+    gap: 8px !important;
+  }
+  
   .login-shell {
     margin-top: 20px !important;
     padding-top: 15px !important;
     padding-bottom: 15px !important;
+  }
+  .login-shell form {
+    margin-top: 16px !important;
+    gap: 10px !important;
   }
 }
 

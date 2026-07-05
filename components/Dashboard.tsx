@@ -453,8 +453,14 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => setIsModalOpen(true)}
-                        style={{ backgroundColor: '#0a2f5c', color: '#ffffff' }}
-                        className="mx-auto flex h-[40px] px-6 items-center justify-center gap-[8px] rounded-full text-[12px] font-bold transition active:scale-[0.98] cursor-pointer hover:opacity-90 shadow-md"
+                        style={{ 
+                            backgroundColor: '#1a3a6b', 
+                            color: '#ffffff',
+                            borderColor: '#2d7fe0',
+                            borderStyle: 'solid',
+                            borderWidth: '1.5px',
+                        }}
+                        className="mx-auto flex whitespace-nowrap w-fit h-[40px] px-6 items-center justify-center gap-[8px] rounded-full text-[12px] font-bold transition active:scale-[0.98] cursor-pointer hover:opacity-90 shadow-md"
                     >
                         Add Schedule <Plus size={14} style={{ color: '#ffffff' }} />
                     </button>

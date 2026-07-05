@@ -125,11 +125,12 @@ export default function AddScheduleModal({ isOpen, onClose, onAdd, initialDate =
                             <button
                                 type="submit"
                                 disabled={!filled}
-                                className={`h-[44px] w-full rounded-full text-xs font-bold uppercase tracking-wider transition-all border-none ${
-                                    filled 
-                                        ? "bg-[#2d7fe0] hover:bg-[#1e6bcf] text-white active:scale-[0.97] cursor-pointer shadow-md shadow-blue-500/10" 
-                                        : "bg-[#f3f4f6] text-[#9ca3af] cursor-not-allowed"
-                                } mt-5`}
+                                style={{
+                                    backgroundColor: filled ? '#2563eb' : '#f3f4f6',
+                                    color: filled ? '#ffffff' : '#9ca3af',
+                                    cursor: filled ? 'pointer' : 'not-allowed',
+                                }}
+                                className="h-[44px] w-full rounded-full text-xs font-bold uppercase tracking-wider transition-all border-none mt-5 active:scale-[0.97] shadow-md"
                             >
                                 Add Schedule
                             </button>

@@ -75,7 +75,7 @@ export default function BottomNav({ activePage }: BottomNavProps) {
 
                 <Link
                     href="/chat"
-                    className="ml-[3px] flex h-[66px] items-center justify-center gap-[10px] rounded-full text-[23px] font-semibold active:scale-95 transition-all"
+                    className="ml-[3px] flex h-[66px] items-center justify-center gap-[8px] px-[20px] rounded-full text-[17px] font-bold active:scale-95 transition-all"
                     style={{
                         borderColor: '#48b9ff',
                         borderStyle: 'solid',
@@ -85,7 +85,7 @@ export default function BottomNav({ activePage }: BottomNavProps) {
                     }}
                 >
                     <span>Chat</span>
-                    <Zap className="w-[23px] h-[23px] fill-white" style={{ color: '#ffffff' }} />
+                    <Zap className="w-[18px] h-[18px] fill-white" style={{ color: '#ffffff' }} />
                 </Link>
             </nav>
         </div>
