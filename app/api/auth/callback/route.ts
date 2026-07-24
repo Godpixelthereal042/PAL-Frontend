@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { getDB } from "@/lib/db";
+import { hasCompletedBusinessBrain } from "@/lib/businessBrain";
 
 export async function GET(request: Request) {
     try {
@@ -19,8 +20,7 @@ export async function GET(request: Request) {
                                 !supabaseAnonKey.includes("dummy-key");
 
             if (useSupabase) {
-                // Create response redirect object first so we can set cookies on it
-                const response = NextResponse.redirect(`${origin}${next}`);
+                let redirectTarget = `${origin}${next}`;
 
                 const supabaseServer = createServerClient(supabaseUrl, supabaseAnonKey, {
                     cookies: {
@@ -31,11 +31,6 @@ export async function GET(request: Request) {
                             cookiesToSet.forEach(({ name, value, options }) => {
                                 try {
                                     cookieStore.set(name, value, options);
-                                } catch (e) {
-                                    // Ignored
-                                }
-                                try {
-                                    response.cookies.set(name, value, options);
                                 } catch (e) {
                                     // Ignored
                                 }
@@ -83,11 +78,16 @@ export async function GET(request: Request) {
                                  email = excluded.email`,
                                 [fullName, email]
                             );
+
+                            const hasBrain = await hasCompletedBusinessBrain(user.id);
+                            if (!hasBrain) {
+                                redirectTarget = `${origin}/business-brain`;
+                            }
                         }
                     } catch (syncErr) {
                         console.error("Local SQLite OAuth sync error:", syncErr);
                     }
-                    return response;
+                    return NextResponse.redirect(redirectTarget);
                 }
                 console.error("OAuth Exchange Code error:", error.message);
             }

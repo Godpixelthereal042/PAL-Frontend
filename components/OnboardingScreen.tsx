@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/lib/supabaseClient";
+import BusinessBrainForm from "@/components/BusinessBrainForm";
 
 type Screen =
   | "growth"
@@ -32,7 +33,8 @@ type Screen =
   | "language"
   | "signup"
   | "login"
-  | "otp";
+  | "otp"
+  | "business_brain";
 
 type Tone = "light" | "dark";
 
@@ -202,7 +204,12 @@ export default function OnboardingScreen() {
           selectedPersona: "growth"
         };
         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        router.push("/");
+        const checkBrain = await fetch("/api/business-brain");
+        if (checkBrain.ok) {
+          router.push("/");
+        } else {
+          router.push("/business-brain");
+        }
         return;
       }
 
@@ -230,7 +237,11 @@ export default function OnboardingScreen() {
           selectedPersona: "growth"
         };
         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        router.push("/");
+        if (loginData.hasCompletedBusinessBrain === false) {
+          router.push("/business-brain");
+        } else {
+          router.push("/");
+        }
       } else {
         const err = await loginRes.json();
         alert(err.error || "Social authentication failed");
@@ -410,7 +421,20 @@ export default function OnboardingScreen() {
             <div className="min-h-[640px] w-full h-full relative">
               <OtpScreen 
                 email={email}
-                onNext={() => router.push("/")} 
+                onNext={() => setScreen("business_brain")} 
+              />
+            </div>
+          </div>
+        )}
+        
+        {screen === "business_brain" && (
+          <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
+            <div className="min-h-[640px] w-full h-full relative px-[20px] pt-[20px] pb-[40px]">
+              <BusinessBrainForm
+                mode="onboarding"
+                initialIndustry={industry}
+                onComplete={() => router.push("/")}
+                onSkip={() => router.push("/")}
               />
             </div>
           </div>
@@ -1058,16 +1082,10 @@ function LoginScreen({
         };
         localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
         
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-        const useSupabase = supabaseUrl && supabaseAnonKey && 
-                            !supabaseUrl.includes("dummy-url") && 
-                            !supabaseAnonKey.includes("dummy-key");
-                            
-        if (useSupabase) {
-          router.push("/");
+        if (data.hasCompletedBusinessBrain === false) {
+          router.push("/business-brain");
         } else {
-          onNext();
+          router.push("/");
         }
       } else {
         const err = await res.json();

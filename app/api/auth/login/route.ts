@@ -3,6 +3,7 @@ import { getDB } from "@/lib/db";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import { createClient } from "@/lib/supabaseServer";
+import { hasCompletedBusinessBrain } from "@/lib/businessBrain";
 
 function hashPassword(password: string): string {
     const salt = process.env.AUTH_SALT || "pal_salt_key";
@@ -90,8 +91,10 @@ export async function POST(request: Request) {
                 ]
             );
 
+            const hasBrain = await hasCompletedBusinessBrain(user.id);
             return NextResponse.json({
-                user: { id: user.id, name: user.name, email: user.email, role: user.role }
+                user: { id: user.id, name: user.name, email: user.email, role: user.role },
+                hasCompletedBusinessBrain: hasBrain
             });
         } else {
             // 2. Fall back to local SQLite credentials verification
@@ -161,8 +164,10 @@ export async function POST(request: Request) {
                 path: "/"
             });
 
+            const hasBrain = await hasCompletedBusinessBrain(user.id);
             return NextResponse.json({
-                user: { id: user.id, name: user.name, email: user.email, role: user.role }
+                user: { id: user.id, name: user.name, email: user.email, role: user.role },
+                hasCompletedBusinessBrain: hasBrain
             });
         }
 

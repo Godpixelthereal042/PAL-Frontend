@@ -201,6 +201,10 @@ export default function Dashboard() {
                 if (res.ok) {
                     const data = await res.json();
                     if (data.authenticated) {
+                        if (data.hasCompletedBusinessBrain === false) {
+                            router.push("/business-brain");
+                            return;
+                        }
                         setUsername(data.user.name);
                         const storedProfile = localStorage.getItem("pal_user_profile");
                         if (!storedProfile) {

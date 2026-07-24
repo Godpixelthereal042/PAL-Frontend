@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
         pathname.startsWith("/notifications") ||
         pathname.startsWith("/log-history") ||
         pathname.startsWith("/connect") ||
+        pathname.startsWith("/business-brain") ||
         (pathname.startsWith("/api/") && !pathname.startsWith("/api/auth"));
 
     // Check for either SQLite session cookie or any Supabase Auth cookie

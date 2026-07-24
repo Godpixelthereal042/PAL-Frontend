@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDB } from "@/lib/db";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabaseServer";
+import { hasCompletedBusinessBrain } from "@/lib/businessBrain";
 
 export async function GET() {
     try {
@@ -56,8 +57,11 @@ export async function GET() {
                     console.warn("Could not sync user to database (tables might be missing):", dbErr);
                 }
 
+                const hasBrain = await hasCompletedBusinessBrain(user.id);
+
                 return NextResponse.json({
                     authenticated: true,
+                    hasCompletedBusinessBrain: hasBrain,
                     user: {
                         id: user.id,
                         name: dbUser?.name || user.user_metadata?.fullName || user.email?.split("@")[0] || "User",
@@ -96,7 +100,9 @@ export async function GET() {
             return NextResponse.json({ authenticated: false }, { status: 401 });
         }
 
-        return NextResponse.json({ authenticated: true, user });
+        const hasBrain = await hasCompletedBusinessBrain(user.id);
+
+        return NextResponse.json({ authenticated: true, hasCompletedBusinessBrain: hasBrain, user });
 
     } catch (error: any) {
         console.error("Session Route GET Error:", error);

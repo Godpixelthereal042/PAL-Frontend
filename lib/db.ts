@@ -523,6 +523,63 @@ export async function getDB(): Promise<Database> {
                 created_at BIGINT NOT NULL
             );
         `);
+        // Business Brain tables (Milestone 1A)
+        await sqliteDb.exec(`
+            CREATE TABLE IF NOT EXISTS business_brain (
+                id TEXT PRIMARY KEY,
+                user_id TEXT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+                business_name TEXT,
+                business_description TEXT,
+                industry TEXT,
+                business_stage TEXT,
+                target_market TEXT,
+                priorities TEXT,
+                created_at BIGINT NOT NULL,
+                updated_at BIGINT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS business_goals (
+                id TEXT PRIMARY KEY,
+                brain_id TEXT NOT NULL REFERENCES business_brain(id) ON DELETE CASCADE,
+                title TEXT NOT NULL,
+                description TEXT,
+                timeframe TEXT,
+                status TEXT DEFAULT 'active',
+                created_at BIGINT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS business_offers (
+                id TEXT PRIMARY KEY,
+                brain_id TEXT NOT NULL REFERENCES business_brain(id) ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                description TEXT,
+                offer_type TEXT,
+                price TEXT,
+                status TEXT DEFAULT 'active',
+                created_at BIGINT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS business_customer_segments (
+                id TEXT PRIMARY KEY,
+                brain_id TEXT NOT NULL REFERENCES business_brain(id) ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                description TEXT,
+                created_at BIGINT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS business_challenges (
+                id TEXT PRIMARY KEY,
+                brain_id TEXT NOT NULL REFERENCES business_brain(id) ON DELETE CASCADE,
+                title TEXT NOT NULL,
+                description TEXT,
+                severity TEXT DEFAULT 'medium',
+                status TEXT DEFAULT 'active',
+                created_at BIGINT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS business_notes (
+                id TEXT PRIMARY KEY,
+                brain_id TEXT NOT NULL REFERENCES business_brain(id) ON DELETE CASCADE,
+                content TEXT NOT NULL,
+                category TEXT,
+                created_at BIGINT NOT NULL
+            );
+        `);
         // Add columns to integrations table in SQLite if they don't exist
         try {
             await sqliteDb.exec("ALTER TABLE integrations ADD COLUMN access_token TEXT");

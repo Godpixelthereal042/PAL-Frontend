@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDB } from "@/lib/db";
 import { cookies } from "next/headers";
 import crypto from "crypto";
+import { hasCompletedBusinessBrain } from "@/lib/businessBrain";
 
 export async function POST(request: Request) {
     try {
@@ -59,8 +60,11 @@ export async function POST(request: Request) {
             path: "/"
         });
 
+        const hasBrain = await hasCompletedBusinessBrain(user.id);
+
         return NextResponse.json({
             success: true,
+            hasCompletedBusinessBrain: hasBrain,
             user: { id: user.id, name: user.name, email: user.email, role: user.role }
         });
 

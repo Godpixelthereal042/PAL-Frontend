@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getBusinessBrain } from "@/lib/businessBrain";
 
 const generateOfflineFallbackResponse = (
     profile: any,
@@ -91,6 +92,17 @@ async function generateContextAwareAIResponse(db: any, userText: string, image?:
         selectedPersona: "growth"
     };
 
+    // 1b. Fetch Business Brain (graceful — null if not set up yet or on any error)
+    let businessBrain = null;
+    if (userId !== "current_user") {
+        try {
+            businessBrain = await getBusinessBrain(userId);
+        } catch (e) {
+            // Gracefully degrade — brain tables may not exist on older installs
+            console.warn("Failed to fetch Business Brain, continuing without it:", e);
+        }
+    }
+
     // 2. Fetch projects & milestones
     const projects = await db.all("SELECT * FROM projects");
     const milestones = await db.all("SELECT * FROM milestones");
@@ -133,11 +145,42 @@ async function generateContextAwareAIResponse(db: any, userText: string, image?:
     }
 
     try {
+        // Build Business Brain context block (empty string if no brain exists)
+        let businessBrainContext = "";
+        if (businessBrain) {
+            const b = businessBrain.brain;
+            const parts: string[] = [];
+            parts.push(`Business Brain (Founder's business context — use this to personalize every response):`);
+            if (b.business_name) parts.push(`  Business Name: ${b.business_name}`);
+            if (b.business_description) parts.push(`  What they do: ${b.business_description}`);
+            if (b.industry) parts.push(`  Industry: ${b.industry}`);
+            if (b.business_stage) parts.push(`  Stage: ${b.business_stage}`);
+            if (b.target_market) parts.push(`  Target Customers: ${b.target_market}`);
+            if (b.priorities) parts.push(`  Current Priorities: ${b.priorities}`);
+            if (businessBrain.goals.length > 0) {
+                parts.push(`  Goals: ${businessBrain.goals.map((g: any) => g.title + (g.status ? ` [${g.status}]` : "")).join("; ")}`);
+            }
+            if (businessBrain.offers.length > 0) {
+                parts.push(`  Products/Services: ${businessBrain.offers.map((o: any) => o.name + (o.price ? ` ($${o.price})` : "")).join("; ")}`);
+            }
+            if (businessBrain.customerSegments.length > 0) {
+                parts.push(`  Customer Segments: ${businessBrain.customerSegments.map((s: any) => s.name).join("; ")}`);
+            }
+            if (businessBrain.challenges.length > 0) {
+                parts.push(`  Challenges: ${businessBrain.challenges.map((c: any) => c.title + (c.severity ? ` [${c.severity}]` : "")).join("; ")}`);
+            }
+            if (businessBrain.notes.length > 0) {
+                parts.push(`  Notes: ${businessBrain.notes.slice(0, 5).map((n: any) => n.content).join("; ")}`);
+            }
+            businessBrainContext = "\n" + parts.join("\n");
+        }
+
         const systemInstruction = `You are Pal, the user's AI Co-Founder and Personal Assistant Ledger.
 You must adopt the persona: ${coachName} (${persona} persona).
 Details:
 - User's Name: ${profile.fullName}
-- Company: ${profile.companyName}
+- Company: ${profile.companyName || (businessBrain?.brain?.business_name) || "your business"}
+${businessBrainContext}
 - Current Date & Time: ${new Date().toISOString()} (Use this to resolve relative dates/times like tomorrow, next Tuesday, etc.)
 - Active projects count: ${projects.length}
 - Projects: ${JSON.stringify(projects)}
