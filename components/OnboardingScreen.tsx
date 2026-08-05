@@ -384,40 +384,64 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
     <div
       onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
       onTouchEnd={handleTouchEnd}
-      className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]"
+      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[34px] pt-[20px] pb-[34px]"
     >
-      <div className="flex justify-between items-center z-30 relative">
+      {/* Top Header Controls */}
+      <div className="flex justify-between items-center z-30 relative shrink-0">
         <ProgressBars active={0} />
         <button
           type="button"
           onClick={onSkip}
-          className="text-xs font-bold text-[#0a438a] bg-white/40 backdrop-blur-xs border border-white/60 px-3 py-1 rounded-full cursor-pointer hover:bg-white transition-colors"
+          className="text-xs font-bold text-slate-300 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 hover:text-white transition-all ml-4"
         >
           Skip
         </button>
       </div>
 
-      <div className="min-h-[620px] w-full h-full relative flex flex-col pt-3">
-        <h1 className="mt-[20px] text-[58px] font-semibold leading-[0.94] text-left growth-heading" style={{ color: 'var(--app-accent)' }}>
-          GO FOR
+      {/* Main Hero Content */}
+      <div className="min-h-[440px] w-full flex-1 relative flex flex-col pt-4 z-20">
+        <h1 className="mt-[16px] text-[54px] font-black leading-[0.94] text-left tracking-tight">
+          <span className="text-[#38bdf8] drop-shadow-[0_0_25px_rgba(56,189,248,0.3)]">
+            GO FOR
+            <br />
+            BUSINESS
+            <br />
+            GROWTH
+          </span>
           <br />
-          BUSINESS
+          <span className="text-white font-extrabold">WITH</span>
           <br />
-          GROWTH
-          <br />
-          <span style={{ color: 'var(--onb-heading)' }} className="font-bold">WITH</span>
-          <br />
-          <span style={{ color: 'var(--onb-heading)' }} className="font-bold">PAL</span>
+          <span className="text-white font-extrabold">PAL</span>
         </h1>
-        <Mascot priority className="absolute -right-[266px] bottom-[-52px] w-[496px] max-w-none growth-mascot" />
+
+        {/* Mascot Hero with Backlight Glow */}
+        <div className="absolute -right-[240px] bottom-[-40px] z-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[#2d7fe0]/20 blur-3xl rounded-full" />
+          <Mascot priority className="w-[480px] max-w-none mascot-peek relative z-10 drop-shadow-[0_20px_60px_rgba(0,0,0,0.8)]" />
+        </div>
+      </div>
+
+      {/* Bottom Executive Action Card & CTA */}
+      <div className="relative z-30 space-y-3 shrink-0 mt-auto">
         <button
           type="button"
           onClick={onNext}
-          className="absolute bottom-[42px] left-[34px] right-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[15px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
+          className="w-full text-left rounded-[24px] bg-[#101726]/85 border border-white/12 backdrop-blur-xl p-4 text-white shadow-2xl transition-all hover:border-white/25 active:scale-[0.98] cursor-pointer"
         >
-          It&apos;s more fun and quick
-          <br />
-          when we do it together! 🚀
+          <p className="text-[15px] font-semibold leading-snug text-white">
+            It&apos;s more fun and quick when we do it together! 🚀
+          </p>
+          <p className="text-[12px] text-[#94a3b8] mt-1 font-medium">
+            Initialize your Executive AI Operating System in 30 seconds.
+          </p>
+        </button>
+
+        <button
+          type="button"
+          onClick={onNext}
+          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+        >
+          Get Started 🚀
         </button>
       </div>
     </div>
