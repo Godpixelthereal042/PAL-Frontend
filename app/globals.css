@@ -373,3 +373,105 @@ next-dev-portal,
   font-weight: 800;
 }
 
+/* ─── ONBOARDING RESPONSIVE SHELL & COMPOSITION STYLES ─── */
+.phone-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.phone {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--onb-status-color, #050505);
+  z-index: 40;
+  flex-shrink: 0;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-bars {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.progress-bars span {
+  height: 4px;
+  flex: 1;
+  border-radius: 9999px;
+  background-color: rgba(10, 67, 138, 0.2);
+  transition: all 0.3s ease;
+}
+
+.progress-bars span.active {
+  background-color: #0a438a;
+}
+
+/* Peak mascot overlays anchored strictly to 430px mobile container */
+.mascot-peek {
+  pointer-events: none;
+  user-select: none;
+}
+
+.growth-mascot {
+  position: absolute;
+  right: -220px;
+  bottom: -40px;
+  width: 440px;
+  max-width: none;
+  z-index: 10;
+}
+
+.manage-mascot {
+  position: absolute;
+  right: -210px;
+  bottom: -220px;
+  width: 520px;
+  max-width: none;
+  z-index: 0;
+}
+
+.primary-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  border-radius: 9999px;
+  background-color: #0a438a;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(10, 67, 138, 0.35);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.primary-pill:active {
+  transform: scale(0.98);
+}
+
+.pal-card-stack {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+

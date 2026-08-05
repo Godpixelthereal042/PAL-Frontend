@@ -32,6 +32,7 @@ import {
 import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/lib/supabaseClient";
 import BusinessBrainConversation from "@/components/onboarding/BusinessBrainConversation";
+import OnboardingShell from "@/components/onboarding/OnboardingShell";
 
 type Screen =
   | "growth"
@@ -171,9 +172,10 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <div className="phone-stage">
-      <section className={cn("phone")} aria-label="PAL app">
-        <StatusBar tone={isDark ? "dark" : "light"} />
+    <OnboardingShell>
+      <div className="phone-stage">
+        <section className={cn("phone")} aria-label="PAL app">
+          <StatusBar tone={isDark ? "dark" : "light"} />
 
         {screen === "growth" && (
           <GrowthIntro
@@ -305,6 +307,7 @@ export default function OnboardingScreen() {
         )}
       </section>
     </div>
+    </OnboardingShell>
   );
 }
 
