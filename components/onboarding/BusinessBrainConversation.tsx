@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Send, CheckCircle2, Calendar, Mail, MessageSquare, CreditCard, Twitter, Github, Sparkles, ArrowRight } from "lucide-react";
+import { Send, CheckCircle2, Calendar, Mail, MessageSquare, CreditCard, Twitter, Github, Sparkles, ArrowRight, Brain, Bot } from "lucide-react";
 import { palBrain } from "@/lib/brain/palBrain";
 
 interface BusinessBrainConversationProps {
@@ -85,73 +86,88 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
 
   return (
     <div className="w-full h-full flex flex-col justify-between p-5 text-left font-outfit relative">
-      {/* Top PAL Header */}
+      {/* Top PAL Executive Header */}
       <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full bg-[#0a438a] flex items-center justify-center text-white font-extrabold text-xs shadow-md">
-            PAL
+          <div className="w-9 h-9 rounded-full bg-[#0a438a] border border-[#2d7fe0]/40 flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+            <Brain size={18} className="text-[#38bdf8]" />
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-white tracking-wide">Executive AI Setup</h2>
-            <p className="text-[11px] text-zinc-400 font-medium">Building Business Brain</p>
+            <h2 className="text-sm font-extrabold text-white tracking-wide">PAL Business Brain</h2>
+            <p className="text-[11px] text-slate-400 font-medium">Conversational AI Initialization</p>
           </div>
         </div>
-        <span className="text-[10px] font-extrabold text-[#2d7fe0] bg-[#2d7fe0]/15 border border-[#2d7fe0]/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
+        <span className="text-[10px] font-extrabold text-[#38bdf8] bg-[#2d7fe0]/15 border border-[#2d7fe0]/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
           Step {step === "name" ? 1 : step === "description" ? 2 : step === "team" ? 3 : 4} of 4
         </span>
       </div>
 
-      {/* Chat Sequence Container */}
+      {/* Chat Sequence Container — Matching Main PAL Chat App Styling */}
       <div className="flex-1 overflow-y-auto scrollbar-hide py-4 space-y-4 min-h-0">
-        {/* Intro Message */}
-        <div className="bg-[#121620] border border-white/10 rounded-[24px] p-4 space-y-2 shadow-xl">
-          <p className="text-sm font-bold text-white leading-relaxed">
-            👋 Welcome <span className="text-[#2d7fe0] font-extrabold">{name}</span>!
-          </p>
-          <p className="text-xs text-zinc-300 leading-relaxed font-medium">
-            You&apos;re registered as a <strong className="text-white">{persona}</strong> in <strong className="text-white">{industry}</strong> based in <strong className="text-white">{country}</strong>.
-          </p>
-          <p className="text-xs text-zinc-400 leading-relaxed">
-            Let&apos;s initialize your <strong className="text-[#2d7fe0]">Business Brain</strong> so I can manage your projects, cashflow, and team actions.
-          </p>
+        {/* Intro Message from PAL AI */}
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-[#2d7fe0] flex items-center justify-center shrink-0 mt-0.5 text-white font-extrabold text-xs shadow-md">
+            PAL
+          </div>
+          <div className="bg-[#101726] border border-white/12 rounded-2xl rounded-tl-xs p-4 max-w-[90%] space-y-2 shadow-xl">
+            <p className="text-xs sm:text-sm font-bold text-white leading-relaxed">
+              👋 Welcome <span className="text-[#38bdf8] font-extrabold">{name}</span>! I&apos;m PAL.
+            </p>
+            <p className="text-xs text-slate-300 leading-relaxed font-medium">
+              You&apos;re registered as a <strong className="text-white">{persona}</strong> in <strong className="text-white">{industry}</strong> based in <strong className="text-white">{country}</strong>.
+            </p>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Let&apos;s build your <strong className="text-[#38bdf8]">Business Brain</strong> so I can manage your projects, cashflow, and executive tasks.
+            </p>
+          </div>
         </div>
 
-        {/* Step 1 Answer */}
+        {/* Step 1 User Answer */}
         {step !== "name" && businessName && (
           <div className="flex justify-end">
-            <div className="bg-[#0a438a] text-white rounded-[20px] rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
+            <div className="bg-[#0a438a] text-white rounded-2xl rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
               {businessName}
             </div>
           </div>
         )}
 
-        {/* Step 2 Prompt */}
+        {/* Step 2 AI Prompt */}
         {(step === "description" || step === "team" || step === "integrations" || step === "analyzing") && (
-          <div className="bg-[#121620] border border-white/10 rounded-[24px] p-4 text-xs font-semibold text-white shadow-xl">
-            What primary product or service does <span className="text-[#2d7fe0] font-bold">{businessName}</span> offer?
+          <div className="flex items-start gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-[#2d7fe0] flex items-center justify-center shrink-0 text-white font-extrabold text-xs">
+              PAL
+            </div>
+            <div className="bg-[#101726] border border-white/12 rounded-2xl rounded-tl-xs p-4 max-w-[90%] text-xs font-semibold text-white shadow-xl">
+              Awesome name! What primary product or service does <span className="text-[#38bdf8] font-bold">{businessName}</span> offer?
+            </div>
           </div>
         )}
 
-        {/* Step 2 Answer */}
+        {/* Step 2 User Answer */}
         {step !== "name" && step !== "description" && description && (
           <div className="flex justify-end">
-            <div className="bg-[#0a438a] text-white rounded-[20px] rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
+            <div className="bg-[#0a438a] text-white rounded-2xl rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
               {description}
             </div>
           </div>
         )}
 
-        {/* Step 3 Prompt */}
+        {/* Step 3 AI Prompt */}
         {(step === "team" || step === "integrations" || step === "analyzing") && (
-          <div className="bg-[#121620] border border-white/10 rounded-[24px] p-4 text-xs font-semibold text-white shadow-xl">
-            How many team members work with you at {businessName}?
+          <div className="flex items-start gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-[#2d7fe0] flex items-center justify-center shrink-0 text-white font-extrabold text-xs">
+              PAL
+            </div>
+            <div className="bg-[#101726] border border-white/12 rounded-2xl rounded-tl-xs p-4 max-w-[90%] text-xs font-semibold text-white shadow-xl">
+              How many team members work with you at {businessName}?
+            </div>
           </div>
         )}
 
-        {/* Step 3 Answer */}
+        {/* Step 3 User Answer */}
         {step !== "name" && step !== "description" && step !== "team" && teamSize && (
           <div className="flex justify-end">
-            <div className="bg-[#0a438a] text-white rounded-[20px] rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
+            <div className="bg-[#0a438a] text-white rounded-2xl rounded-tr-xs px-4 py-2.5 text-xs font-bold shadow-md">
               {teamSize}
             </div>
           </div>
@@ -159,55 +175,60 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
 
         {/* Step 4: Integrations Prompt */}
         {(step === "integrations" || step === "analyzing") && (
-          <div className="bg-[#121620] border border-white/10 rounded-[24px] p-4 space-y-3 shadow-xl">
-            <p className="text-xs font-bold text-white">
-              Connect operational tools to give PAL executive sight:
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { name: "Google Calendar", icon: Calendar, color: "text-blue-400" },
-                { name: "Gmail", icon: Mail, color: "text-red-400" },
-                { name: "Slack", icon: MessageSquare, color: "text-emerald-400" },
-                { name: "Stripe", icon: CreditCard, color: "text-[#2d7fe0]" },
-                { name: "X (Twitter)", icon: Twitter, color: "text-cyan-400" },
-                { name: "GitHub", icon: Github, color: "text-zinc-300" }
-              ].map(({ name: sName, icon: SIcon, color }) => {
-                const isConnected = connectedServices.includes(sName);
-                return (
-                  <button
-                    key={sName}
-                    type="button"
-                    onClick={() => toggleIntegration(sName)}
-                    className={`p-2.5 rounded-xl border flex items-center justify-between text-left transition-all cursor-pointer ${
-                      isConnected
-                        ? "bg-[#0a438a]/30 border-[#2d7fe0] text-white"
-                        : "bg-black/30 border-white/10 text-zinc-300 hover:border-white/20"
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <SIcon size={14} className={color} />
-                      <span className="text-[11px] font-bold truncate">{sName}</span>
-                    </div>
-                    {isConnected ? (
-                      <CheckCircle2 size={14} className="text-[#2d7fe0] shrink-0" />
-                    ) : (
-                      <span className="text-[10px] text-zinc-500 font-bold shrink-0">+</span>
-                    )}
-                  </button>
-                );
-              })}
+          <div className="flex items-start gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-[#2d7fe0] flex items-center justify-center shrink-0 text-white font-extrabold text-xs">
+              PAL
+            </div>
+            <div className="bg-[#101726] border border-white/12 rounded-2xl rounded-tl-xs p-4 max-w-[90%] space-y-3 shadow-xl">
+              <p className="text-xs font-bold text-white">
+                Connect operational tools to give PAL executive sight:
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { name: "Google Calendar", icon: Calendar, color: "text-blue-400" },
+                  { name: "Gmail", icon: Mail, color: "text-red-400" },
+                  { name: "Slack", icon: MessageSquare, color: "text-emerald-400" },
+                  { name: "Stripe", icon: CreditCard, color: "text-[#2d7fe0]" },
+                  { name: "X (Twitter)", icon: Twitter, color: "text-cyan-400" },
+                  { name: "GitHub", icon: Github, color: "text-slate-300" }
+                ].map(({ name: sName, icon: SIcon, color }) => {
+                  const isConnected = connectedServices.includes(sName);
+                  return (
+                    <button
+                      key={sName}
+                      type="button"
+                      onClick={() => toggleIntegration(sName)}
+                      className={`p-2.5 rounded-xl border flex items-center justify-between text-left transition-all cursor-pointer ${
+                        isConnected
+                          ? "bg-[#2d7fe0]/25 border-[#2d7fe0] text-white"
+                          : "bg-black/40 border-white/10 text-slate-300 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <SIcon size={14} className={color} />
+                        <span className="text-[11px] font-bold truncate">{sName}</span>
+                      </div>
+                      {isConnected ? (
+                        <CheckCircle2 size={14} className="text-[#38bdf8] shrink-0" />
+                      ) : (
+                        <span className="text-[10px] text-slate-500 font-bold shrink-0">+</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
         {/* Step 5: Analyzing State */}
         {step === "analyzing" && (
-          <div className="bg-[#121620] border border-[#2d7fe0]/40 rounded-[24px] p-6 text-center space-y-3 shadow-2xl">
+          <div className="bg-[#101726] border border-[#2d7fe0]/50 rounded-2xl p-6 text-center space-y-3 shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-[#2d7fe0]/20 border border-[#2d7fe0] mx-auto flex items-center justify-center">
-              <Sparkles size={24} className="text-[#2d7fe0] animate-spin" />
+              <Sparkles size={24} className="text-[#38bdf8] animate-spin" />
             </div>
             <h3 className="text-sm font-extrabold text-white">Initializing Business Brain...</h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-slate-400">
               Ingesting context for <strong className="text-white">{businessName}</strong> $\rightarrow$ Generating Executive Dashboard
             </p>
           </div>
@@ -217,7 +238,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
       {/* Input Controls */}
       {step === "name" && (
         <div className="pt-3 border-t border-white/10 shrink-0">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block mb-1">
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">
             What is your business or project called?
           </label>
           <div className="flex gap-2">
@@ -227,14 +248,14 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleNextStep()}
               placeholder="e.g. Acme Corp"
-              className="flex-1 h-12 bg-[#121620] border border-white/10 rounded-xl px-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0]"
+              className="flex-1 h-11 bg-[#060911] border border-white/15 rounded-xl px-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
               autoFocus
             />
             <button
               type="button"
               onClick={handleNextStep}
               disabled={!inputText.trim()}
-              className="h-12 px-5 rounded-xl bg-[#0a438a] hover:bg-[#2563eb] text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer flex items-center justify-center"
+              className="h-11 px-4 rounded-xl bg-[#0a438a] hover:bg-[#2d7fe0] text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer flex items-center justify-center"
             >
               <Send size={16} />
             </button>
@@ -244,7 +265,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
 
       {step === "description" && (
         <div className="pt-3 border-t border-white/10 shrink-0">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block mb-1">
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">
             What do you do or sell?
           </label>
           <div className="flex gap-2">
@@ -254,14 +275,14 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleNextStep()}
               placeholder="e.g. B2B SaaS for marketing teams"
-              className="flex-1 h-12 bg-[#121620] border border-white/10 rounded-xl px-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0]"
+              className="flex-1 h-11 bg-[#060911] border border-white/15 rounded-xl px-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
               autoFocus
             />
             <button
               type="button"
               onClick={handleNextStep}
               disabled={!inputText.trim()}
-              className="h-12 px-5 rounded-xl bg-[#0a438a] hover:bg-[#2563eb] text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer flex items-center justify-center"
+              className="h-11 px-4 rounded-xl bg-[#0a438a] hover:bg-[#2d7fe0] text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer flex items-center justify-center"
             >
               <Send size={16} />
             </button>
@@ -271,7 +292,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
 
       {step === "team" && (
         <div className="pt-3 border-t border-white/10 shrink-0 space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
             Select Team Size
           </span>
           <div className="grid grid-cols-2 gap-2">
@@ -280,7 +301,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
                 key={size}
                 type="button"
                 onClick={() => handleSelectTeam(size)}
-                className="h-11 rounded-xl bg-[#121620] border border-white/10 hover:border-[#2d7fe0] text-xs font-bold text-white transition-all cursor-pointer flex items-center justify-center"
+                className="h-11 rounded-xl bg-[#060911] border border-white/15 hover:border-[#2d7fe0] text-xs font-bold text-white transition-all cursor-pointer flex items-center justify-center"
               >
                 {size}
               </button>
@@ -294,7 +315,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
           <button
             type="button"
             onClick={handleFinishBusinessBrain}
-            className="w-full h-12 rounded-full bg-[#0a438a] hover:bg-[#2563eb] text-white text-xs font-extrabold tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+            className="w-full h-12 rounded-full bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] hover:brightness-110 text-white text-xs font-extrabold tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-98"
           >
             <span>Complete Setup &amp; Build Brain</span>
             <ArrowRight size={16} />

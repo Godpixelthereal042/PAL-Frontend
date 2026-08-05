@@ -1,24 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, ReactNode, FormEvent, TouchEvent } from "react";
+import React, { useState, useEffect, useMemo, FormEvent, TouchEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   BriefcaseBusiness,
   Check,
-  ChevronDown,
+  CheckCircle2,
   CircleDollarSign,
   Eye,
   EyeOff,
   Home,
-  Lightbulb,
-  Moon,
+  Rocket,
   Search,
   Sparkles,
-  Sun,
-  Zap,
-  Building2,
   Stethoscope,
   GraduationCap,
   Hammer,
@@ -27,10 +23,13 @@ import {
   Truck,
   Utensils,
   Film,
-  Scale
+  Scale,
+  Building2,
+  Brain,
+  ShieldCheck,
+  Zap
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
-import { supabase } from "@/lib/supabaseClient";
 import BusinessBrainConversation from "@/components/onboarding/BusinessBrainConversation";
 import OnboardingShell from "@/components/onboarding/OnboardingShell";
 
@@ -55,28 +54,32 @@ function cn(...classes: Array<string | false | null | undefined>) {
 
 const personaOptions = [
   {
-    icon: "🚀",
+    icon: Rocket,
     title: "Startup",
     description: "Building something new with a team.",
-    value: "Startup"
+    value: "Startup",
+    color: "text-[#38bdf8]"
   },
   {
-    icon: "🎨",
+    icon: Sparkles,
     title: "Freelancer",
     description: "Managing clients and personal work.",
-    value: "Freelancer"
+    value: "Freelancer",
+    color: "text-[#2d7fe0]"
   },
   {
-    icon: "🏪",
+    icon: Building2,
     title: "Business Owner",
     description: "Running an existing business or company.",
-    value: "Business Owner"
+    value: "Business Owner",
+    color: "text-[#60a5fa]"
   },
   {
-    icon: "🧩",
+    icon: BriefcaseBusiness,
     title: "Other",
     description: "Tell PAL about your custom setup.",
-    value: "Other"
+    value: "Other",
+    color: "text-[#a855f7]"
   }
 ];
 
@@ -127,7 +130,6 @@ const languages = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
   const [screen, setScreenState] = useState<Screen>("growth");
   
   // User Data State
@@ -142,7 +144,6 @@ export default function OnboardingScreen() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const setScreen = (nextScreen: Screen) => {
     setScreenState(nextScreen);
@@ -173,7 +174,7 @@ export default function OnboardingScreen() {
     <OnboardingShell>
       <div className="phone-stage">
         <section className="phone" aria-label="PAL app">
-          <StatusBar tone="dark" />
+          <StatusBar />
 
           {screen === "growth" && (
             <GrowthIntro
@@ -244,8 +245,6 @@ export default function OnboardingScreen() {
                 setEmail={setEmail}
                 password={password}
                 setPassword={setPassword}
-                confirmPassword={confirmPassword}
-                setConfirmPassword={setConfirmPassword}
                 persona={persona}
                 industry={industry}
                 country={country}
@@ -305,7 +304,7 @@ export default function OnboardingScreen() {
 
 // ---------------- Helper Components ----------------
 
-function StatusBar({ tone }: { tone: Tone }) {
+function StatusBar() {
   return (
     <div className="status-bar text-white px-6 pt-3 pb-2 flex justify-between items-center z-40 shrink-0">
       <span className="font-bold text-xs">9:41</span>
@@ -319,13 +318,15 @@ function StatusBar({ tone }: { tone: Tone }) {
 
 function ProgressBars({ active }: { active: number }) {
   return (
-    <div className="progress-bars flex gap-1.5 w-full" aria-hidden="true">
+    <div className="progress-bars flex gap-2 w-full items-center" aria-hidden="true">
       {[0, 1, 2].map((index) => (
         <span 
           key={index} 
           className={cn(
-            "h-1 flex-1 rounded-full transition-all duration-300",
-            index === active ? "bg-[#2d7fe0] shadow-[0_0_10px_rgba(45,127,224,0.6)]" : "bg-white/20"
+            "h-1.5 flex-1 rounded-full transition-all duration-300",
+            index === active 
+              ? "bg-[#38bdf8] shadow-[0_0_12px_rgba(56,189,248,0.8)]" 
+              : "bg-white/30"
           )} 
         />
       ))}
@@ -335,14 +336,14 @@ function ProgressBars({ active }: { active: number }) {
 
 function BrandLogo({ className }: { className?: string }) {
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative flex items-center gap-2", className)}>
       <Image
         src="/assets/pal-logo.png"
-        alt="PAL"
-        width={170}
-        height={80}
+        alt="PAL Logo"
+        width={140}
+        height={60}
         priority
-        className="h-auto w-full filter drop-shadow-[0_0_12px_rgba(45,127,224,0.4)]"
+        className="h-auto w-auto max-w-[140px] filter drop-shadow-[0_0_12px_rgba(45,127,224,0.4)]"
       />
     </div>
   );
@@ -350,20 +351,20 @@ function BrandLogo({ className }: { className?: string }) {
 
 function Mascot({ className, priority = false }: { className?: string; priority?: boolean }) {
   return (
-    <div className={cn("pointer-events-none select-none mascot-peek", className)}>
+    <div className={cn("pointer-events-none select-none", className)}>
       <Image
         src="/assets/pal-mascot.png"
-        alt="Mascot"
-        width={691}
-        height={642}
+        alt="PAL Mascot"
+        width={480}
+        height={450}
         priority={priority}
-        className="w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+        className="w-full h-auto object-contain drop-shadow-[0_15px_35px_rgba(0,0,0,0.7)]"
       />
     </div>
   );
 }
 
-// ── 1. Welcome Intro Slides with Recomposed Mascot Breathing Room ─────────
+// ── 1. Welcome Intro Slides with Mobile-First Responsive Layouts ─────────
 
 function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -380,7 +381,7 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
     <div
       onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
       onTouchEnd={handleTouchEnd}
-      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]"
+      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6"
     >
       {/* Top Header Controls */}
       <div className="flex justify-between items-center z-30 relative shrink-0">
@@ -388,32 +389,33 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
         <button
           type="button"
           onClick={onSkip}
-          className="text-xs font-bold text-slate-300 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 hover:text-white transition-all ml-4"
+          className="text-xs font-bold text-slate-200 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 transition-all ml-4"
         >
           Skip
         </button>
       </div>
 
-      {/* Main Hero Content - Unblocked Headline & Recomposed Mascot */}
-      <div className="min-h-[420px] w-full flex-1 relative flex flex-col pt-4 z-20">
-        <h1 className="mt-[12px] text-[50px] font-black leading-[0.94] text-left tracking-tight">
-          <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">
-            GO FOR
-            <br />
-            BUSINESS
-            <br />
-            GROWTH
-          </span>
-          <br />
-          <span className="text-white font-extrabold">WITH</span>
-          <br />
-          <span className="text-white font-extrabold">PAL</span>
-        </h1>
+      {/* Main Hero Content - Headlines & Mascot (Safe Relative Flow, NO Overlaps!) */}
+      <div className="flex-1 flex flex-col justify-between py-4 z-20">
+        <div className="space-y-1 text-left z-20">
+          <h1 className="text-[42px] sm:text-[46px] font-black leading-[0.94] tracking-tight">
+            <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+              GO FOR
+              <br />
+              BUSINESS
+              <br />
+              GROWTH
+            </span>
+          </h1>
+          <h2 className="text-[38px] sm:text-[42px] font-extrabold text-white leading-none">
+            WITH PAL
+          </h2>
+        </div>
 
-        {/* Mascot Hero Positioned on Right Side with Breathing Room */}
-        <div className="absolute -right-[180px] bottom-[-20px] z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-[#2d7fe0]/20 blur-3xl rounded-full" />
-          <Mascot priority className="w-[420px] max-w-none mascot-peek relative z-10" />
+        {/* Mascot Hero - Contained Responsively on Right/Bottom without Clipping */}
+        <div className="relative w-full flex justify-end items-center my-2 pointer-events-none">
+          <div className="absolute right-4 w-48 h-48 bg-[#2d7fe0]/25 blur-3xl rounded-full z-0" />
+          <Mascot priority className="w-[180px] sm:w-[210px] relative z-10" />
         </div>
       </div>
 
@@ -422,12 +424,12 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
         <button
           type="button"
           onClick={onNext}
-          className="w-full text-left rounded-[24px] bg-[#101726]/85 border border-white/12 backdrop-blur-xl p-4 text-white shadow-2xl transition-all hover:border-white/25 active:scale-[0.98] cursor-pointer"
+          className="w-full text-left rounded-[22px] bg-[#101726]/90 border border-white/12 backdrop-blur-xl p-4 text-white shadow-2xl transition-all hover:border-white/25 active:scale-[0.98] cursor-pointer"
         >
-          <p className="text-[14px] font-semibold leading-snug text-white">
+          <p className="text-xs sm:text-sm font-semibold leading-snug text-white">
             It&apos;s more fun and quick when we do it together! 🚀
           </p>
-          <p className="text-[12px] text-[#94a3b8] mt-1 font-medium">
+          <p className="text-[11px] text-[#94a3b8] mt-0.5 font-medium">
             Initialize your Executive AI Operating System in 30 seconds.
           </p>
         </button>
@@ -435,7 +437,7 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
         <button
           type="button"
           onClick={onNext}
-          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+          className="primary-pill w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
         >
           Get Started 🚀
         </button>
@@ -461,7 +463,7 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
     <div
       onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
       onTouchEnd={handleTouchEnd}
-      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]"
+      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6"
     >
       <div className="flex justify-between items-center z-30 relative shrink-0">
         <button
@@ -475,26 +477,28 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
         <button
           type="button"
           onClick={onSkip}
-          className="text-xs font-bold text-slate-300 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 hover:text-white transition-all ml-4"
+          className="text-xs font-bold text-slate-200 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 transition-all ml-4"
         >
           Skip
         </button>
       </div>
 
-      <div className="min-h-[420px] w-full flex-1 relative flex flex-col pt-4 z-20 text-left">
-        <BrandLogo className="mt-2 h-auto w-[150px]" />
-        <h1 className="mt-4 text-[48px] font-black leading-[0.96] text-left tracking-tight">
-          <span className="text-white">Tracks</span>
-          <br />
-          <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">Manage &amp; Grow</span>
-          <br />
-          <span className="text-white font-extrabold">All In One Place.</span>
-        </h1>
+      <div className="flex-1 flex flex-col justify-between py-4 z-20 text-left">
+        <div>
+          <BrandLogo className="mt-1" />
+          <h1 className="mt-3 text-[38px] sm:text-[42px] font-black leading-[0.96] tracking-tight">
+            <span className="text-white">Tracks,</span>
+            <br />
+            <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">Manage &amp; Grow</span>
+            <br />
+            <span className="text-white font-extrabold">All In One Place.</span>
+          </h1>
+        </div>
 
-        {/* Mascot Standing Proudly on Right */}
-        <div className="absolute -right-[150px] bottom-[-30px] z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-[#2d7fe0]/20 blur-3xl rounded-full" />
-          <Mascot priority className="w-[440px] max-w-none mascot-peek relative z-10" />
+        {/* Mascot Positioned Responsively */}
+        <div className="relative w-full flex justify-end items-center my-2 pointer-events-none">
+          <div className="absolute right-4 w-48 h-48 bg-[#2d7fe0]/25 blur-3xl rounded-full z-0" />
+          <Mascot priority className="w-[180px] sm:w-[210px] relative z-10" />
         </div>
       </div>
 
@@ -502,7 +506,7 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
         <button
           type="button"
           onClick={onNext}
-          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+          className="primary-pill w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
         >
           Continue 🚀
         </button>
@@ -513,7 +517,7 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
 
 function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6">
       <div className="flex justify-between items-center z-30 relative shrink-0">
         <button
           type="button"
@@ -526,26 +530,40 @@ function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => v
         <div className="w-8" />
       </div>
 
-      <div className="min-h-[440px] w-full flex-1 relative flex flex-col justify-center pt-2 z-20">
-        <div className="relative rounded-[30px] bg-[#101726]/90 border border-white/12 backdrop-blur-xl p-6 shadow-2xl text-left space-y-4">
-          <h2 className="text-xl font-extrabold text-white">Why Founders Choose PAL</h2>
-          <ul className="space-y-3 text-[13px] leading-relaxed text-slate-300">
+      {/* Rich Executive Value Proposition Card Filling Vertical Rhythm */}
+      <div className="flex-1 flex flex-col justify-center py-3 z-20">
+        <div className="relative rounded-[26px] bg-[#101726]/90 border border-white/12 backdrop-blur-xl p-5 shadow-2xl text-left space-y-3.5">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-2.5">
+            <Sparkles size={18} className="text-[#38bdf8]" />
+            <h2 className="text-base font-extrabold text-white">Why Founders Choose PAL</h2>
+          </div>
+          
+          <ul className="space-y-3 text-xs leading-relaxed text-slate-300">
             <li className="flex items-start gap-2.5">
-              <span className="text-[#38bdf8] font-bold text-base">✓</span>
-              <span><strong className="text-white">Log sales, expenses &amp; tasks</strong> effortlessly. PAL remembers everything.</span>
+              <span className="text-[#38bdf8] font-bold text-sm shrink-0">✓</span>
+              <span><strong className="text-white">Log sales, expenses &amp; tasks</strong> with zero manual friction.</span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="text-[#38bdf8] font-bold text-base">✓</span>
-              <span><strong className="text-white">Daily Executive Insights</strong> on cashflow, profit &amp; sprint progress.</span>
+              <span className="text-[#38bdf8] font-bold text-sm shrink-0">✓</span>
+              <span><strong className="text-white">Daily Executive Briefings</strong> summarizing net profit, runway &amp; sprint progress.</span>
             </li>
             <li className="flex items-start gap-2.5">
-              <span className="text-[#38bdf8] font-bold text-base">✓</span>
-              <span><strong className="text-white">Adapts to your workflow</strong> — Tech, Retail, Freelance, or Services.</span>
+              <span className="text-[#38bdf8] font-bold text-sm shrink-0">✓</span>
+              <span><strong className="text-white">Automated Workflow Routing</strong> across Calendar, Slack &amp; GitHub.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-[#38bdf8] font-bold text-sm shrink-0">✓</span>
+              <span><strong className="text-white">Smart Financial Tracking</strong> with instant multi-currency invoices.</span>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="text-[#38bdf8] font-bold text-sm shrink-0">✓</span>
+              <span><strong className="text-white">Adapts to your role</strong> — Startup, Freelance, Agency, or Enterprise.</span>
             </li>
           </ul>
 
-          <div className="pt-2 border-t border-white/10 text-xs font-semibold text-[#38bdf8]">
-            PAL is ready to build your Business Brain. Let&apos;s go 🚀
+          <div className="pt-2 border-t border-white/10 text-[11px] font-semibold text-[#38bdf8] flex items-center justify-between">
+            <span>PAL Executive Brain Ready</span>
+            <span>Let&apos;s go 🚀</span>
           </div>
         </div>
       </div>
@@ -554,7 +572,7 @@ function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => v
         <button
           type="button"
           onClick={onNext}
-          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+          className="primary-pill w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
         >
           Let&apos;s Go 🚀
         </button>
@@ -563,7 +581,7 @@ function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => v
   );
 }
 
-// ── 2. Rich Persona Cards in Dark Executive Glass ──────────────────────────
+// ── 2. Rich Persona Cards with Lucide Brand Icons ─────────────────────────
 
 function PersonaScreen({
   value,
@@ -577,7 +595,7 @@ function PersonaScreen({
   onBack: () => void;
 }) {
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6">
       <div className="flex flex-col text-left">
         <div className="flex items-center gap-3 mb-2">
           <button
@@ -587,15 +605,16 @@ function PersonaScreen({
           >
             <ArrowLeft size={16} />
           </button>
-          <p className="text-sm font-semibold text-[#38bdf8]">Welcome to PAL</p>
+          <p className="text-xs font-semibold text-[#38bdf8]">Welcome to PAL</p>
         </div>
         
-        <h1 className="text-[28px] font-extrabold leading-tight text-white">
+        <h1 className="text-2xl font-extrabold leading-tight text-white">
           Tell us who you are?
         </h1>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-4 space-y-2.5">
           {personaOptions.map((opt) => {
+            const Icon = opt.icon;
             const isSelected = value === opt.value;
             return (
               <button
@@ -603,15 +622,17 @@ function PersonaScreen({
                 type="button"
                 onClick={() => onChange(opt.value)}
                 className={cn(
-                  "w-full rounded-[22px] p-4 text-left transition-all cursor-pointer border flex items-center gap-3.5 backdrop-blur-xl",
+                  "w-full rounded-2xl p-3.5 text-left transition-all cursor-pointer border flex items-center gap-3.5 backdrop-blur-xl",
                   isSelected
                     ? "bg-[#2d7fe0]/20 border-[#2d7fe0] text-white shadow-[0_0_25px_rgba(45,127,224,0.35)] scale-[1.01]"
                     : "bg-[#101726]/80 border-white/10 text-slate-300 hover:border-white/25 hover:bg-[#101726]"
                 )}
               >
-                <span className="text-2xl shrink-0 p-2.5 rounded-xl bg-white/10">{opt.icon}</span>
+                <div className={cn("p-2.5 rounded-xl bg-white/10 shrink-0", opt.color)}>
+                  <Icon size={20} />
+                </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white leading-tight">
+                  <h3 className="text-xs font-bold text-white leading-tight">
                     {opt.title}
                   </h3>
                   <p className="text-[11px] leading-snug mt-0.5 text-slate-400 font-medium">
@@ -628,7 +649,7 @@ function PersonaScreen({
         type="button" 
         onClick={onNext} 
         disabled={!value}
-        className="primary-pill mt-6 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+        className="primary-pill mt-4 w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
       >
         Next
       </button>
@@ -636,7 +657,7 @@ function PersonaScreen({
   );
 }
 
-// ── 3. Searchable Industry Selection in Executive Dark ─────────────────────
+// ── 3. Searchable Industry Selection Extending Full Vertical Height ────────
 
 function IndustryScreen({
   value,
@@ -659,9 +680,9 @@ function IndustryScreen({
   );
 
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
-      <div className="flex flex-col text-left">
-        <div className="flex items-center gap-3 mb-1">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6">
+      <div className="flex flex-col text-left flex-1 min-h-0">
+        <div className="flex items-center gap-3 mb-1 shrink-0">
           <button
             type="button"
             onClick={onBack}
@@ -669,28 +690,29 @@ function IndustryScreen({
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-tight text-white">
+          <h1 className="text-2xl font-extrabold leading-tight text-white">
             Choose Industry
           </h1>
         </div>
 
-        <p className="mt-1 text-xs text-slate-400 font-medium">
+        <p className="mt-0.5 text-xs text-slate-400 font-medium shrink-0">
           Select your primary business sector below.
         </p>
 
         {/* Search Bar */}
-        <div className="relative mt-3 mb-2">
+        <div className="relative mt-2.5 mb-2 shrink-0">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchQuery(e.target.value)}
             placeholder="Search Industry..."
-            className="w-full h-11 bg-[#060911] border border-white/15 rounded-xl pl-9 pr-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
+            className="w-full h-10 bg-[#060911] border border-white/15 rounded-xl pl-9 pr-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
           />
         </div>
 
-        <div className="mt-1 grid grid-cols-2 gap-2.5 w-full max-h-[310px] overflow-y-auto pr-1 scrollbar-hide">
+        {/* Grid Container Filling Vertical Height down to Button */}
+        <div className="mt-1 flex-1 grid grid-cols-2 gap-2.5 w-full overflow-y-auto pr-1 scrollbar-hide min-h-0">
           {filteredIndustries.map(({ icon: Icon, label }) => {
             const isSelected = value === label;
             return (
@@ -699,7 +721,7 @@ function IndustryScreen({
                 type="button"
                 onClick={() => onChange(label)}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1.5 rounded-[18px] border p-3 text-center text-xs font-bold transition-all cursor-pointer min-h-[85px] backdrop-blur-xl",
+                  "flex flex-col items-center justify-center gap-1.5 rounded-2xl border p-3 text-center text-xs font-bold transition-all cursor-pointer min-h-[85px] backdrop-blur-xl",
                   isSelected
                     ? "bg-[#2d7fe0] text-white border-[#2d7fe0] shadow-[0_0_20px_rgba(45,127,224,0.4)]"
                     : "bg-[#101726]/80 text-slate-200 border-white/10 hover:border-white/25 hover:bg-[#101726]"
@@ -721,7 +743,7 @@ function IndustryScreen({
         type="button" 
         onClick={onNext} 
         disabled={!value}
-        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+        className="primary-pill mt-3 w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all shrink-0"
       >
         Next
       </button>
@@ -729,7 +751,7 @@ function IndustryScreen({
   );
 }
 
-// ── 4. Country & Language Screen in Executive Dark Glass (NO WHITE PANELS) ──
+// ── 4. Country & Language Screen in Executive Dark Glass ─────────────────
 
 function CountryScreen({
   selected,
@@ -752,9 +774,9 @@ function CountryScreen({
   );
 
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
-      <div className="flex flex-col text-left">
-        <div className="flex items-center gap-3 mb-1">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6">
+      <div className="flex flex-col text-left flex-1 min-h-0">
+        <div className="flex items-center gap-3 mb-1 shrink-0">
           <button
             type="button"
             onClick={onBack}
@@ -762,17 +784,17 @@ function CountryScreen({
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-tight text-white">
+          <h1 className="text-2xl font-extrabold leading-tight text-white">
             Choose Country
           </h1>
         </div>
 
-        <p className="mt-1 text-xs text-slate-400 font-medium">
+        <p className="mt-0.5 text-xs text-slate-400 font-medium shrink-0">
           Select your primary business country.
         </p>
 
         {/* Executive Dark Glass Container */}
-        <section className="mt-4 h-[330px] overflow-hidden rounded-[26px] p-4 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col">
+        <section className="mt-3 flex-1 overflow-hidden rounded-[24px] p-3.5 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col min-h-0">
           <label className="relative block w-full shrink-0">
             <input
               value={query}
@@ -783,7 +805,7 @@ function CountryScreen({
             <Search className="absolute right-3.5 top-3 text-slate-400" size={16} />
           </label>
 
-          <div className="mt-3 flex-1 overflow-y-auto pr-1 scrollbar-hide space-y-1">
+          <div className="mt-2.5 flex-1 overflow-y-auto pr-1 scrollbar-hide space-y-1">
             {filtered.map(([flag, name]) => (
               <button
                 key={name}
@@ -811,7 +833,7 @@ function CountryScreen({
         type="button" 
         onClick={onNext} 
         disabled={!selected}
-        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+        className="primary-pill mt-3 w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all shrink-0"
       >
         Next
       </button>
@@ -831,9 +853,9 @@ function LanguageScreen({
   onBack: () => void;
 }) {
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
-      <div className="flex flex-col text-left">
-        <div className="flex items-center gap-3 mb-1">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6">
+      <div className="flex flex-col text-left flex-1 min-h-0">
+        <div className="flex items-center gap-3 mb-1 shrink-0">
           <button
             type="button"
             onClick={onBack}
@@ -841,16 +863,16 @@ function LanguageScreen({
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-tight text-white">
+          <h1 className="text-2xl font-extrabold leading-tight text-white">
             Choose Language
           </h1>
         </div>
 
-        <p className="mt-1 text-xs text-slate-400 font-medium">
+        <p className="mt-0.5 text-xs text-slate-400 font-medium shrink-0">
           Select your preferred language for PAL.
         </p>
 
-        <section className="mt-4 h-[330px] overflow-hidden rounded-[26px] p-4 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col">
+        <section className="mt-3 flex-1 overflow-hidden rounded-[24px] p-3.5 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto pr-1 scrollbar-hide space-y-1">
             {languages.map(([flag, name]) => (
               <button
@@ -858,7 +880,7 @@ function LanguageScreen({
                 type="button"
                 onClick={() => onSelect(name)}
                 className={cn(
-                  "flex h-12 w-full items-center justify-between rounded-xl text-xs font-semibold cursor-pointer px-3 transition-colors",
+                  "flex h-11 w-full items-center justify-between rounded-xl text-xs font-semibold cursor-pointer px-3 transition-colors",
                   selected === name 
                     ? "bg-[#2d7fe0]/20 text-[#38bdf8] border border-[#2d7fe0]/40 font-bold" 
                     : "text-slate-300 hover:bg-white/5"
@@ -879,7 +901,7 @@ function LanguageScreen({
         type="button" 
         onClick={onNext} 
         disabled={!selected}
-        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+        className="primary-pill mt-3 w-full h-12 text-sm font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all shrink-0"
       >
         Next
       </button>
@@ -896,8 +918,6 @@ interface SignupScreenProps {
   setEmail: (v: string) => void;
   password: string;
   setPassword: (v: string) => void;
-  confirmPassword: string;
-  setConfirmPassword: (v: string) => void;
   persona: string;
   industry: string;
   country: string;
@@ -936,10 +956,10 @@ function SignupScreen({
   };
 
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[20px] pb-[30px] text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6 text-left">
       <div>
-        <h1 className="text-[32px] font-extrabold leading-none text-white">Create Account</h1>
-        <p className="mt-2 text-xs text-slate-400">Initialize your PAL executive profile.</p>
+        <h1 className="text-2xl font-extrabold leading-none text-white">Create Account</h1>
+        <p className="mt-1.5 text-xs text-slate-400">Initialize your PAL executive profile.</p>
 
         <form onSubmit={handleRegister} className="mt-4 space-y-3">
           <AuthField label="Full Name" placeholder="Emmanuel" value={fullName} onChange={setFullName} />
@@ -995,10 +1015,10 @@ function LoginScreen({
   };
 
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[20px] pb-[30px] text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-6 pt-4 pb-6 text-left">
       <div>
-        <h1 className="text-[32px] font-extrabold leading-none text-white">Welcome Back</h1>
-        <p className="mt-2 text-xs text-slate-400">Sign in to your PAL Business Brain.</p>
+        <h1 className="text-2xl font-extrabold leading-none text-white">Welcome Back</h1>
+        <p className="mt-1.5 text-xs text-slate-400">Sign in to your PAL Business Brain.</p>
 
         <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
           <AuthField label="Email" placeholder="founder@company.com" type="email" value={email} onChange={setEmail} />
@@ -1139,11 +1159,11 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
   }, [code]);
 
   return (
-    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide text-left px-[24px] pt-[20px] pb-[24px]">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide text-left px-6 pt-4 pb-6">
       <div className="w-full flex-1 flex flex-col justify-between">
-        <section className="rounded-[30px] p-6 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl text-white">
+        <section className="rounded-[26px] p-5 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl text-white">
           <h1 className="text-xl font-extrabold text-white">Enter Verification Code</h1>
-          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+          <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
             Activation code sent to <strong className="text-[#38bdf8]">{email || "your email"}</strong>
           </p>
 
@@ -1154,7 +1174,7 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
                 type="button"
                 onClick={() => pressDigit("1")}
                 className={cn(
-                  "grid h-13 w-11 place-items-center rounded-xl border text-xl font-extrabold cursor-pointer transition-all outline-none",
+                  "grid h-12 w-11 place-items-center rounded-xl border text-xl font-extrabold cursor-pointer transition-all outline-none",
                   error 
                     ? "border-red-500 text-red-400 bg-red-950/40" 
                     : (index === code.length && !success)
@@ -1169,13 +1189,13 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
             ))}
           </div>
 
-          <p className="mt-4 text-center text-xs text-slate-400">
+          <p className="mt-3 text-center text-xs text-slate-400">
             Resend code in <strong className="text-[#38bdf8] font-mono">{timeLeft}s</strong>
           </p>
         </section>
 
         {/* Custom Number Pad */}
-        <div className="py-4 grid grid-cols-3 gap-2 max-w-[300px] mx-auto w-full">
+        <div className="py-4 grid grid-cols-3 gap-2 max-w-[290px] mx-auto w-full">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"].map((k, idx) => (
             <button
               key={idx}
@@ -1191,7 +1211,7 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
           ))}
         </div>
 
-        {/* Animated Executive Success Modal */}
+        {/* Animated Executive Success Modal with Official PAL Branding */}
         {success && <SuccessModal onNext={onNext} />}
       </div>
     </div>
@@ -1200,30 +1220,34 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
 
 function SuccessModal({ onNext }: { onNext: () => void }) {
   return (
-    <div className="absolute inset-0 z-50 bg-[#060911]/90 backdrop-blur-md flex items-end animate-in fade-in duration-300">
-      <div className="w-full rounded-t-[32px] bg-[#101726] border-t border-white/20 p-6 text-center text-white shadow-2xl space-y-4">
-        <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#2d7fe0]/20 border border-[#2d7fe0] animate-bounce">
-          <span className="text-4xl leading-none">🎉</span>
+    <div className="absolute inset-0 z-50 bg-[#060911]/92 backdrop-blur-md flex items-center justify-center p-5 animate-in fade-in duration-300">
+      <div className="w-full rounded-[28px] bg-[#101726] border border-white/20 p-6 text-center text-white shadow-2xl space-y-4">
+        <BrandLogo className="w-36 mx-auto justify-center mb-1" />
+        
+        <div className="relative w-20 h-20 mx-auto">
+          <div className="absolute inset-0 bg-[#2d7fe0]/30 rounded-full blur-xl animate-pulse" />
+          <Mascot priority className="w-20 h-20 relative z-10 mx-auto" />
         </div>
+
         <div className="space-y-1">
           <h2 className="text-xl font-extrabold text-white">
-            Congrats! You&apos;re All Set Up.
+            Verification Complete!
           </h2>
           <p className="text-xs text-slate-300 leading-relaxed max-w-[280px] mx-auto">
-            Your <strong className="text-[#38bdf8]">PAL Executive Assistant</strong> is ready to build your Business Brain! 💪
+            Your <strong className="text-[#38bdf8]">PAL Executive Brain</strong> is ready to configure your business workspace.
           </p>
         </div>
 
-        {/* Dashboard Preview Badge */}
+        {/* Executive Brain Online Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#2d7fe0]/15 border border-[#2d7fe0]/30 text-[11px] font-bold text-[#38bdf8]">
-          <Sparkles size={14} className="animate-spin" />
-          <span>Executive Brain Online • Syncing Projects</span>
+          <Brain size={14} className="animate-pulse text-[#38bdf8]" />
+          <span>PAL Business Brain Online</span>
         </div>
 
         <button 
           type="button" 
           onClick={onNext} 
-          className="primary-pill w-full h-13 text-xs font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] flex items-center justify-center"
+          className="primary-pill w-full h-12 text-xs font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] flex items-center justify-center"
         >
           Initialize Business Brain 🚀
         </button>
