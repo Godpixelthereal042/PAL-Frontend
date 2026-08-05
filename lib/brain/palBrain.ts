@@ -194,6 +194,28 @@ class PalBrainEngine {
         this.notify();
         return newEvent;
     }
+
+    public updateContext(context: {
+        businessName?: string;
+        businessDescription?: string;
+        teamSize?: string;
+        industry?: string;
+        country?: string;
+        connectedServices?: string[];
+    }) {
+        const active = this.getActiveProject();
+        if (active) {
+            if (context.businessName) active.name = context.businessName;
+            if (context.businessDescription) active.description = context.businessDescription;
+            if (context.connectedServices) active.connectedAccounts = context.connectedServices;
+        }
+        this.addMemory({
+            source: "PROJECT",
+            title: `Business Brain Initialized: ${context.businessName || "New Business"}`,
+            content: `Configured business brain for ${context.businessName || "Business"} (${context.industry || "General"} in ${context.country || "Nigeria"}). Team size: ${context.teamSize || "Solo"}.`
+        });
+        this.notify();
+    }
 }
 
 export const palBrain = new PalBrainEngine();
