@@ -127,10 +127,10 @@ const languages = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const [screen, setScreenState] = useState<Screen>("growth");
   
-  // Collected User Data
+  // User Data State
   const [persona, setPersona] = useState("");
   const [industry, setIndustry] = useState("Technology & Innovation");
   const [country, setCountry] = useState("Nigeria");
@@ -143,8 +143,6 @@ export default function OnboardingScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const isDark = theme === "dark";
 
   const setScreen = (nextScreen: Screen) => {
     setScreenState(nextScreen);
@@ -174,72 +172,71 @@ export default function OnboardingScreen() {
   return (
     <OnboardingShell>
       <div className="phone-stage">
-        <section className={cn("phone")} aria-label="PAL app">
-          <StatusBar tone={isDark ? "dark" : "light"} />
+        <section className="phone" aria-label="PAL app">
+          <StatusBar tone="dark" />
 
-        {screen === "growth" && (
-          <GrowthIntro
-            onNext={() => setScreen("manage")}
-            onSkip={() => setScreen("persona")}
-          />
-        )}
-        {screen === "manage" && (
-          <ManageIntro
-            onNext={() => setScreen("together")}
-            onBack={() => setScreen("growth")}
-            onSkip={() => setScreen("persona")}
-          />
-        )}
-        {screen === "together" && (
-          <TogetherIntro
-            onNext={() => setScreen("persona")}
-            onBack={() => setScreen("manage")}
-          />
-        )}
-        
-        {screen === "persona" && (
-          <PersonaScreen
-            value={persona}
-            onChange={setPersona}
-            onNext={() => setScreen("industry")}
-            onBack={() => setScreen("together")}
-          />
-        )}
-        
-        {screen === "industry" && (
-          <IndustryScreen 
-            value={industry} 
-            searchQuery={searchIndustry}
-            onSearchQuery={setSearchIndustry}
-            onChange={setIndustry} 
-            onNext={() => setScreen("country")} 
-            onBack={() => setScreen("persona")}
-          />
-        )}
-        
-        {screen === "country" && (
-          <CountryScreen
-            selected={country}
-            query={searchCountry}
-            onQuery={setSearchCountry}
-            onSelect={setCountry}
-            onNext={() => setScreen("language")}
-            onBack={() => setScreen("industry")}
-          />
-        )}
-        
-        {screen === "language" && (
-          <LanguageScreen 
-            selected={language} 
-            onSelect={setLanguage} 
-            onNext={() => setScreen("signup")} 
-            onBack={() => setScreen("country")}
-          />
-        )}
-        
-        {screen === "signup" && (
-          <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide pb-10">
-            <div className="min-h-[680px] w-full h-full relative">
+          {screen === "growth" && (
+            <GrowthIntro
+              onNext={() => setScreen("manage")}
+              onSkip={() => setScreen("persona")}
+            />
+          )}
+          {screen === "manage" && (
+            <ManageIntro
+              onNext={() => setScreen("together")}
+              onBack={() => setScreen("growth")}
+              onSkip={() => setScreen("persona")}
+            />
+          )}
+          {screen === "together" && (
+            <TogetherIntro
+              onNext={() => setScreen("persona")}
+              onBack={() => setScreen("manage")}
+            />
+          )}
+          
+          {screen === "persona" && (
+            <PersonaScreen
+              value={persona}
+              onChange={setPersona}
+              onNext={() => setScreen("industry")}
+              onBack={() => setScreen("together")}
+            />
+          )}
+          
+          {screen === "industry" && (
+            <IndustryScreen 
+              value={industry} 
+              searchQuery={searchIndustry}
+              onSearchQuery={setSearchIndustry}
+              onChange={setIndustry} 
+              onNext={() => setScreen("country")} 
+              onBack={() => setScreen("persona")}
+            />
+          )}
+          
+          {screen === "country" && (
+            <CountryScreen
+              selected={country}
+              query={searchCountry}
+              onQuery={setSearchCountry}
+              onSelect={setCountry}
+              onNext={() => setScreen("language")}
+              onBack={() => setScreen("industry")}
+            />
+          )}
+          
+          {screen === "language" && (
+            <LanguageScreen 
+              selected={language} 
+              onSelect={setLanguage} 
+              onNext={() => setScreen("signup")} 
+              onBack={() => setScreen("country")}
+            />
+          )}
+          
+          {screen === "signup" && (
+            <div className="relative h-full flex-1 flex flex-col overflow-y-auto scrollbar-hide pb-6">
               <SignupScreen 
                 fullName={fullName}
                 setFullName={setFullName}
@@ -259,12 +256,10 @@ export default function OnboardingScreen() {
                 onBase={() => handleSocialSignIn("base")}
               />
             </div>
-          </div>
-        )}
-        
-        {screen === "login" && (
-          <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide pb-10">
-            <div className="min-h-[600px] w-full h-full relative">
+          )}
+          
+          {screen === "login" && (
+            <div className="relative h-full flex-1 flex flex-col overflow-y-auto scrollbar-hide pb-6">
               <LoginScreen 
                 email={email}
                 setEmail={setEmail}
@@ -276,52 +271,47 @@ export default function OnboardingScreen() {
                 onBase={() => handleSocialSignIn("base")}
               />
             </div>
-          </div>
-        )}
-        
-        {screen === "otp" && (
-          <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
-            <div className="min-h-[640px] w-full h-full relative">
+          )}
+          
+          {screen === "otp" && (
+            <div className="relative h-full flex-1 flex flex-col overflow-y-auto scrollbar-hide">
               <OtpScreen 
                 email={email}
                 onNext={() => setScreen("business_brain")} 
               />
             </div>
-          </div>
-        )}
-        
-        {screen === "business_brain" && (
-          <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide">
-            <BusinessBrainConversation
-              userProfile={{
-                fullName: fullName || "Emmanuel",
-                email: email || "user@pal.ai",
-                persona: persona || "Business Owner",
-                industry: industry || "Technology & Innovation",
-                country: country || "Nigeria",
-                language: language || "English"
-              }}
-              onComplete={() => router.push("/")}
-            />
-          </div>
-        )}
-      </section>
-    </div>
+          )}
+          
+          {screen === "business_brain" && (
+            <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide">
+              <BusinessBrainConversation
+                userProfile={{
+                  fullName: fullName || "Emmanuel",
+                  email: email || "user@pal.ai",
+                  persona: persona || "Business Owner",
+                  industry: industry || "Technology & Innovation",
+                  country: country || "Nigeria",
+                  language: language || "English"
+                }}
+                onComplete={() => router.push("/")}
+              />
+            </div>
+          )}
+        </section>
+      </div>
     </OnboardingShell>
   );
 }
 
 // ---------------- Helper Components ----------------
 
-function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => void }) {
+function StatusBar({ tone }: { tone: Tone }) {
   return (
-    <div className={cn("status-bar", tone === "dark" && "status-dark")}>
-      <span>9:41</span>
-      {tone === "light" && <span className="dynamic-island" aria-hidden="true" />}
-      <div className="status-icons" aria-hidden="true">
-        <span className="signal"><span /><span /><span /><span /></span>
-        <span className="wifi"><span className="wifi-dot" /></span>
-        <span className="battery" />
+    <div className="status-bar text-white px-6 pt-3 pb-2 flex justify-between items-center z-40 shrink-0">
+      <span className="font-bold text-xs">9:41</span>
+      <div className="status-icons flex items-center gap-1.5 opacity-90" aria-hidden="true">
+        <span className="signal flex gap-0.5"><span className="w-1 h-2 bg-white rounded-xs"/><span className="w-1 h-2.5 bg-white rounded-xs"/><span className="w-1 h-3 bg-white rounded-xs"/><span className="w-1 h-3.5 bg-white rounded-xs"/></span>
+        <span className="battery w-5 h-2.5 border border-white rounded-xs relative ml-1 inline-block"><span className="absolute inset-0.5 bg-white rounded-2xs" /></span>
       </div>
     </div>
   );
@@ -329,9 +319,15 @@ function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => 
 
 function ProgressBars({ active }: { active: number }) {
   return (
-    <div className="progress-bars" aria-hidden="true">
+    <div className="progress-bars flex gap-1.5 w-full" aria-hidden="true">
       {[0, 1, 2].map((index) => (
-        <span key={index} className={index === active ? "active" : ""} />
+        <span 
+          key={index} 
+          className={cn(
+            "h-1 flex-1 rounded-full transition-all duration-300",
+            index === active ? "bg-[#2d7fe0] shadow-[0_0_10px_rgba(45,127,224,0.6)]" : "bg-white/20"
+          )} 
+        />
       ))}
     </div>
   );
@@ -346,7 +342,7 @@ function BrandLogo({ className }: { className?: string }) {
         width={170}
         height={80}
         priority
-        className="h-auto w-full"
+        className="h-auto w-full filter drop-shadow-[0_0_12px_rgba(45,127,224,0.4)]"
       />
     </div>
   );
@@ -361,13 +357,13 @@ function Mascot({ className, priority = false }: { className?: string; priority?
         width={691}
         height={642}
         priority={priority}
-        className="w-full h-auto"
+        className="w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
       />
     </div>
   );
 }
 
-// ── 1. Welcome Intro Slides with Swipe, Skip, and Timer Support ───────────
+// ── 1. Welcome Intro Slides with Recomposed Mascot Breathing Room ─────────
 
 function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -376,7 +372,7 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
     if (touchStart === null) return;
     const touchEnd = e.changedTouches[0].clientX;
     if (touchStart - touchEnd > 50) {
-      onNext(); // Swipe left to next
+      onNext();
     }
   };
 
@@ -384,7 +380,7 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
     <div
       onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
       onTouchEnd={handleTouchEnd}
-      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[34px] pt-[20px] pb-[34px]"
+      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]"
     >
       {/* Top Header Controls */}
       <div className="flex justify-between items-center z-30 relative shrink-0">
@@ -398,10 +394,10 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
         </button>
       </div>
 
-      {/* Main Hero Content */}
-      <div className="min-h-[440px] w-full flex-1 relative flex flex-col pt-4 z-20">
-        <h1 className="mt-[16px] text-[54px] font-black leading-[0.94] text-left tracking-tight">
-          <span className="text-[#38bdf8] drop-shadow-[0_0_25px_rgba(56,189,248,0.3)]">
+      {/* Main Hero Content - Unblocked Headline & Recomposed Mascot */}
+      <div className="min-h-[420px] w-full flex-1 relative flex flex-col pt-4 z-20">
+        <h1 className="mt-[12px] text-[50px] font-black leading-[0.94] text-left tracking-tight">
+          <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">
             GO FOR
             <br />
             BUSINESS
@@ -414,10 +410,10 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
           <span className="text-white font-extrabold">PAL</span>
         </h1>
 
-        {/* Mascot Hero with Backlight Glow */}
-        <div className="absolute -right-[240px] bottom-[-40px] z-10 pointer-events-none">
+        {/* Mascot Hero Positioned on Right Side with Breathing Room */}
+        <div className="absolute -right-[180px] bottom-[-20px] z-10 pointer-events-none">
           <div className="absolute inset-0 bg-[#2d7fe0]/20 blur-3xl rounded-full" />
-          <Mascot priority className="w-[480px] max-w-none mascot-peek relative z-10 drop-shadow-[0_20px_60px_rgba(0,0,0,0.8)]" />
+          <Mascot priority className="w-[420px] max-w-none mascot-peek relative z-10" />
         </div>
       </div>
 
@@ -428,7 +424,7 @@ function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
           onClick={onNext}
           className="w-full text-left rounded-[24px] bg-[#101726]/85 border border-white/12 backdrop-blur-xl p-4 text-white shadow-2xl transition-all hover:border-white/25 active:scale-[0.98] cursor-pointer"
         >
-          <p className="text-[15px] font-semibold leading-snug text-white">
+          <p className="text-[14px] font-semibold leading-snug text-white">
             It&apos;s more fun and quick when we do it together! 🚀
           </p>
           <p className="text-[12px] text-[#94a3b8] mt-1 font-medium">
@@ -465,13 +461,13 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
     <div
       onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
       onTouchEnd={handleTouchEnd}
-      className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]"
+      className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]"
     >
-      <div className="flex justify-between items-center z-30 relative">
+      <div className="flex justify-between items-center z-30 relative shrink-0">
         <button
           type="button"
           onClick={onBack}
-          className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
         >
           <ArrowLeft size={16} />
         </button>
@@ -479,43 +475,50 @@ function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: (
         <button
           type="button"
           onClick={onSkip}
-          className="text-xs font-bold text-[#0a438a] bg-white/40 backdrop-blur-xs border border-white/60 px-3 py-1 rounded-full cursor-pointer hover:bg-white transition-colors"
+          className="text-xs font-bold text-slate-300 bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1 rounded-full cursor-pointer hover:bg-white/20 hover:text-white transition-all ml-4"
         >
           Skip
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={onNext}
-        className="flex flex-col w-full h-full min-h-[620px] items-start overflow-hidden text-left cursor-pointer border-0 outline-none relative pt-4"
-      >
-        <Mascot priority className="absolute -right-[250px] bottom-[-270px] w-[600px] max-w-none manage-mascot z-0" />
-        <BrandLogo className="mt-[24px] h-auto w-[168px] ml-[10px] manage-logo relative z-10" />
-        <h1 className="mt-[7px] text-[54px] font-semibold leading-[0.96] text-left ml-[10px] manage-heading relative z-10" style={{ color: 'var(--onb-heading)' }}>
-          Tracks
+      <div className="min-h-[420px] w-full flex-1 relative flex flex-col pt-4 z-20 text-left">
+        <BrandLogo className="mt-2 h-auto w-[150px]" />
+        <h1 className="mt-4 text-[48px] font-black leading-[0.96] text-left tracking-tight">
+          <span className="text-white">Tracks</span>
           <br />
-          Manage
+          <span className="text-[#38bdf8] drop-shadow-[0_0_20px_rgba(56,189,248,0.3)]">Manage &amp; Grow</span>
           <br />
-          &amp; Grow
-          <br />
-          <span style={{ color: 'var(--onb-heading)' }} className="font-bold">All In One</span>
-          <br />
-          <span style={{ color: 'var(--onb-heading)' }} className="font-bold">Place.</span>
+          <span className="text-white font-extrabold">All In One Place.</span>
         </h1>
-      </button>
+
+        {/* Mascot Standing Proudly on Right */}
+        <div className="absolute -right-[150px] bottom-[-30px] z-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[#2d7fe0]/20 blur-3xl rounded-full" />
+          <Mascot priority className="w-[440px] max-w-none mascot-peek relative z-10" />
+        </div>
+      </div>
+
+      <div className="relative z-30 shrink-0 mt-auto">
+        <button
+          type="button"
+          onClick={onNext}
+          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
+        >
+          Continue 🚀
+        </button>
+      </div>
     </div>
   );
 }
 
 function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
-      <div className="flex justify-between items-center z-30 relative">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+      <div className="flex justify-between items-center z-30 relative shrink-0">
         <button
           type="button"
           onClick={onBack}
-          className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
         >
           <ArrowLeft size={16} />
         </button>
@@ -523,42 +526,44 @@ function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => v
         <div className="w-8" />
       </div>
 
-      <div className="min-h-[620px] w-full h-full relative flex flex-col pt-3">
-        <div className="pal-card-stack relative mt-[42px] rounded-[31px] bg-white px-[32px] pb-[31px] pt-[28px] shadow-pal text-left onb-card together-card">
-          <ul className="relative z-10 list-disc space-y-[18px] pl-[18px] text-[15px] leading-[1.3] marker:text-[#3b5a7c]" style={{ color: '#3b5a7c' }}>
-            <li>
-              <span className="font-semibold text-[#0a438a]">Log sales, expenses,</span> and project updates
-              effortlessly. PAL remembers everything.
+      <div className="min-h-[440px] w-full flex-1 relative flex flex-col justify-center pt-2 z-20">
+        <div className="relative rounded-[30px] bg-[#101726]/90 border border-white/12 backdrop-blur-xl p-6 shadow-2xl text-left space-y-4">
+          <h2 className="text-xl font-extrabold text-white">Why Founders Choose PAL</h2>
+          <ul className="space-y-3 text-[13px] leading-relaxed text-slate-300">
+            <li className="flex items-start gap-2.5">
+              <span className="text-[#38bdf8] font-bold text-base">✓</span>
+              <span><strong className="text-white">Log sales, expenses &amp; tasks</strong> effortlessly. PAL remembers everything.</span>
             </li>
-            <li>
-              <span className="font-semibold text-[#0a438a]">Get daily insights on profit,</span> spending, and growth in simple executive terms.
+            <li className="flex items-start gap-2.5">
+              <span className="text-[#38bdf8] font-bold text-base">✓</span>
+              <span><strong className="text-white">Daily Executive Insights</strong> on cashflow, profit &amp; sprint progress.</span>
             </li>
-            <li>
-              <span className="font-semibold text-[#0a438a]">Tech? Retail? Services?</span>
-              <br />
-              PAL adapts to your hustle, your flow, your way.
-            </li>
-            <li>
-              You don&apos;t have to build alone anymore.
-              <br />
-              <span className="font-semibold text-[#0a438a]">PAL is with you. Let&apos;s go 🚀</span>
+            <li className="flex items-start gap-2.5">
+              <span className="text-[#38bdf8] font-bold text-base">✓</span>
+              <span><strong className="text-white">Adapts to your workflow</strong> — Tech, Retail, Freelance, or Services.</span>
             </li>
           </ul>
-          <Mascot className="absolute -bottom-[83px] left-[118px] z-20 w-[96px]" />
+
+          <div className="pt-2 border-t border-white/10 text-xs font-semibold text-[#38bdf8]">
+            PAL is ready to build your Business Brain. Let&apos;s go 🚀
+          </div>
         </div>
+      </div>
+
+      <div className="relative z-30 shrink-0 mt-auto">
         <button
           type="button"
           onClick={onNext}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer"
+          className="primary-pill w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] hover:brightness-110 active:scale-[0.98] transition-all"
         >
-          Let&apos;s go 🚀
+          Let&apos;s Go 🚀
         </button>
       </div>
     </div>
   );
 }
 
-// ── 2. Rich Persona Cards ──────────────────────────────────────────────────
+// ── 2. Rich Persona Cards in Dark Executive Glass ──────────────────────────
 
 function PersonaScreen({
   value,
@@ -572,69 +577,66 @@ function PersonaScreen({
   onBack: () => void;
 }) {
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+      <div className="flex flex-col text-left">
         <div className="flex items-center gap-3 mb-2">
           <button
             type="button"
             onClick={onBack}
-            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
           >
             <ArrowLeft size={16} />
           </button>
-          <p className="text-[20px] font-semibold leading-none" style={{ color: 'var(--onb-subtext)' }}>Hey welcome!</p>
+          <p className="text-sm font-semibold text-[#38bdf8]">Welcome to PAL</p>
         </div>
         
-        <h1 className="text-[28px] font-extrabold leading-[1.12]" style={{ color: 'var(--onb-heading)' }}>
+        <h1 className="text-[28px] font-extrabold leading-tight text-white">
           Tell us who you are?
         </h1>
 
-        <div className="pal-card-stack relative mt-[28px] rounded-[31px] bg-white px-[20px] pb-[24px] pt-[24px] shadow-pal persona-card" style={{ color: '#111827' }}>
-          <div className="relative z-10 grid gap-[12px]">
-            {personaOptions.map((opt) => {
-              const isSelected = value === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => onChange(opt.value)}
-                  className={cn(
-                    "rounded-[18px] p-3.5 text-left transition-all cursor-pointer border flex items-center gap-3",
-                    isSelected
-                      ? "bg-[#0a438a] text-white border-[#0a438a] shadow-md scale-[1.01]"
-                      : "bg-[#f8fafc] text-zinc-800 border-zinc-200 hover:border-[#0a438a]/40"
-                  )}
-                >
-                  <span className="text-2xl shrink-0 p-2 rounded-xl bg-white/10">{opt.icon}</span>
-                  <div>
-                    <h3 className={cn("text-sm font-bold leading-tight", isSelected ? "text-white" : "text-zinc-900")}>
-                      {opt.title}
-                    </h3>
-                    <p className={cn("text-[11px] leading-snug mt-0.5 font-medium", isSelected ? "text-blue-100" : "text-zinc-500")}>
-                      {opt.description}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-          <Mascot className="absolute -bottom-[68px] left-[119px] z-20 w-[97px]" />
+        <div className="mt-5 space-y-3">
+          {personaOptions.map((opt) => {
+            const isSelected = value === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onChange(opt.value)}
+                className={cn(
+                  "w-full rounded-[22px] p-4 text-left transition-all cursor-pointer border flex items-center gap-3.5 backdrop-blur-xl",
+                  isSelected
+                    ? "bg-[#2d7fe0]/20 border-[#2d7fe0] text-white shadow-[0_0_25px_rgba(45,127,224,0.35)] scale-[1.01]"
+                    : "bg-[#101726]/80 border-white/10 text-slate-300 hover:border-white/25 hover:bg-[#101726]"
+                )}
+              >
+                <span className="text-2xl shrink-0 p-2.5 rounded-xl bg-white/10">{opt.icon}</span>
+                <div>
+                  <h3 className="text-sm font-bold text-white leading-tight">
+                    {opt.title}
+                  </h3>
+                  <p className="text-[11px] leading-snug mt-0.5 text-slate-400 font-medium">
+                    {opt.description}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </div>
-
-        <button 
-          type="button" 
-          onClick={onNext} 
-          disabled={!value}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
+
+      <button 
+        type="button" 
+        onClick={onNext} 
+        disabled={!value}
+        className="primary-pill mt-6 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+      >
+        Next
+      </button>
     </div>
   );
 }
 
-// ── 3. Searchable Industry Selection ──────────────────────────────────────
+// ── 3. Searchable Industry Selection in Executive Dark ─────────────────────
 
 function IndustryScreen({
   value,
@@ -657,38 +659,38 @@ function IndustryScreen({
   );
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
-      <div className="min-h-[580px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+      <div className="flex flex-col text-left">
         <div className="flex items-center gap-3 mb-1">
           <button
             type="button"
             onClick={onBack}
-            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+          <h1 className="text-[28px] font-extrabold leading-tight text-white">
             Choose Industry
           </h1>
         </div>
 
-        <p className="mt-[2px] max-w-[340px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
-          Please select your business sector below.
+        <p className="mt-1 text-xs text-slate-400 font-medium">
+          Select your primary business sector below.
         </p>
 
-        {/* Search Industry Bar */}
+        {/* Search Bar */}
         <div className="relative mt-3 mb-2">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchQuery(e.target.value)}
             placeholder="Search Industry..."
-            className="w-full h-10 bg-white border border-gray-300 rounded-xl pl-9 pr-4 text-xs font-semibold text-black outline-none shadow-xs placeholder:text-gray-400"
+            className="w-full h-11 bg-[#060911] border border-white/15 rounded-xl pl-9 pr-4 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
           />
         </div>
 
-        <div className="mt-1 grid grid-cols-2 gap-[10px] w-full max-h-[320px] overflow-y-auto pr-1 scrollbar-hide">
+        <div className="mt-1 grid grid-cols-2 gap-2.5 w-full max-h-[310px] overflow-y-auto pr-1 scrollbar-hide">
           {filteredIndustries.map(({ icon: Icon, label }) => {
             const isSelected = value === label;
             return (
@@ -697,15 +699,15 @@ function IndustryScreen({
                 type="button"
                 onClick={() => onChange(label)}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-[6px] rounded-[16px] border p-[10px] text-center text-[12px] font-bold transition cursor-pointer shadow-sm min-h-[85px]",
+                  "flex flex-col items-center justify-center gap-1.5 rounded-[18px] border p-3 text-center text-xs font-bold transition-all cursor-pointer min-h-[85px] backdrop-blur-xl",
                   isSelected
-                    ? "bg-[#0a438a] text-white border-[#0a438a]"
-                    : "bg-white text-zinc-800 border-zinc-200 hover:border-[#0a438a]/40"
+                    ? "bg-[#2d7fe0] text-white border-[#2d7fe0] shadow-[0_0_20px_rgba(45,127,224,0.4)]"
+                    : "bg-[#101726]/80 text-slate-200 border-white/10 hover:border-white/25 hover:bg-[#101726]"
                 )}
               >
                 <Icon 
                   size={20} 
-                  className={isSelected ? "text-white" : "text-[#0a438a]"}
+                  className={isSelected ? "text-white" : "text-[#38bdf8]"}
                   strokeWidth={2.2} 
                 />
                 <span className="leading-tight">{label}</span>
@@ -713,19 +715,21 @@ function IndustryScreen({
             );
           })}
         </div>
-
-        <button 
-          type="button" 
-          onClick={onNext} 
-          disabled={!value}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
+
+      <button 
+        type="button" 
+        onClick={onNext} 
+        disabled={!value}
+        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+      >
+        Next
+      </button>
     </div>
   );
 }
+
+// ── 4. Country & Language Screen in Executive Dark Glass (NO WHITE PANELS) ──
 
 function CountryScreen({
   selected,
@@ -748,69 +752,69 @@ function CountryScreen({
   );
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+      <div className="flex flex-col text-left">
         <div className="flex items-center gap-3 mb-1">
           <button
             type="button"
             onClick={onBack}
-            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+          <h1 className="text-[28px] font-extrabold leading-tight text-white">
             Choose Country
           </h1>
         </div>
 
-        <p className="mt-[2px] max-w-[350px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+        <p className="mt-1 text-xs text-slate-400 font-medium">
           Select your primary business country.
         </p>
 
-        <section className="mt-[16px] h-[340px] overflow-hidden rounded-[30px] px-[16px] pt-[12px] shadow-pal bg-white border border-gray-100 flex flex-col pb-4">
-          <label className="relative block w-full flex-shrink-0">
-            <span className="sr-only">Search country</span>
+        {/* Executive Dark Glass Container */}
+        <section className="mt-4 h-[330px] overflow-hidden rounded-[26px] p-4 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col">
+          <label className="relative block w-full shrink-0">
             <input
               value={query}
               onChange={(event) => onQuery(event.target.value)}
-              className="h-[40px] w-full rounded-full border border-gray-300 bg-gray-50 px-[23px] pr-[48px] text-[15px] text-black outline-none placeholder:text-gray-400 font-medium"
+              className="h-10 w-full rounded-xl border border-white/15 bg-[#060911] px-4 pr-10 text-xs font-semibold text-white outline-none focus:border-[#2d7fe0] placeholder:text-slate-500"
               placeholder="Search country..."
             />
-            <Search className="absolute right-[20px] top-[9px] text-gray-400" size={20} />
+            <Search className="absolute right-3.5 top-3 text-slate-400" size={16} />
           </label>
 
-          <div className="mt-[14px] h-[250px] overflow-y-auto pb-[20px] pl-[6px] pr-[7px] scrollbar-hide text-black">
+          <div className="mt-3 flex-1 overflow-y-auto pr-1 scrollbar-hide space-y-1">
             {filtered.map(([flag, name]) => (
               <button
                 key={name}
                 type="button"
                 onClick={() => onSelect(name)}
                 className={cn(
-                  "flex h-[43px] w-full items-center justify-between rounded-[8px] text-[15px] cursor-pointer px-3 transition-colors",
+                  "flex h-11 w-full items-center justify-between rounded-xl text-xs font-semibold cursor-pointer px-3 transition-colors",
                   selected === name 
-                    ? "bg-[#0a438a]/10 text-[#0a438a] font-bold" 
-                    : "hover:bg-gray-100"
+                    ? "bg-[#2d7fe0]/20 text-[#38bdf8] border border-[#2d7fe0]/40 font-bold" 
+                    : "text-slate-300 hover:bg-white/5"
                 )}
               >
-                <div className="flex items-center gap-[16px]">
-                  <span className="text-[24px] leading-none">{flag}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl leading-none">{flag}</span>
                   <span>{name}</span>
                 </div>
-                {selected === name && <Check size={18} className="text-[#0a438a]" strokeWidth={3} />}
+                {selected === name && <Check size={16} className="text-[#38bdf8]" strokeWidth={3} />}
               </button>
             ))}
           </div>
         </section>
-
-        <button 
-          type="button" 
-          onClick={onNext} 
-          disabled={!selected}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
+
+      <button 
+        type="button" 
+        onClick={onNext} 
+        disabled={!selected}
+        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+      >
+        Next
+      </button>
     </div>
   );
 }
@@ -827,63 +831,63 @@ function LanguageScreen({
   onBack: () => void;
 }) {
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[16px] pb-[30px]">
+      <div className="flex flex-col text-left">
         <div className="flex items-center gap-3 mb-1">
           <button
             type="button"
             onClick={onBack}
-            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+            className="w-8 h-8 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white cursor-pointer hover:bg-white/20 transition-all"
           >
             <ArrowLeft size={16} />
           </button>
-          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+          <h1 className="text-[28px] font-extrabold leading-tight text-white">
             Choose Language
           </h1>
         </div>
 
-        <p className="mt-[2px] max-w-[350px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+        <p className="mt-1 text-xs text-slate-400 font-medium">
           Select your preferred language for PAL.
         </p>
 
-        <section className="mt-[20px] h-[320px] overflow-hidden rounded-[30px] px-[20px] pt-[12px] shadow-pal bg-white border border-gray-100 text-black flex flex-col pb-4">
-          <div className="h-full overflow-y-auto scrollbar-hide pb-4">
+        <section className="mt-4 h-[330px] overflow-hidden rounded-[26px] p-4 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl flex flex-col">
+          <div className="flex-1 overflow-y-auto pr-1 scrollbar-hide space-y-1">
             {languages.map(([flag, name]) => (
               <button
                 key={name}
                 type="button"
                 onClick={() => onSelect(name)}
                 className={cn(
-                  "flex h-[52px] w-full items-center justify-between rounded-[10px] text-[15px] cursor-pointer px-3 transition-colors",
+                  "flex h-12 w-full items-center justify-between rounded-xl text-xs font-semibold cursor-pointer px-3 transition-colors",
                   selected === name 
-                    ? "bg-[#0a438a]/10 text-[#0a438a] font-bold" 
-                    : "hover:bg-gray-100"
+                    ? "bg-[#2d7fe0]/20 text-[#38bdf8] border border-[#2d7fe0]/40 font-bold" 
+                    : "text-slate-300 hover:bg-white/5"
                 )}
               >
-                <div className="flex items-center gap-[12px]">
-                  <span className="text-[24px] leading-none">{flag}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl leading-none">{flag}</span>
                   <span>{name}</span>
                 </div>
-                {selected === name && <Check size={18} className="text-[#0a438a]" strokeWidth={3} />}
+                {selected === name && <Check size={16} className="text-[#38bdf8]" strokeWidth={3} />}
               </button>
             ))}
           </div>
         </section>
-
-        <button 
-          type="button" 
-          onClick={onNext} 
-          disabled={!selected}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] w-[calc(100%_-_68px)] cursor-pointer disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
+
+      <button 
+        type="button" 
+        onClick={onNext} 
+        disabled={!selected}
+        className="primary-pill mt-4 w-full h-13 text-[15px] font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] disabled:opacity-40 transition-all"
+      >
+        Next
+      </button>
     </div>
   );
 }
 
-// ── Auth Forms ─────────────────────────────────────────────────────────────
+// ── 5. Auth Forms ─────────────────────────────────────────────────────────
 
 interface SignupScreenProps {
   fullName: string;
@@ -908,12 +912,10 @@ function SignupScreen({
   fullName, setFullName,
   email, setEmail,
   password, setPassword,
-  confirmPassword, setConfirmPassword,
   persona, industry, country, language,
   onLogin, onNext, onGoogle, onBase
 }: SignupScreenProps) {
   const [agreeTerms, setAgreeTerms] = useState(true);
-  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
@@ -921,7 +923,6 @@ function SignupScreen({
       alert("Please agree to the Terms & Privacy Policy.");
       return;
     }
-    setLoading(true);
     const profilePayload = {
       fullName: fullName || "Emmanuel",
       email,
@@ -935,36 +936,36 @@ function SignupScreen({
   };
 
   return (
-    <div className="relative h-full overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
-      <div className="min-h-[640px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[20px] pb-[30px] text-left">
+      <div>
         <h1 className="text-[32px] font-extrabold leading-none text-white">Create Account</h1>
-        <p className="mt-[8px] text-[13px] text-zinc-400">Initialize your PAL executive profile.</p>
+        <p className="mt-2 text-xs text-slate-400">Initialize your PAL executive profile.</p>
 
-        <form onSubmit={handleRegister} className="mt-5 space-y-3">
+        <form onSubmit={handleRegister} className="mt-4 space-y-3">
           <AuthField label="Full Name" placeholder="Emmanuel" value={fullName} onChange={setFullName} />
           <AuthField label="Work Email" placeholder="founder@company.com" type="email" value={email} onChange={setEmail} />
           <AuthField label="Password" placeholder="••••••••" password value={password} onChange={setPassword} />
           
-          <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer pt-1">
+          <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer pt-1">
             <input
               type="checkbox"
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="rounded border-zinc-700 bg-zinc-900 text-[#2d7fe0]"
+              className="rounded border-white/20 bg-black text-[#2d7fe0]"
             />
             <span>I agree to PAL&apos;s <strong className="text-white">Terms &amp; Privacy Policy</strong></span>
           </label>
 
           <AuthButtons primaryLabel="Continue to Business Brain" onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
         </form>
-
-        <p className="mt-4 text-center text-xs text-zinc-400">
-          Already have an account?{" "}
-          <button type="button" onClick={onLogin} className="font-bold text-[#2d7fe0] hover:underline cursor-pointer">
-            Sign In
-          </button>
-        </p>
       </div>
+
+      <p className="mt-4 text-center text-xs text-slate-400">
+        Already have an account?{" "}
+        <button type="button" onClick={onLogin} className="font-bold text-[#38bdf8] hover:underline cursor-pointer">
+          Sign In
+        </button>
+      </p>
     </div>
   );
 }
@@ -994,25 +995,25 @@ function LoginScreen({
   };
 
   return (
-    <div className="relative h-full overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
-      <div className="min-h-[580px] w-full h-full relative flex flex-col text-left">
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide px-[30px] pt-[20px] pb-[30px] text-left">
+      <div>
         <h1 className="text-[32px] font-extrabold leading-none text-white">Welcome Back</h1>
-        <p className="mt-[8px] text-[13px] text-zinc-400">Sign in to your PAL Business Brain.</p>
+        <p className="mt-2 text-xs text-slate-400">Sign in to your PAL Business Brain.</p>
 
-        <form onSubmit={handleLoginSubmit} className="mt-5 space-y-3">
+        <form onSubmit={handleLoginSubmit} className="mt-4 space-y-3">
           <AuthField label="Email" placeholder="founder@company.com" type="email" value={email} onChange={setEmail} />
           <AuthField label="Password" placeholder="••••••••" password value={password} onChange={setPassword} />
           <AuthMeta />
           <AuthButtons primaryLabel="Sign In" onPrimary={handleLoginSubmit} onGoogle={onGoogle} onBase={onBase} />
         </form>
-
-        <p className="mt-4 text-center text-xs text-zinc-400">
-          Don&apos;t have an account?{" "}
-          <button type="button" onClick={onSignup} className="font-bold text-[#2d7fe0] hover:underline cursor-pointer">
-            Sign Up
-          </button>
-        </p>
       </div>
+
+      <p className="mt-4 text-center text-xs text-slate-400">
+        Don&apos;t have an account?{" "}
+        <button type="button" onClick={onSignup} className="font-bold text-[#38bdf8] hover:underline cursor-pointer">
+          Sign Up
+        </button>
+      </p>
     </div>
   );
 }
@@ -1035,11 +1036,11 @@ function AuthField({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <label className="block text-[12px] text-zinc-300 text-left font-semibold">
+    <label className="block text-xs text-slate-300 text-left font-semibold">
       {label}
       <span className="relative mt-1 block">
         <input 
-          className="auth-input w-full h-11 rounded-xl text-[15px] bg-[#121620] border border-white/10 px-3.5 text-white outline-none focus:border-[#2d7fe0]"
+          className="w-full h-11 rounded-xl text-xs bg-[#060911] border border-white/15 px-3.5 text-white outline-none focus:border-[#2d7fe0]"
           placeholder={placeholder} 
           type={password ? (showPassword ? "text" : "password") : type} 
           value={value}
@@ -1050,7 +1051,7 @@ function AuthField({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-3 text-zinc-400 hover:text-white cursor-pointer"
+            className="absolute right-3 top-3 text-slate-400 hover:text-white cursor-pointer"
           >
             {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
@@ -1062,9 +1063,9 @@ function AuthField({
 
 function AuthMeta() {
   return (
-    <div className="mt-2 flex items-center justify-between text-xs text-zinc-400 select-none">
+    <div className="mt-2 flex items-center justify-between text-xs text-slate-400 select-none">
       <label className="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" defaultChecked className="rounded border-zinc-700 bg-zinc-900 text-[#2d7fe0]" />
+        <input type="checkbox" defaultChecked className="rounded border-white/20 bg-black text-[#2d7fe0]" />
         Remember me
       </label>
       <button type="button" onClick={() => alert("Password reset link sent!")} className="cursor-pointer hover:text-white">
@@ -1086,40 +1087,40 @@ function AuthButtons({
   onBase: () => void;
 }) {
   return (
-    <div className="mt-4 grid gap-2.5 w-full">
+    <div className="mt-3 grid gap-2 w-full">
       <button 
         type="submit" 
         onClick={(e) => onPrimary(e)}
-        className="primary-pill h-12 text-sm font-bold w-full cursor-pointer flex items-center justify-center"
+        className="primary-pill h-12 text-xs font-extrabold w-full cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] flex items-center justify-center"
       >
         {primaryLabel}
       </button>
       <button
         type="button"
         onClick={onGoogle}
-        className="h-11 rounded-full border border-gray-300 bg-white text-xs font-bold text-black cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2"
+        className="h-11 rounded-full border border-white/15 bg-white/10 hover:bg-white/15 text-xs font-bold text-white cursor-pointer transition-all flex items-center justify-center gap-2"
       >
         <span>Sign in with Google</span>
       </button>
       <button
         type="button"
         onClick={onBase}
-        className="h-11 rounded-full border border-gray-300 bg-white text-xs font-bold text-black cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2"
+        className="h-11 rounded-full border border-white/15 bg-white/10 hover:bg-white/15 text-xs font-bold text-white cursor-pointer transition-all flex items-center justify-center gap-2"
       >
-        <span className="inline-block h-3.5 w-3.5 rounded-xs bg-[#0052ff]" />
+        <span className="inline-block h-3 w-3 rounded-xs bg-[#0052ff]" />
         <span>Sign in with Base ID</span>
       </button>
     </div>
   );
 }
 
-// ── 4. OTP Screen with Automatic 5-Digit Verification ─────────────────────
+// ── 6. OTP Screen in Executive Dark Glass (NO WHITE BOX) ─────────────────
 
 function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft] = useState(60);
 
   const pressDigit = (digit: string) => {
     setError(false);
@@ -1131,7 +1132,6 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
     setSuccess(true);
   };
 
-  // Auto verify when 5th digit is typed!
   useEffect(() => {
     if (code.length === 5) {
       verify();
@@ -1139,29 +1139,29 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
   }, [code]);
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide text-left">
-      <div className="min-h-[640px] w-full h-full relative flex flex-col justify-between">
-        <section className="mx-[20px] mt-[24px] rounded-[30px] px-[24px] pb-[28px] pt-[24px] shadow-pal bg-white" style={{ color: '#111827' }}>
-          <h1 className="text-[24px] font-extrabold text-[#0a438a]">Enter Verification Code</h1>
-          <p className="mt-[8px] text-[13px] leading-relaxed text-zinc-600">
-            Activation code sent to <strong className="text-zinc-900">{email || "your email"}</strong>
+    <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide text-left px-[24px] pt-[20px] pb-[24px]">
+      <div className="w-full flex-1 flex flex-col justify-between">
+        <section className="rounded-[30px] p-6 bg-[#101726]/90 border border-white/12 backdrop-blur-xl shadow-2xl text-white">
+          <h1 className="text-xl font-extrabold text-white">Enter Verification Code</h1>
+          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+            Activation code sent to <strong className="text-[#38bdf8]">{email || "your email"}</strong>
           </p>
 
-          <div className="mt-[16px] flex justify-between gap-1.5 w-full">
+          <div className="mt-4 flex justify-between gap-1.5 w-full">
             {[0, 1, 2, 3, 4].map((index) => (
               <button
                 key={index}
                 type="button"
                 onClick={() => pressDigit("1")}
                 className={cn(
-                  "grid h-[54px] w-[46px] place-items-center rounded-[12px] border text-[22px] font-extrabold cursor-pointer transition-all outline-none",
+                  "grid h-13 w-11 place-items-center rounded-xl border text-xl font-extrabold cursor-pointer transition-all outline-none",
                   error 
-                    ? "border-red-500 text-red-500 bg-red-50" 
+                    ? "border-red-500 text-red-400 bg-red-950/40" 
                     : (index === code.length && !success)
-                      ? "border-[#0a438a] ring-2 ring-[#0a438a]/20 bg-white scale-105" 
+                      ? "border-[#2d7fe0] ring-2 ring-[#2d7fe0]/40 bg-[#060911] text-white scale-105" 
                       : code[index] 
-                        ? "border-gray-400 text-gray-900 bg-white font-bold" 
-                        : "border-gray-200 text-gray-400 bg-gray-50"
+                        ? "border-[#2d7fe0]/60 text-white bg-[#060911] font-bold" 
+                        : "border-white/15 text-slate-500 bg-[#060911]/50"
                 )}
               >
                 {code[index] ?? ""}
@@ -1169,13 +1169,13 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
             ))}
           </div>
 
-          <p className="mt-4 text-center text-xs text-zinc-500">
-            Resend code in <strong className="text-[#0a438a] font-mono">{timeLeft}s</strong>
+          <p className="mt-4 text-center text-xs text-slate-400">
+            Resend code in <strong className="text-[#38bdf8] font-mono">{timeLeft}s</strong>
           </p>
         </section>
 
         {/* Custom Number Pad */}
-        <div className="p-4 grid grid-cols-3 gap-2 max-w-[320px] mx-auto w-full">
+        <div className="py-4 grid grid-cols-3 gap-2 max-w-[300px] mx-auto w-full">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"].map((k, idx) => (
             <button
               key={idx}
@@ -1184,14 +1184,14 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
                 if (k === "⌫") setCode(prev => prev.slice(0, -1));
                 else if (k) pressDigit(k);
               }}
-              className="h-12 rounded-xl bg-white/10 border border-white/10 text-lg font-bold text-white active:scale-95 transition-transform"
+              className="h-11 rounded-xl bg-white/10 border border-white/10 text-base font-bold text-white active:scale-95 transition-all hover:bg-white/20"
             >
               {k}
             </button>
           ))}
         </div>
 
-        {/* Animated Celebration Success Modal */}
+        {/* Animated Executive Success Modal */}
         {success && <SuccessModal onNext={onNext} />}
       </div>
     </div>
@@ -1200,21 +1200,30 @@ function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
 
 function SuccessModal({ onNext }: { onNext: () => void }) {
   return (
-    <div className="absolute inset-0 z-30 bg-[#0a4072]/85 backdrop-blur-md flex items-end animate-in fade-in duration-300">
-      <div className="w-full rounded-t-[32px] bg-[#121620] border-t border-white/20 px-[32px] pb-[44px] pt-[28px] text-center text-white shadow-2xl space-y-4">
-        <div className="mx-auto grid h-[110px] w-[110px] place-items-center rounded-full bg-[#2d7fe0]/20 border border-[#2d7fe0] animate-bounce">
-          <span className="text-[56px] leading-none">🎉</span>
+    <div className="absolute inset-0 z-50 bg-[#060911]/90 backdrop-blur-md flex items-end animate-in fade-in duration-300">
+      <div className="w-full rounded-t-[32px] bg-[#101726] border-t border-white/20 p-6 text-center text-white shadow-2xl space-y-4">
+        <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#2d7fe0]/20 border border-[#2d7fe0] animate-bounce">
+          <span className="text-4xl leading-none">🎉</span>
         </div>
-        <h2 className="text-[22px] font-extrabold leading-[1.3] text-white">
-          Congrats! You&apos;re All Set Up.
-        </h2>
-        <p className="text-xs text-zinc-300 leading-relaxed max-w-[280px] mx-auto">
-          Your <strong className="text-[#2d7fe0]">PAL Executive Assistant</strong> is ready to build your Business Brain! 💪
-        </p>
+        <div className="space-y-1">
+          <h2 className="text-xl font-extrabold text-white">
+            Congrats! You&apos;re All Set Up.
+          </h2>
+          <p className="text-xs text-slate-300 leading-relaxed max-w-[280px] mx-auto">
+            Your <strong className="text-[#38bdf8]">PAL Executive Assistant</strong> is ready to build your Business Brain! 💪
+          </p>
+        </div>
+
+        {/* Dashboard Preview Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#2d7fe0]/15 border border-[#2d7fe0]/30 text-[11px] font-bold text-[#38bdf8]">
+          <Sparkles size={14} className="animate-spin" />
+          <span>Executive Brain Online • Syncing Projects</span>
+        </div>
+
         <button 
           type="button" 
           onClick={onNext} 
-          className="primary-pill mt-4 w-full h-12 text-sm font-bold cursor-pointer flex items-center justify-center shadow-lg"
+          className="primary-pill w-full h-13 text-xs font-extrabold cursor-pointer bg-gradient-to-r from-[#0a438a] to-[#2d7fe0] shadow-[0_10px_30px_rgba(45,127,224,0.4)] flex items-center justify-center"
         >
           Initialize Business Brain 🚀
         </button>
