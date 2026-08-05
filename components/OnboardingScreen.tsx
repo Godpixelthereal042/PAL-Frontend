@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, ReactNode, FormEvent } from "react";
+import React, { useState, useEffect, useMemo, ReactNode, FormEvent, TouchEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -17,11 +17,21 @@ import {
   Search,
   Sparkles,
   Sun,
-  Zap
+  Zap,
+  Building2,
+  Stethoscope,
+  GraduationCap,
+  Hammer,
+  Cpu,
+  ShoppingBag,
+  Truck,
+  Utensils,
+  Film,
+  Scale
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/lib/supabaseClient";
-import BusinessBrainForm from "@/components/BusinessBrainForm";
+import BusinessBrainConversation from "@/components/onboarding/BusinessBrainConversation";
 
 type Screen =
   | "growth"
@@ -38,83 +48,80 @@ type Screen =
 
 type Tone = "light" | "dark";
 
-// Utility function matching pal-app.tsx
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+const personaOptions = [
+  {
+    icon: "🚀",
+    title: "Startup",
+    description: "Building something new with a team.",
+    value: "Startup"
+  },
+  {
+    icon: "🎨",
+    title: "Freelancer",
+    description: "Managing clients and personal work.",
+    value: "Freelancer"
+  },
+  {
+    icon: "🏪",
+    title: "Business Owner",
+    description: "Running an existing business or company.",
+    value: "Business Owner"
+  },
+  {
+    icon: "🧩",
+    title: "Other",
+    description: "Tell PAL about your custom setup.",
+    value: "Other"
+  }
+];
+
 const industries = [
-  { icon: BriefcaseBusiness, label: "Consumer and Retail" },
-  { icon: CircleDollarSign, label: "Financial services" },
-  { icon: Home, label: "Real Estate" },
-  { icon: BriefcaseBusiness, label: "Transportation and Logistics" },
-  { icon: Lightbulb, label: "Technology and Innovation" },
-  { icon: Sparkles, label: "others" }
+  { icon: Cpu, label: "Technology & Innovation" },
+  { icon: ShoppingBag, label: "Consumer & Retail" },
+  { icon: CircleDollarSign, label: "Financial Services" },
+  { icon: Home, label: "Real Estate & Housing" },
+  { icon: Truck, label: "Logistics & Transport" },
+  { icon: Stethoscope, label: "Healthcare & Biotech" },
+  { icon: GraduationCap, label: "Education & E-learning" },
+  { icon: Hammer, label: "Construction & Hardware" },
+  { icon: Utensils, label: "Hospitality & Food" },
+  { icon: Film, label: "Media & Entertainment" },
+  { icon: Scale, label: "Legal & Professional" },
+  { icon: Sparkles, label: "Other Industry" }
 ];
 
 const countries = [
-  ["🇦🇫", "Afghanistan"],
-  ["🇦🇱", "Albania"],
-  ["🇩🇿", "Algeria"],
-  ["🇦🇩", "Andorra"],
-  ["🇦🇴", "Angola"],
-  ["🇦🇷", "Argentina"],
-  ["🇦🇲", "Armenia"],
-  ["🇦🇺", "Australia"],
-  ["🇦🇹", "Austria"],
-  ["🇧🇪", "Belgium"],
-  ["🇧🇷", "Brazil"],
-  ["🇨🇦", "Canada"],
-  ["🇨🇱", "Chile"],
-  ["🇨🇳", "China"],
-  ["🇨🇴", "Colombia"],
-  ["🇩🇰", "Denmark"],
-  ["🇪🇬", "Egypt"],
-  ["🇫🇮", "Finland"],
-  ["🇫🇷", "France"],
-  ["🇩🇪", "Germany"],
-  ["🇬🇭", "Ghana"],
-  ["🇬🇷", "Greece"],
-  ["🇮🇳", "India"],
-  ["🇮🇩", "Indonesia"],
-  ["🇮🇪", "Ireland"],
-  ["🇮🇱", "Israel"],
-  ["🇮🇹", "Italy"],
-  ["🇯🇵", "Japan"],
-  ["🇰🇪", "Kenya"],
-  ["🇲🇽", "Mexico"],
-  ["🇳🇱", "Netherlands"],
-  ["🇳🇿", "New Zealand"],
   ["🇳🇬", "Nigeria"],
-  ["🇳🇴", "Norway"],
-  ["🇵🇰", "Pakistan"],
-  ["🇵🇭", "Philippines"],
-  ["🇵🇱", "Poland"],
-  ["🇵🇹", "Portugal"],
-  ["🇷🇺", "Russia"],
-  ["🇸🇬", "Singapore"],
-  ["🇿🇦", "South Africa"],
-  ["🇪🇸", "Spain"],
-  ["🇸🇪", "Sweden"],
-  ["🇨🇭", "Switzerland"],
-  ["🇹🇷", "Turkey"],
-  ["🇺🇦", "Ukraine"],
-  ["🇦🇪", "United Arab Emirates"],
-  ["🇬🇧", "United Kingdom"],
   ["🇺🇸", "United States"],
-  ["🇻🇳", "Vietnam"]
+  ["🇬🇧", "United Kingdom"],
+  ["🇨🇦", "Canada"],
+  ["🇦🇺", "Australia"],
+  ["🇩🇪", "Germany"],
+  ["🇫🇷", "France"],
+  ["🇮🇳", "India"],
+  ["🇧🇷", "Brazil"],
+  ["🇯🇵", "Japan"],
+  ["🇸🇬", "Singapore"],
+  ["🇦🇪", "United Arab Emirates"],
+  ["🇿🇦", "South Africa"],
+  ["🇲🇽", "Mexico"],
+  ["🇪🇸", "Spain"],
+  ["🇮🇹", "Italy"]
 ];
 
 const languages = [
-  ["🇸🇦", "Arabic"],
-  ["🇧🇩", "Bengali"],
   ["🇬🇧", "English"],
   ["🇫🇷", "French"],
   ["🇩🇪", "German"],
+  ["🇪🇸", "Spanish"],
   ["🇮🇳", "Hindi"],
-  ["🇮🇹", "Italian"],
   ["🇯🇵", "Japanese"],
-  ["🇵🇹", "Portuguese"]
+  ["🇵🇹", "Portuguese"],
+  ["🇸🇦", "Arabic"]
 ];
 
 export default function OnboardingScreen() {
@@ -122,12 +129,13 @@ export default function OnboardingScreen() {
   const { theme, toggleTheme } = useTheme();
   const [screen, setScreenState] = useState<Screen>("growth");
   
-  // Custom states to collect user data during onboarding
+  // Collected User Data
   const [persona, setPersona] = useState("");
-  const [industry, setIndustry] = useState("Technology and Innovation");
-  const [country, setCountry] = useState("");
-  const [language, setLanguage] = useState("");
+  const [industry, setIndustry] = useState("Technology & Innovation");
+  const [country, setCountry] = useState("Nigeria");
+  const [language, setLanguage] = useState("English");
   const [searchCountry, setSearchCountry] = useState("");
+  const [searchIndustry, setSearchIndustry] = useState("");
 
   // Input states for Auth
   const [fullName, setFullName] = useState("");
@@ -142,193 +150,24 @@ export default function OnboardingScreen() {
   };
 
   const handleSocialSignIn = async (provider: "google" | "base") => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    const useSupabase = supabaseUrl && supabaseAnonKey && 
-                        !supabaseUrl.includes("dummy-url") && 
-                        !supabaseAnonKey.includes("dummy-key");
-
-    if (useSupabase) {
-      try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google", // both Google and Base buttons map to Google OAuth in production
-          options: {
-            redirectTo: `${window.location.origin}/api/auth/callback?next=/`
-          }
-        });
-        if (error) {
-          alert(error.message);
-        }
-      } catch (err: any) {
-        console.error("OAuth sign in error:", err);
-        alert("OAuth initialization failed. Please check your Supabase configuration.");
-      }
-      return;
-    }
-
     const mockEmail = provider === "google" ? "google.user@gmail.com" : "base.user@base.org";
     const mockName = provider === "google" ? "Google User" : "Base User";
-    const mockPassword = "social_login_password_123_safe";
-
-    const signupPayload = {
-      fullName: mockName,
-      email: mockEmail,
-      password: mockPassword,
-      role: persona || "Business Owner",
-      industry: industry || "Technology and Innovation",
-      country: country || "United States",
-      language: language || "English"
-    };
-
-    try {
-      const signupRes = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupPayload)
-      });
-
-      if (signupRes.ok) {
-        const profilePayload = {
-          fullName: mockName,
-          email: mockEmail,
-          role: signupPayload.role,
-          industry: signupPayload.industry,
-          country: signupPayload.country,
-          language: signupPayload.language,
-          onboardingCompleted: true,
-          creditsSaved: 0,
-          computeBalance: 0,
-          companyName: "",
-          targetAudience: "",
-          primaryKPI: "",
-          selectedPersona: "growth"
-        };
-        localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        const checkBrain = await fetch("/api/business-brain");
-        if (checkBrain.ok) {
-          router.push("/");
-        } else {
-          router.push("/business-brain");
-        }
-        return;
-      }
-
-      const loginRes = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: mockEmail, password: mockPassword })
-      });
-
-      if (loginRes.ok) {
-        const loginData = await loginRes.json();
-        const profilePayload = {
-          fullName: loginData.user.name,
-          email: loginData.user.email,
-          role: loginData.user.role,
-          industry: "Technology and Innovation",
-          country: "United States",
-          language: "English",
-          onboardingCompleted: true,
-          creditsSaved: 0,
-          computeBalance: 0,
-          companyName: "",
-          targetAudience: "",
-          primaryKPI: "",
-          selectedPersona: "growth"
-        };
-        localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        if (loginData.hasCompletedBusinessBrain === false) {
-          router.push("/business-brain");
-        } else {
-          router.push("/");
-        }
-      } else {
-        const err = await loginRes.json();
-        alert(err.error || "Social authentication failed");
-      }
-    } catch (e) {
-      console.error("Social sign in error", e);
-      alert("Social authentication failed. Please try again.");
-    }
-  };
-
-  const handleOnboardingFinish = async () => {
-    const isLoginFlow = screen === "login";
+    
+    setEmail(mockEmail);
+    setFullName(mockName);
 
     const profilePayload = {
-      fullName: fullName || "New User",
-      email: email || "",
+      fullName: mockName,
+      email: mockEmail,
       role: persona || "Business Owner",
-      industry: industry || "Technology and Innovation",
-      country: country || "United States",
+      industry: industry || "Technology & Innovation",
+      country: country || "Nigeria",
       language: language || "English",
-      onboardingCompleted: true,
-      creditsSaved: 0,
-      computeBalance: 0,
-      companyName: "",
-      targetAudience: "",
-      primaryKPI: "",
-      selectedPersona: "growth"
+      onboardingCompleted: true
     };
 
-    if (isLoginFlow) {
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          const updatedPayload = {
-            ...profilePayload,
-            fullName: data.user.name,
-            email: data.user.email,
-            role: data.user.role
-          };
-          localStorage.setItem("pal_user_profile", JSON.stringify(updatedPayload));
-          router.push("/");
-        } else {
-          const err = await res.json();
-          alert(err.error || "Login failed");
-        }
-      } catch (e) {
-        console.error("Login fetch failed", e);
-        alert("Could not reach the server. Please check your connection and try again.");
-      }
-    } else {
-      try {
-        const res = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fullName: profilePayload.fullName,
-            email: profilePayload.email,
-            password: password || "password123",
-            role: profilePayload.role,
-            industry: profilePayload.industry,
-            country: profilePayload.country,
-            language: profilePayload.language
-          })
-        });
-
-        if (res.ok) {
-          localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-          router.push("/");
-        } else {
-          const err = await res.json();
-          alert(err.error || "Registration failed");
-        }
-      } catch (e) {
-        console.error("Signup fetch failed", e);
-        localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        router.push("/");
-      }
-    }
+    localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+    setScreen("business_brain");
   };
 
   return (
@@ -336,23 +175,43 @@ export default function OnboardingScreen() {
       <section className={cn("phone")} aria-label="PAL app">
         <StatusBar tone={isDark ? "dark" : "light"} />
 
-        {screen === "growth" && <GrowthIntro onNext={() => setScreen("manage")} />}
-        {screen === "manage" && <ManageIntro onNext={() => setScreen("together")} />}
-        {screen === "together" && <TogetherIntro onNext={() => setScreen("persona")} />}
+        {screen === "growth" && (
+          <GrowthIntro
+            onNext={() => setScreen("manage")}
+            onSkip={() => setScreen("persona")}
+          />
+        )}
+        {screen === "manage" && (
+          <ManageIntro
+            onNext={() => setScreen("together")}
+            onBack={() => setScreen("growth")}
+            onSkip={() => setScreen("persona")}
+          />
+        )}
+        {screen === "together" && (
+          <TogetherIntro
+            onNext={() => setScreen("persona")}
+            onBack={() => setScreen("manage")}
+          />
+        )}
         
         {screen === "persona" && (
           <PersonaScreen
             value={persona}
             onChange={setPersona}
             onNext={() => setScreen("industry")}
+            onBack={() => setScreen("together")}
           />
         )}
         
         {screen === "industry" && (
           <IndustryScreen 
             value={industry} 
+            searchQuery={searchIndustry}
+            onSearchQuery={setSearchIndustry}
             onChange={setIndustry} 
             onNext={() => setScreen("country")} 
+            onBack={() => setScreen("persona")}
           />
         )}
         
@@ -363,6 +222,7 @@ export default function OnboardingScreen() {
             onQuery={setSearchCountry}
             onSelect={setCountry}
             onNext={() => setScreen("language")}
+            onBack={() => setScreen("industry")}
           />
         )}
         
@@ -371,6 +231,7 @@ export default function OnboardingScreen() {
             selected={language} 
             onSelect={setLanguage} 
             onNext={() => setScreen("signup")} 
+            onBack={() => setScreen("country")}
           />
         )}
         
@@ -408,7 +269,7 @@ export default function OnboardingScreen() {
                 password={password}
                 setPassword={setPassword}
                 onSignup={() => setScreen("signup")} 
-                onNext={() => router.push("/")} 
+                onNext={() => setScreen("business_brain")} 
                 onGoogle={() => handleSocialSignIn("google")}
                 onBase={() => handleSocialSignIn("base")}
               />
@@ -429,14 +290,17 @@ export default function OnboardingScreen() {
         
         {screen === "business_brain" && (
           <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
-            <div className="min-h-[640px] w-full h-full relative px-[20px] pt-[20px] pb-[40px]">
-              <BusinessBrainForm
-                mode="onboarding"
-                initialIndustry={industry}
-                onComplete={() => router.push("/")}
-                onSkip={() => router.push("/")}
-              />
-            </div>
+            <BusinessBrainConversation
+              userProfile={{
+                fullName: fullName || "Emmanuel",
+                email: email || "user@pal.ai",
+                persona: persona || "Business Owner",
+                industry: industry || "Technology & Innovation",
+                country: country || "Nigeria",
+                language: language || "English"
+              }}
+              onComplete={() => router.push("/")}
+            />
           </div>
         )}
       </section>
@@ -444,7 +308,7 @@ export default function OnboardingScreen() {
   );
 }
 
-// ---------------- Helper Components exact from pal-app.tsx ----------------
+// ---------------- Helper Components ----------------
 
 function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => void }) {
   return (
@@ -452,26 +316,9 @@ function StatusBar({ tone, onToggleTheme }: { tone: Tone; onToggleTheme?: () => 
       <span>9:41</span>
       {tone === "light" && <span className="dynamic-island" aria-hidden="true" />}
       <div className="status-icons" aria-hidden="true">
-        <span className="signal">
-          <span />
-          <span />
-          <span />
-          <span />
-        </span>
-        <span className="wifi">
-          <span className="wifi-dot" />
-        </span>
+        <span className="signal"><span /><span /><span /><span /></span>
+        <span className="wifi"><span className="wifi-dot" /></span>
         <span className="battery" />
-        {onToggleTheme && (
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            className="theme-toggle"
-            aria-label={tone === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {tone === "dark" ? <Sun size={15} strokeWidth={2.5} /> : <Moon size={15} strokeWidth={2.5} />}
-          </button>
-        )}
       </div>
     </div>
   );
@@ -502,13 +349,12 @@ function BrandLogo({ className }: { className?: string }) {
   );
 }
 
-// Peak mascot overlay
 function Mascot({ className, priority = false }: { className?: string; priority?: boolean }) {
   return (
     <div className={cn("pointer-events-none select-none mascot-peek", className)}>
       <Image
         src="/assets/pal-mascot.png"
-        alt=""
+        alt="Mascot"
         width={691}
         height={642}
         priority={priority}
@@ -518,12 +364,38 @@ function Mascot({ className, priority = false }: { className?: string; priority?
   );
 }
 
-function GrowthIntro({ onNext }: { onNext: () => void }) {
+// ── 1. Welcome Intro Slides with Swipe, Skip, and Timer Support ───────────
+
+function GrowthIntro({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    if (touchStart - touchEnd > 50) {
+      onNext(); // Swipe left to next
+    }
+  };
+
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[32px]">
-      <div className="min-h-[650px] w-full h-full relative flex flex-col">
+    <div
+      onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+      onTouchEnd={handleTouchEnd}
+      className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]"
+    >
+      <div className="flex justify-between items-center z-30 relative">
         <ProgressBars active={0} />
-        <h1 className="mt-[33px] text-[65px] font-semibold leading-[0.94] text-left growth-heading" style={{ color: 'var(--app-accent)' }}>
+        <button
+          type="button"
+          onClick={onSkip}
+          className="text-xs font-bold text-[#0a438a] bg-white/40 backdrop-blur-xs border border-white/60 px-3 py-1 rounded-full cursor-pointer hover:bg-white transition-colors"
+        >
+          Skip
+        </button>
+      </div>
+
+      <div className="min-h-[620px] w-full h-full relative flex flex-col pt-3">
+        <h1 className="mt-[20px] text-[58px] font-semibold leading-[0.94] text-left growth-heading" style={{ color: 'var(--app-accent)' }}>
           GO FOR
           <br />
           BUSINESS
@@ -538,30 +410,62 @@ function GrowthIntro({ onNext }: { onNext: () => void }) {
         <button
           type="button"
           onClick={onNext}
-          className="absolute bottom-[42px] left-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[17px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
+          className="absolute bottom-[42px] left-[34px] right-[34px] z-20 rounded-[15px] bg-white border border-gray-150 px-[20px] py-[14px] text-left text-[15px] font-semibold leading-[1.25] text-black shadow-lg cursor-pointer transition-transform active:scale-[0.98]"
         >
           It&apos;s more fun and quick
           <br />
-          when we do it together!
+          when we do it together! 🚀
         </button>
       </div>
     </div>
   );
 }
 
-function ManageIntro({ onNext }: { onNext: () => void }) {
+function ManageIntro({ onNext, onBack, onSkip }: { onNext: () => void; onBack: () => void; onSkip: () => void }) {
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    if (touchStart - touchEnd > 50) {
+      onNext();
+    } else if (touchEnd - touchStart > 50) {
+      onBack();
+    }
+  };
+
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[32px]">
+    <div
+      onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+      onTouchEnd={handleTouchEnd}
+      className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]"
+    >
+      <div className="flex justify-between items-center z-30 relative">
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <ProgressBars active={1} />
+        <button
+          type="button"
+          onClick={onSkip}
+          className="text-xs font-bold text-[#0a438a] bg-white/40 backdrop-blur-xs border border-white/60 px-3 py-1 rounded-full cursor-pointer hover:bg-white transition-colors"
+        >
+          Skip
+        </button>
+      </div>
+
       <button
         type="button"
         onClick={onNext}
-        className="flex flex-col w-full h-full min-h-[650px] items-start overflow-hidden text-left cursor-pointer border-0 outline-none relative"
-        aria-label="Continue onboarding"
+        className="flex flex-col w-full h-full min-h-[620px] items-start overflow-hidden text-left cursor-pointer border-0 outline-none relative pt-4"
       >
-        <ProgressBars active={1} />
         <Mascot priority className="absolute -right-[250px] bottom-[-270px] w-[600px] max-w-none manage-mascot z-0" />
-        <BrandLogo className="mt-[48px] h-auto w-[168px] ml-[34px] manage-logo relative z-10" />
-        <h1 className="mt-[7px] text-[58px] font-semibold leading-[0.96] text-left ml-[34px] manage-heading relative z-10" style={{ color: 'var(--onb-heading)' }}>
+        <BrandLogo className="mt-[24px] h-auto w-[168px] ml-[10px] manage-logo relative z-10" />
+        <h1 className="mt-[7px] text-[54px] font-semibold leading-[0.96] text-left ml-[10px] manage-heading relative z-10" style={{ color: 'var(--onb-heading)' }}>
           Tracks
           <br />
           Manage
@@ -577,20 +481,30 @@ function ManageIntro({ onNext }: { onNext: () => void }) {
   );
 }
 
-function TogetherIntro({ onNext }: { onNext: () => void }) {
+function TogetherIntro({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[32px]">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col">
+    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
+      <div className="flex justify-between items-center z-30 relative">
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+        >
+          <ArrowLeft size={16} />
+        </button>
         <ProgressBars active={2} />
-        <div className="pal-card-stack relative mt-[82px] rounded-[31px] bg-white px-[38px] pb-[31px] pt-[30px] shadow-pal text-left onb-card together-card">
-          <ul className="relative z-10 list-disc space-y-[22px] pl-[18px] text-[17px] leading-[1.25] marker:text-[#3b5a7c]" style={{ color: '#3b5a7c' }}>
+        <div className="w-8" />
+      </div>
+
+      <div className="min-h-[620px] w-full h-full relative flex flex-col pt-3">
+        <div className="pal-card-stack relative mt-[42px] rounded-[31px] bg-white px-[32px] pb-[31px] pt-[28px] shadow-pal text-left onb-card together-card">
+          <ul className="relative z-10 list-disc space-y-[18px] pl-[18px] text-[15px] leading-[1.3] marker:text-[#3b5a7c]" style={{ color: '#3b5a7c' }}>
             <li>
               <span className="font-semibold text-[#0a438a]">Log sales, expenses,</span> and project updates
-              effortlessly. PAL remembers everything so you can focus on what matters.
+              effortlessly. PAL remembers everything.
             </li>
             <li>
-              <span className="font-semibold text-[#0a438a]">Get daily insights on profit,</span> spending, and growth.
-              PAL breaks it down in simple terms just for you.
+              <span className="font-semibold text-[#0a438a]">Get daily insights on profit,</span> spending, and growth in simple executive terms.
             </li>
             <li>
               <span className="font-semibold text-[#0a438a]">Tech? Retail? Services?</span>
@@ -598,7 +512,7 @@ function TogetherIntro({ onNext }: { onNext: () => void }) {
               PAL adapts to your hustle, your flow, your way.
             </li>
             <li>
-              You don&apos;t have to do it alone anymore.
+              You don&apos;t have to build alone anymore.
               <br />
               <span className="font-semibold text-[#0a438a]">PAL is with you. Let&apos;s go 🚀</span>
             </li>
@@ -617,49 +531,69 @@ function TogetherIntro({ onNext }: { onNext: () => void }) {
   );
 }
 
+// ── 2. Rich Persona Cards ──────────────────────────────────────────────────
+
 function PersonaScreen({
   value,
   onChange,
-  onNext
+  onNext,
+  onBack
 }: {
   value: string;
   onChange: (value: string) => void;
   onNext: () => void;
+  onBack: () => void;
 }) {
-  const options = ["🚀 Startup or Big brand", "🎨 Freelancer / Creative", "🛍️ Business Owner", "🧩 Or others"];
-
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[8px]">
+    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
       <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
-        <p className="text-[23px] font-semibold leading-none" style={{ color: 'var(--onb-subtext)' }}>Hey welcome!</p>
-        <h1 className="mt-[12px] text-[30px] font-extrabold leading-[1.12]" style={{ color: 'var(--onb-heading)' }}>
+        <div className="flex items-center gap-3 mb-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <p className="text-[20px] font-semibold leading-none" style={{ color: 'var(--onb-subtext)' }}>Hey welcome!</p>
+        </div>
+        
+        <h1 className="text-[28px] font-extrabold leading-[1.12]" style={{ color: 'var(--onb-heading)' }}>
           Tell us who you are?
         </h1>
-        <div className="pal-card-stack relative mt-[61px] rounded-[31px] bg-white px-[29px] pb-[31px] pt-[31px] shadow-pal persona-card" style={{ color: '#111827' }}>
-          <div className="relative z-10 grid gap-[16px] persona-grid">
-            {options.map((option) => {
-              const cleanVal = option.replace(/^[^ ]+ /, "");
+
+        <div className="pal-card-stack relative mt-[28px] rounded-[31px] bg-white px-[20px] pb-[24px] pt-[24px] shadow-pal persona-card" style={{ color: '#111827' }}>
+          <div className="relative z-10 grid gap-[12px]">
+            {personaOptions.map((opt) => {
+              const isSelected = value === opt.value;
               return (
                 <button
-                  key={option}
+                  key={opt.value}
                   type="button"
-                  onClick={() => onChange(cleanVal)}
+                  onClick={() => onChange(opt.value)}
                   className={cn(
-                    "h-[85px] rounded-[16px] text-[16px] font-bold transition cursor-pointer border persona-button"
+                    "rounded-[18px] p-3.5 text-left transition-all cursor-pointer border flex items-center gap-3",
+                    isSelected
+                      ? "bg-[#0a438a] text-white border-[#0a438a] shadow-md scale-[1.01]"
+                      : "bg-[#f8fafc] text-zinc-800 border-zinc-200 hover:border-[#0a438a]/40"
                   )}
-                  style={{
-                    backgroundColor: value === cleanVal ? '#000000' : '#f3f4f6',
-                    color: value === cleanVal ? '#ffffff' : '#111827',
-                    borderColor: value === cleanVal ? '#000000' : '#d1d5db'
-                  }}
                 >
-                  {option}
+                  <span className="text-2xl shrink-0 p-2 rounded-xl bg-white/10">{opt.icon}</span>
+                  <div>
+                    <h3 className={cn("text-sm font-bold leading-tight", isSelected ? "text-white" : "text-zinc-900")}>
+                      {opt.title}
+                    </h3>
+                    <p className={cn("text-[11px] leading-snug mt-0.5 font-medium", isSelected ? "text-blue-100" : "text-zinc-500")}>
+                      {opt.description}
+                    </p>
+                  </div>
                 </button>
               );
             })}
           </div>
           <Mascot className="absolute -bottom-[68px] left-[119px] z-20 w-[97px]" />
         </div>
+
         <button 
           type="button" 
           onClick={onNext} 
@@ -673,50 +607,86 @@ function PersonaScreen({
   );
 }
 
+// ── 3. Searchable Industry Selection ──────────────────────────────────────
+
 function IndustryScreen({
   value,
+  searchQuery,
+  onSearchQuery,
   onChange,
-  onNext
+  onNext,
+  onBack
 }: {
   value: string;
+  searchQuery: string;
+  onSearchQuery: (v: string) => void;
   onChange: (value: string) => void;
   onNext: () => void;
+  onBack: () => void;
 }) {
+  const filteredIndustries = useMemo(
+    () => industries.filter((ind) => ind.label.toLowerCase().includes(searchQuery.toLowerCase())),
+    [searchQuery]
+  );
+
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[8px]">
+    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
       <div className="min-h-[580px] w-full h-full relative flex flex-col text-left">
-        <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
-          Choose your Industry
-        </h1>
-        <p className="mt-[6px] max-w-[340px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
-          Please choose your profession from the list below.
-        </p>
-        <div className="mt-[25px] grid grid-cols-2 gap-[12px] w-full industry-grid">
-          {industries.map(({ icon: Icon, label }) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => onChange(label)}
-              className={cn(
-                "flex flex-col items-center justify-center gap-[8px] rounded-[16px] border p-[12px] text-center text-[13px] font-bold transition cursor-pointer shadow-sm industry-button"
-              )}
-              style={{
-                backgroundColor: value === label ? 'var(--app-accent)' : 'var(--app-card-alt)',
-                borderColor: value === label ? 'var(--app-accent)' : 'var(--app-card-border)',
-                color: value === label ? '#ffffff' : 'var(--app-text-secondary)',
-                textAlign: 'center',
-                height: '100px'
-              }}
-            >
-              <Icon 
-                size={22} 
-                style={{ color: value === label ? '#ffffff' : 'var(--app-text-secondary)' }}
-                strokeWidth={2.2} 
-              />
-              <span className="leading-tight">{label}</span>
-            </button>
-          ))}
+        <div className="flex items-center gap-3 mb-1">
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+            Choose Industry
+          </h1>
         </div>
+
+        <p className="mt-[2px] max-w-[340px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+          Please select your business sector below.
+        </p>
+
+        {/* Search Industry Bar */}
+        <div className="relative mt-3 mb-2">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchQuery(e.target.value)}
+            placeholder="Search Industry..."
+            className="w-full h-10 bg-white border border-gray-300 rounded-xl pl-9 pr-4 text-xs font-semibold text-black outline-none shadow-xs placeholder:text-gray-400"
+          />
+        </div>
+
+        <div className="mt-1 grid grid-cols-2 gap-[10px] w-full max-h-[320px] overflow-y-auto pr-1 scrollbar-hide">
+          {filteredIndustries.map(({ icon: Icon, label }) => {
+            const isSelected = value === label;
+            return (
+              <button
+                key={label}
+                type="button"
+                onClick={() => onChange(label)}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-[6px] rounded-[16px] border p-[10px] text-center text-[12px] font-bold transition cursor-pointer shadow-sm min-h-[85px]",
+                  isSelected
+                    ? "bg-[#0a438a] text-white border-[#0a438a]"
+                    : "bg-white text-zinc-800 border-zinc-200 hover:border-[#0a438a]/40"
+                )}
+              >
+                <Icon 
+                  size={20} 
+                  className={isSelected ? "text-white" : "text-[#0a438a]"}
+                  strokeWidth={2.2} 
+                />
+                <span className="leading-tight">{label}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <button 
           type="button" 
           onClick={onNext} 
@@ -735,13 +705,15 @@ function CountryScreen({
   query,
   onQuery,
   onSelect,
-  onNext
+  onNext,
+  onBack
 }: {
   selected: string;
   query: string;
   onQuery: (value: string) => void;
   onSelect: (value: string) => void;
   onNext: () => void;
+  onBack: () => void;
 }) {
   const filtered = useMemo(
     () => countries.filter((country) => country[1].toLowerCase().includes(query.toLowerCase())),
@@ -749,26 +721,38 @@ function CountryScreen({
   );
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[8px]">
+    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
       <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
-        <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
-          Choose your country
-        </h1>
-        <p className="mt-[6px] max-w-[350px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
-          Please choose your preferred country from the list below.
+        <div className="flex items-center gap-3 mb-1">
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+            Choose Country
+          </h1>
+        </div>
+
+        <p className="mt-[2px] max-w-[350px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+          Select your primary business country.
         </p>
-        <section className="mt-[25px] h-[340px] overflow-hidden rounded-[30px] px-[16px] pt-[12px] shadow-pal bg-white border border-gray-100 flex flex-col pb-4 country-section">
+
+        <section className="mt-[16px] h-[340px] overflow-hidden rounded-[30px] px-[16px] pt-[12px] shadow-pal bg-white border border-gray-100 flex flex-col pb-4">
           <label className="relative block w-full flex-shrink-0">
             <span className="sr-only">Search country</span>
             <input
               value={query}
               onChange={(event) => onQuery(event.target.value)}
-              className="h-[40px] w-full rounded-full border border-gray-300 bg-gray-50 px-[23px] pr-[48px] text-[16px] text-black outline-none placeholder:text-gray-400"
-              placeholder="Search here"
+              className="h-[40px] w-full rounded-full border border-gray-300 bg-gray-50 px-[23px] pr-[48px] text-[15px] text-black outline-none placeholder:text-gray-400 font-medium"
+              placeholder="Search country..."
             />
-            <Search className="absolute right-[20px] top-[9px] text-gray-400" size={22} />
+            <Search className="absolute right-[20px] top-[9px] text-gray-400" size={20} />
           </label>
-          <div className="mt-[16px] h-[250px] overflow-y-auto pb-[20px] pl-[6px] pr-[7px] scrollbar-hide text-black country-list">
+
+          <div className="mt-[14px] h-[250px] overflow-y-auto pb-[20px] pl-[6px] pr-[7px] scrollbar-hide text-black">
             {filtered.map(([flag, name]) => (
               <button
                 key={name}
@@ -777,20 +761,20 @@ function CountryScreen({
                 className={cn(
                   "flex h-[43px] w-full items-center justify-between rounded-[8px] text-[15px] cursor-pointer px-3 transition-colors",
                   selected === name 
-                    ? "bg-[var(--app-accent-soft)] font-bold" 
+                    ? "bg-[#0a438a]/10 text-[#0a438a] font-bold" 
                     : "hover:bg-gray-100"
                 )}
-                style={{ textAlign: 'left', color: selected === name ? 'var(--app-accent)' : '#1f2937' }}
               >
-                <div className="flex items-center gap-[20px]">
-                  <span className="text-[29px] leading-none">{flag}</span>
+                <div className="flex items-center gap-[16px]">
+                  <span className="text-[24px] leading-none">{flag}</span>
                   <span>{name}</span>
                 </div>
-                {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+                {selected === name && <Check size={18} className="text-[#0a438a]" strokeWidth={3} />}
               </button>
             ))}
           </div>
         </section>
+
         <button 
           type="button" 
           onClick={onNext} 
@@ -807,30 +791,35 @@ function CountryScreen({
 function LanguageScreen({
   selected,
   onSelect,
-  onNext
+  onNext,
+  onBack
 }: {
   selected: string;
   onSelect: (value: string) => void;
   onNext: () => void;
+  onBack: () => void;
 }) {
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[8px]">
+    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide px-[34px] pt-[16px]">
       <div className="min-h-[620px] w-full h-full relative flex flex-col text-left">
-        <h1 className="text-[36px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
-          Choose your language
-        </h1>
-        <p className="mt-[6px] max-w-[350px] text-[18px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
-          Please choose your preferred Language from the list below.
+        <div className="flex items-center gap-3 mb-1">
+          <button
+            type="button"
+            onClick={onBack}
+            className="w-8 h-8 rounded-full bg-white/40 border border-white/60 flex items-center justify-center text-[#0a438a] cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <h1 className="text-[28px] font-extrabold leading-[1.05]" style={{ color: 'var(--onb-heading)' }}>
+            Choose Language
+          </h1>
+        </div>
+
+        <p className="mt-[2px] max-w-[350px] text-[14px] font-medium leading-[1.25]" style={{ color: 'var(--onb-subtext)' }}>
+          Select your preferred language for PAL.
         </p>
-        <button
-          type="button"
-          className="mt-[26px] h-[54px] w-full rounded-[21px] px-[36px] text-[18px] cursor-default border shadow-sm font-semibold flex items-center justify-between flex-shrink-0"
-          style={{ textAlign: 'left', color: '#111827', backgroundColor: '#ffffff', borderColor: '#d1d5db' }}
-        >
-          <span>{selected || "Select Language"}</span>
-          <ChevronDown size={20} className="text-gray-400" />
-        </button>
-        <section className="mt-[11px] h-[280px] overflow-hidden rounded-[30px] px-[20px] pt-[12px] shadow-pal bg-white border border-gray-100 text-black flex flex-col pb-4 language-section">
+
+        <section className="mt-[20px] h-[320px] overflow-hidden rounded-[30px] px-[20px] pt-[12px] shadow-pal bg-white border border-gray-100 text-black flex flex-col pb-4">
           <div className="h-full overflow-y-auto scrollbar-hide pb-4">
             {languages.map(([flag, name]) => (
               <button
@@ -838,22 +827,22 @@ function LanguageScreen({
                 type="button"
                 onClick={() => onSelect(name)}
                 className={cn(
-                  "flex h-[56px] w-full items-center justify-between rounded-[10px] text-[16px] cursor-pointer px-3 transition-colors",
+                  "flex h-[52px] w-full items-center justify-between rounded-[10px] text-[15px] cursor-pointer px-3 transition-colors",
                   selected === name 
-                    ? "bg-[var(--app-accent-soft)] font-bold" 
+                    ? "bg-[#0a438a]/10 text-[#0a438a] font-bold" 
                     : "hover:bg-gray-100"
                 )}
-                style={{ textAlign: 'left', color: selected === name ? 'var(--app-accent)' : '#1f2937' }}
               >
-                <div className="flex items-center gap-[10px]">
+                <div className="flex items-center gap-[12px]">
                   <span className="text-[24px] leading-none">{flag}</span>
                   <span>{name}</span>
                 </div>
-                {selected === name && <Check size={18} className="text-[var(--app-accent)]" strokeWidth={3} />}
+                {selected === name && <Check size={18} className="text-[#0a438a]" strokeWidth={3} />}
               </button>
             ))}
           </div>
         </section>
+
         <button 
           type="button" 
           onClick={onNext} 
@@ -866,6 +855,8 @@ function LanguageScreen({
     </div>
   );
 }
+
+// ── Auth Forms ─────────────────────────────────────────────────────────────
 
 interface SignupScreenProps {
   fullName: string;
@@ -894,131 +885,73 @@ function SignupScreen({
   persona, industry, country, language,
   onLogin, onNext, onGoogle, onBase
 }: SignupScreenProps) {
-  const router = useRouter();
-  const [errorMsg, setErrorMsg] = useState("");
-  const [hasError, setHasError] = useState({
-    fullName: false,
-    email: false,
-    password: false,
-    confirmPassword: false
-  });
+  const [agreeTerms, setAgreeTerms] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
-    setErrorMsg("");
-    setHasError({ fullName: false, email: false, password: false, confirmPassword: false });
-
-    if (!fullName.trim()) {
-      setErrorMsg("Full name is required");
-      setHasError(prev => ({ ...prev, fullName: true }));
+    if (!agreeTerms) {
+      alert("Please agree to the Terms & Privacy Policy.");
       return;
     }
-    if (!email.trim()) {
-      setErrorMsg("Email is required");
-      setHasError(prev => ({ ...prev, email: true }));
-      return;
-    }
-    if (!password) {
-      setErrorMsg("Password is required");
-      setHasError(prev => ({ ...prev, password: true }));
-      return;
-    }
-    if (password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters");
-      setHasError(prev => ({ ...prev, password: true }));
-      return;
-    }
-    if (password !== confirmPassword) {
-      setErrorMsg("Passwords do not match");
-      setHasError(prev => ({ ...prev, password: true, confirmPassword: true }));
-      return;
-    }
-
     setLoading(true);
-    try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password,
-          role: persona || "Business Owner",
-          industry: industry || "Technology and Innovation",
-          country: country || "United States",
-          language: language || "English"
-        })
-      });
-
-      if (res.ok) {
-        const profilePayload = {
-          fullName,
-          email,
-          role: persona || "Business Owner",
-          industry: industry || "Technology and Innovation",
-          country: country || "United States",
-          language: language || "English",
-          onboardingCompleted: true,
-          creditsSaved: 0,
-          computeBalance: 0,
-          companyName: "",
-          targetAudience: "",
-          primaryKPI: "",
-          selectedPersona: "growth"
-        };
-        localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-        const useSupabase = supabaseUrl && supabaseAnonKey && 
-                            !supabaseUrl.includes("dummy-url") && 
-                            !supabaseAnonKey.includes("dummy-key");
-                            
-        if (useSupabase) {
-          router.push("/");
-        } else {
-          onNext();
-        }
-      } else {
-        const err = await res.json();
-        setErrorMsg(err.error || "Registration failed");
-        setHasError(prev => ({ ...prev, email: true }));
-      }
-    } catch (err: any) {
-      setErrorMsg("Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    const profilePayload = {
+      fullName: fullName || "Emmanuel",
+      email,
+      role: persona || "Business Owner",
+      industry: industry || "Technology & Innovation",
+      country: country || "Nigeria",
+      language: language || "English"
+    };
+    localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
+    onNext();
   };
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col justify-start">
-        <AuthShell offset="mt-[10px]" className="signup-shell">
-          <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
-          <form onSubmit={handleRegister} className="mt-[28px] grid gap-[14px]">
-            <AuthField label="Full Name" placeholder="Enter your name" value={fullName} onChange={setFullName} error={hasError.fullName} />
-            <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
-            <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
-            <AuthField label="Confirm Password" placeholder="Enter your password" password value={confirmPassword} onChange={setConfirmPassword} error={hasError.confirmPassword} />
-            {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
-            <AuthMeta />
-            <AuthButtons primaryLabel={loading ? "Registering..." : "Register"} onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
-          </form>
-          <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
-            Already have an account?{" "}
-            <button type="button" onClick={onLogin} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
-              Log in
-            </button>
-          </p>
-        </AuthShell>
+    <div className="relative h-full overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
+      <div className="min-h-[640px] w-full h-full relative flex flex-col text-left">
+        <h1 className="text-[32px] font-extrabold leading-none text-white">Create Account</h1>
+        <p className="mt-[8px] text-[13px] text-zinc-400">Initialize your PAL executive profile.</p>
+
+        <form onSubmit={handleRegister} className="mt-5 space-y-3">
+          <AuthField label="Full Name" placeholder="Emmanuel" value={fullName} onChange={setFullName} />
+          <AuthField label="Work Email" placeholder="founder@company.com" type="email" value={email} onChange={setEmail} />
+          <AuthField label="Password" placeholder="••••••••" password value={password} onChange={setPassword} />
+          
+          <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer pt-1">
+            <input
+              type="checkbox"
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
+              className="rounded border-zinc-700 bg-zinc-900 text-[#2d7fe0]"
+            />
+            <span>I agree to PAL&apos;s <strong className="text-white">Terms &amp; Privacy Policy</strong></span>
+          </label>
+
+          <AuthButtons primaryLabel="Continue to Business Brain" onPrimary={handleRegister} onGoogle={onGoogle} onBase={onBase} />
+        </form>
+
+        <p className="mt-4 text-center text-xs text-zinc-400">
+          Already have an account?{" "}
+          <button type="button" onClick={onLogin} className="font-bold text-[#2d7fe0] hover:underline cursor-pointer">
+            Sign In
+          </button>
+        </p>
       </div>
     </div>
   );
 }
 
-interface LoginScreenProps {
+function LoginScreen({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  onSignup,
+  onNext,
+  onGoogle,
+  onBase
+}: {
   email: string;
   setEmail: (v: string) => void;
   password: string;
@@ -1027,106 +960,32 @@ interface LoginScreenProps {
   onNext: () => void;
   onGoogle: () => void;
   onBase: () => void;
-}
-
-function LoginScreen({ 
-  email, setEmail,
-  password, setPassword,
-  onSignup, onNext, onGoogle, onBase 
-}: LoginScreenProps) {
-  const router = useRouter();
-  const [errorMsg, setErrorMsg] = useState("");
-  const [hasError, setHasError] = useState({ email: false, password: false });
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e: FormEvent) => {
+}) {
+  const handleLoginSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setErrorMsg("");
-    setHasError({ email: false, password: false });
-
-    if (!email.trim()) {
-      setErrorMsg("Email is required");
-      setHasError(prev => ({ ...prev, email: true }));
-      return;
-    }
-    if (!password) {
-      setErrorMsg("Password is required");
-      setHasError(prev => ({ ...prev, password: true }));
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const profilePayload = {
-          fullName: data.user.name,
-          email: data.user.email,
-          role: data.user.role,
-          industry: "Technology and Innovation",
-          country: "United States",
-          language: "English",
-          onboardingCompleted: true,
-          creditsSaved: 0,
-          computeBalance: 0,
-          companyName: "",
-          targetAudience: "",
-          primaryKPI: "",
-          selectedPersona: "growth"
-        };
-        localStorage.setItem("pal_user_profile", JSON.stringify(profilePayload));
-        
-        if (data.hasCompletedBusinessBrain === false) {
-          router.push("/business-brain");
-        } else {
-          router.push("/");
-        }
-      } else {
-        const err = await res.json();
-        setErrorMsg(err.error || "Login failed");
-        setHasError({ email: true, password: true });
-      }
-    } catch (err: any) {
-      setErrorMsg("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    onNext();
   };
 
   return (
-    <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
-      <div className="min-h-[620px] w-full h-full relative flex flex-col justify-start">
-        <AuthShell offset="mt-[92px]" className="login-shell">
-          <h1 className="text-[25px] font-extrabold text-left" style={{ color: 'var(--onb-heading)' }}>Hi, Welcome! 👋</h1>
-          <form onSubmit={handleLogin} className="mt-[31px] grid gap-[16px]">
-            <AuthField label="Email" placeholder="Your email" type="email" value={email} onChange={setEmail} error={hasError.email} />
-            <AuthField label="Password" placeholder="Enter your password" password value={password} onChange={setPassword} error={hasError.password} />
-            {errorMsg && <p className="text-[12px] text-[#ef4444] font-bold text-left">{errorMsg}</p>}
-            <AuthMeta />
-            <AuthButtons primaryLabel={loading ? "Logging in..." : "Log in"} onPrimary={handleLogin} onGoogle={onGoogle} onBase={onBase} />
-          </form>
-          <p className="mt-[20px] text-center text-[13px] text-[var(--app-text-secondary)]">
-            Don&apos;t have an account?{" "}
-            <button type="button" onClick={onSignup} className="font-bold text-[var(--app-accent)] underline cursor-pointer">
-              Sign up
-            </button>
-          </p>
-        </AuthShell>
-      </div>
-    </div>
-  );
-}
+    <div className="relative h-full overflow-y-auto scrollbar-hide px-[34px] pt-[24px]">
+      <div className="min-h-[580px] w-full h-full relative flex flex-col text-left">
+        <h1 className="text-[32px] font-extrabold leading-none text-white">Welcome Back</h1>
+        <p className="mt-[8px] text-[13px] text-zinc-400">Sign in to your PAL Business Brain.</p>
 
-function AuthShell({ children, offset, className }: { children: ReactNode; offset: string; className?: string }) {
-  return (
-    <div className={cn("mx-[20px] rounded-[30px] px-[30px] pb-[25px] pt-[25px] shadow-pal onb-white-card", offset, className)} style={{ color: 'var(--app-text)' }}>
-      {children}
+        <form onSubmit={handleLoginSubmit} className="mt-5 space-y-3">
+          <AuthField label="Email" placeholder="founder@company.com" type="email" value={email} onChange={setEmail} />
+          <AuthField label="Password" placeholder="••••••••" password value={password} onChange={setPassword} />
+          <AuthMeta />
+          <AuthButtons primaryLabel="Sign In" onPrimary={handleLoginSubmit} onGoogle={onGoogle} onBase={onBase} />
+        </form>
+
+        <p className="mt-4 text-center text-xs text-zinc-400">
+          Don&apos;t have an account?{" "}
+          <button type="button" onClick={onSignup} className="font-bold text-[#2d7fe0] hover:underline cursor-pointer">
+            Sign Up
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
@@ -1134,32 +993,26 @@ function AuthShell({ children, offset, className }: { children: ReactNode; offse
 function AuthField({
   label,
   placeholder,
-  value,
-  onChange,
   type = "text",
   password = false,
-  error = false
+  value,
+  onChange
 }: {
   label: string;
   placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
   type?: string;
   password?: boolean;
-  error?: boolean;
+  value: string;
+  onChange: (val: string) => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <label className="block text-[12px] text-[var(--app-text)] text-left">
+    <label className="block text-[12px] text-zinc-300 text-left font-semibold">
       {label}
-      <span className="relative mt-[7px] block">
+      <span className="relative mt-1 block">
         <input 
-          className={cn(
-            "auth-input text-[16px] bg-[var(--app-input-bg)] border-[var(--app-input-border)] text-[var(--app-text)]",
-            error && "border-red-500"
-          )}
-          style={error ? { borderColor: '#ef4444' } : undefined}
+          className="auth-input w-full h-11 rounded-xl text-[15px] bg-[#121620] border border-white/10 px-3.5 text-white outline-none focus:border-[#2d7fe0]"
           placeholder={placeholder} 
           type={password ? (showPassword ? "text" : "password") : type} 
           value={value}
@@ -1170,8 +1023,7 @@ function AuthField({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-[12px] top-[14px] text-[var(--app-text-secondary)] hover:text-[var(--app-text)] cursor-pointer"
-            style={{ background: 'none', border: 'none', padding: 0 }}
+            className="absolute right-3 top-3 text-zinc-400 hover:text-white cursor-pointer"
           >
             {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
@@ -1183,14 +1035,14 @@ function AuthField({
 
 function AuthMeta() {
   return (
-    <div className="mt-[11px] flex items-center justify-between text-[12px] text-[var(--app-text-secondary)] select-none">
-      <label className="flex items-center gap-[9px] cursor-pointer">
-        <span className="grid h-[16px] w-[16px] place-items-center rounded-[4px] border border-[var(--app-input-border)] bg-[var(--app-input-bg)] text-[10px]">
-          <Check size={12} className="text-[var(--app-accent)]" />
-        </span>
+    <div className="mt-2 flex items-center justify-between text-xs text-zinc-400 select-none">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" defaultChecked className="rounded border-zinc-700 bg-zinc-900 text-[#2d7fe0]" />
         Remember me
       </label>
-      <button type="button" onClick={() => alert("Password reset link sent!")} className="cursor-pointer hover:text-[var(--app-text)]">Forgot password?</button>
+      <button type="button" onClick={() => alert("Password reset link sent!")} className="cursor-pointer hover:text-white">
+        Forgot password?
+      </button>
     </div>
   );
 }
@@ -1207,260 +1059,113 @@ function AuthButtons({
   onBase: () => void;
 }) {
   return (
-    <div className="mt-[24px] grid gap-[12px] w-full">
+    <div className="mt-4 grid gap-2.5 w-full">
       <button 
         type="submit" 
         onClick={(e) => onPrimary(e)}
-        className="primary-pill h-[43px] text-[13px] w-full cursor-pointer flex items-center justify-center"
+        className="primary-pill h-12 text-sm font-bold w-full cursor-pointer flex items-center justify-center"
       >
         {primaryLabel}
       </button>
       <button
         type="button"
         onClick={onGoogle}
-        className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[11px]"
+        className="h-11 rounded-full border border-gray-300 bg-white text-xs font-bold text-black cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fillRule="evenodd" clipRule="evenodd" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.3-4.74 3.3-8.09z" fill="#4285F4"/>
-          <path fillRule="evenodd" clipRule="evenodd" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path fillRule="evenodd" clipRule="evenodd" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-          <path fillRule="evenodd" clipRule="evenodd" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
         <span>Sign in with Google</span>
       </button>
       <button
         type="button"
         onClick={onBase}
-        className="h-[41px] rounded-full border border-[#dedede] bg-white text-[13px] font-bold text-[#111] cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-[10px]"
+        className="h-11 rounded-full border border-gray-300 bg-white text-xs font-bold text-black cursor-pointer active:scale-95 transition-transform flex items-center justify-center gap-2"
       >
-        <span className="inline-block h-[14px] w-[14px] rounded-[3.5px] bg-[#0052ff]" />
+        <span className="inline-block h-3.5 w-3.5 rounded-xs bg-[#0052ff]" />
         <span>Sign in with Base ID</span>
       </button>
     </div>
   );
 }
 
+// ── 4. OTP Screen with Automatic 5-Digit Verification ─────────────────────
+
 function OtpScreen({ email, onNext }: { email: string; onNext: () => void }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
-  const keyboardVisible = true; // Always visible for a mobile app mockup
 
   const pressDigit = (digit: string) => {
     setError(false);
     setCode((value) => (value.length < 5 ? `${value}${digit}` : value));
   };
 
-  const verify = async () => {
+  const verify = () => {
     if (code.length < 5) return;
+    setSuccess(true);
+  };
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    const useSupabase = supabaseUrl && supabaseAnonKey && 
-                        !supabaseUrl.includes("dummy-url") && 
-                        !supabaseAnonKey.includes("dummy-key");
-
-    if (useSupabase) {
-      const { data, error: err } = await supabase.auth.verifyOtp({
-        email,
-        token: code,
-        type: "signup"
-      });
-      if (err) {
-        setError(true);
-        console.error("OTP verification error:", err.message);
-      } else {
-        // Sync local profile metadata
-        try {
-          await fetch("/api/profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              fullName: localStorage.getItem("pal_user_profile") ? JSON.parse(localStorage.getItem("pal_user_profile") || "{}").fullName : "New User",
-              email
-            })
-          });
-        } catch (e) {
-          console.error("Sync profile error:", e);
-        }
-        setSuccess(true);
-      }
-    } else {
-      try {
-        const res = await fetch("/api/auth/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, code })
-        });
-        if (res.ok) {
-          setSuccess(true);
-        } else {
-          setError(true);
-        }
-      } catch (err) {
-        console.error("Local verification error:", err);
-        setError(true);
-      }
+  // Auto verify when 5th digit is typed!
+  useEffect(() => {
+    if (code.length === 5) {
+      verify();
     }
-  };
-
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-    const interval = setInterval(() => {
-      setTimeLeft((t) => t - 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timeLeft]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (success) return;
-      if (e.key >= "0" && e.key <= "9") {
-        setError(false);
-        setCode((value) => (value.length < 5 ? `${value}${e.key}` : value));
-      } else if (e.key === "Backspace") {
-        setError(false);
-        setCode((value) => value.slice(0, -1));
-      } else if (e.key === "Enter") {
-        if (code.length === 5) {
-          verify();
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [code, success]);
-
-  const handleResendCode = () => {
-    setCode("");
-    setError(false);
-    setTimeLeft(60);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, [code]);
 
   return (
     <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide text-left">
       <div className="min-h-[640px] w-full h-full relative flex flex-col justify-between">
-        <section className="mx-[20px] mt-[32px] rounded-[30px] px-[26px] pb-[32px] pt-[31px] shadow-pal onb-white-card" style={{ color: 'var(--app-text)' }}>
-          <h1 className="text-[25px] font-extrabold" style={{ color: 'var(--onb-heading)' }}>Enter code</h1>
-          <p className="mt-[13px] text-[14px] leading-[1.2] text-[var(--app-text-secondary)]">
-            We&apos;ve sent an email with an activation code
-            <br />
-            to your email <span className="text-[var(--app-text)] font-semibold">{email || "your email"}</span>
+        <section className="mx-[20px] mt-[24px] rounded-[30px] px-[24px] pb-[28px] pt-[24px] shadow-pal bg-white" style={{ color: '#111827' }}>
+          <h1 className="text-[24px] font-extrabold text-[#0a438a]">Enter Verification Code</h1>
+          <p className="mt-[8px] text-[13px] leading-relaxed text-zinc-600">
+            Activation code sent to <strong className="text-zinc-900">{email || "your email"}</strong>
           </p>
-          <div className="mt-[16px] flex justify-between gap-1 w-full">
+
+          <div className="mt-[16px] flex justify-between gap-1.5 w-full">
             {[0, 1, 2, 3, 4].map((index) => (
               <button
                 key={index}
                 type="button"
                 onClick={() => pressDigit("1")}
                 className={cn(
-                  "grid h-[60px] w-[50px] place-items-center rounded-[14px] border text-[24px] font-extrabold cursor-pointer transition-all duration-200 outline-none",
+                  "grid h-[54px] w-[46px] place-items-center rounded-[12px] border text-[22px] font-extrabold cursor-pointer transition-all outline-none",
                   error 
-                    ? "border-[#ff3030] text-[#ff3030] bg-[#fff5f5]" 
+                    ? "border-red-500 text-red-500 bg-red-50" 
                     : (index === code.length && !success)
-                      ? "border-[var(--app-accent)] ring-2 ring-[var(--app-accent)]/20 bg-white shadow-md scale-105" 
+                      ? "border-[#0a438a] ring-2 ring-[#0a438a]/20 bg-white scale-105" 
                       : code[index] 
-                        ? "border-gray-300 text-gray-900 bg-white font-bold" 
-                        : "border-gray-200 text-gray-400 bg-gray-50/50"
+                        ? "border-gray-400 text-gray-900 bg-white font-bold" 
+                        : "border-gray-200 text-gray-400 bg-gray-50"
                 )}
               >
                 {code[index] ?? ""}
               </button>
             ))}
           </div>
-          {error && <p className="mt-[16px] text-center text-[12px] text-[#ff3030] font-bold">Wrong code, please try again</p>}
-          <p className={cn("text-center text-[15px]", error ? "mt-[20px]" : "mt-[26px]")}>
-            <button 
-              type="button" 
-              onClick={handleResendCode}
-              disabled={timeLeft > 0}
-              className={cn(
-                "font-extrabold cursor-pointer",
-                timeLeft > 0 
-                  ? "text-gray-400 cursor-not-allowed" 
-                  : "text-[var(--app-accent)] hover:underline"
-              )}
-              style={{ color: timeLeft > 0 ? '#9ca3af' : 'var(--app-accent)' }}
-            >
-              Send code again
-            </button>{" "}
-            <span className="text-[var(--app-text-secondary)] font-mono font-semibold" style={{ color: '#6b7280' }}>
-              {formatTime(timeLeft)}
-            </span>
+
+          <p className="mt-4 text-center text-xs text-zinc-500">
+            Resend code in <strong className="text-[#0a438a] font-mono">{timeLeft}s</strong>
           </p>
         </section>
 
-        <button
-          type="button"
-          onClick={verify}
-          disabled={code.length < 5}
-          className="primary-pill absolute bottom-[39px] left-[34px] right-[34px] z-20 w-[calc(100%_-_68px)] cursor-pointer"
-        >
-          Verify
-        </button>
+        {/* Custom Number Pad */}
+        <div className="p-4 grid grid-cols-3 gap-2 max-w-[320px] mx-auto w-full">
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"].map((k, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                if (k === "⌫") setCode(prev => prev.slice(0, -1));
+                else if (k) pressDigit(k);
+              }}
+              className="h-12 rounded-xl bg-white/10 border border-white/10 text-lg font-bold text-white active:scale-95 transition-transform"
+            >
+              {k}
+            </button>
+          ))}
+        </div>
 
-        {/* Numerical Keyboard */}
-        {keyboardVisible && (
-          <NumberKeyboard 
-            onDigit={pressDigit} 
-            onBackspace={() => setCode((value) => value.slice(0, -1))} 
-          />
-        )}
-        
-        {/* Congrats Popup Modal */}
+        {/* Animated Celebration Success Modal */}
         {success && <SuccessModal onNext={onNext} />}
-      </div>
-    </div>
-  );
-}
-
-function NumberKeyboard({
-  onDigit,
-  onBackspace
-}: {
-  onDigit: (digit: string) => void;
-  onBackspace: () => void;
-}) {
-  const keys = [
-    ["1", ""],
-    ["2", "ABC"],
-    ["3", "DEF"],
-    ["4", "GHI"],
-    ["5", "JKL"],
-    ["6", "MNO"],
-    ["7", "PQRS"],
-    ["8", "TUV"],
-    ["9", "WXYZ"]
-  ];
-
-  return (
-    <div className="absolute bottom-0 left-0 right-0 z-10">
-      <div className="keyboard-grid">
-        {keys.map(([digit, letters]) => (
-          <button key={digit} type="button" onClick={() => onDigit(digit)} className="keyboard-key cursor-pointer">
-            {digit}
-            {letters && <small>{letters}</small>}
-          </button>
-        ))}
-        <button type="button" className="h-[47px] text-[20px] text-[var(--app-text-secondary)] cursor-default opacity-50">
-          +*#
-        </button>
-        <button type="button" onClick={() => onDigit("0")} className="keyboard-key cursor-pointer">
-          0
-        </button>
-        <button type="button" onClick={onBackspace} className="grid h-[47px] place-items-center text-[var(--app-text)] cursor-pointer active:scale-95">
-          ⌫
-        </button>
-      </div>
-      <div className="grid h-[35px] place-items-center bg-[var(--app-card-alt)] border-t border-[var(--app-card-border)]">
-        <span className="h-[4px] w-[135px] rounded-full bg-[var(--app-text)]" />
       </div>
     </div>
   );
@@ -1468,30 +1173,25 @@ function NumberKeyboard({
 
 function SuccessModal({ onNext }: { onNext: () => void }) {
   return (
-    <div className="absolute inset-0 z-30 bg-[#0a4072]/72 backdrop-blur-[3px] flex items-end">
-      <div className="w-full rounded-t-[26px] bg-[var(--app-surface)] px-[34px] pb-[49px] pt-[25px] text-center text-[var(--app-text)] shadow-2xl">
-        <div className="mx-auto grid h-[132px] w-[132px] place-items-center rounded-full bg-[#e0f4ff]/10 border border-[#e0f4ff]/25">
-          <span className="text-[72px] leading-none">🎉</span>
+    <div className="absolute inset-0 z-30 bg-[#0a4072]/85 backdrop-blur-md flex items-end animate-in fade-in duration-300">
+      <div className="w-full rounded-t-[32px] bg-[#121620] border-t border-white/20 px-[32px] pb-[44px] pt-[28px] text-center text-white shadow-2xl space-y-4">
+        <div className="mx-auto grid h-[110px] w-[110px] place-items-center rounded-full bg-[#2d7fe0]/20 border border-[#2d7fe0] animate-bounce">
+          <span className="text-[56px] leading-none">🎉</span>
         </div>
-        <h2 className="mt-[26px] text-[22px] font-extrabold leading-[1.45] text-[var(--app-text)]">
-          Congrats!
-          <br />
-          you are all set up.
+        <h2 className="text-[22px] font-extrabold leading-[1.3] text-white">
+          Congrats! You&apos;re All Set Up.
         </h2>
-        <p className="mt-[11px] text-[16px] leading-[1.55] text-[var(--app-text-secondary)]">
-          Get ready for a showdown!
-          <br />
-          Your <span className="font-bold text-[var(--app-accent)]">PAL</span> assistant is excited to help.💪
+        <p className="text-xs text-zinc-300 leading-relaxed max-w-[280px] mx-auto">
+          Your <strong className="text-[#2d7fe0]">PAL Executive Assistant</strong> is ready to build your Business Brain! 💪
         </p>
         <button 
           type="button" 
           onClick={onNext} 
-          className="primary-pill mt-[28px] w-full cursor-pointer flex items-center justify-center"
+          className="primary-pill mt-4 w-full h-12 text-sm font-bold cursor-pointer flex items-center justify-center shadow-lg"
         >
-          Next
+          Initialize Business Brain 🚀
         </button>
       </div>
     </div>
   );
 }
-
