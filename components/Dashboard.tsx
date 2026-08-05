@@ -170,22 +170,33 @@ const INITIAL_EVENTS: CalendarEvent[] = [
 
 function StatusBar({ tone }: { tone: "light" | "dark" }) {
     return (
-        <div className={`status-bar ${tone === "dark" ? "status-dark" : ""}`}>
+        <div className={`flex justify-between items-center px-7 pt-5 pb-2 text-[15px] font-semibold tracking-wide ${tone === "dark" ? "text-white" : "text-black"}`}>
             <span>9:41</span>
-            {tone === "light" && <span className="dynamic-island" aria-hidden="true" />}
-            <div className="status-icons" aria-hidden="true">
-                <span className="signal">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                </span>
-                <span className="wifi">
-                    <span className="wifi-dot" />
-                </span>
-                <span className="battery" />
+            <div className="flex items-center gap-[6px]">
+                {/* iOS Signal */}
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor">
+                    <path d="M1 9h3v3H1V9zm5-3h3v6H6V6zm5-3h3v9h-3V3zm5-3h3v12h-3V0z" />
+                </svg>
+                {/* iOS Wifi */}
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+                    <path d="M8 12l-8-9.8C.9 1.5 4.3 0 8 0s7.1 1.5 8 2.2L8 12z" />
+                </svg>
+                {/* iOS Battery */}
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+                    <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="currentColor" />
+                    <path d="M23 4v4c1.1 0 2-.9 2-2s-.9-2-2-2z" fill="currentColor" />
+                    <rect x="2" y="2" width="15" height="8" rx="2" fill="currentColor" />
+                </svg>
             </div>
         </div>
+    );
+}
+
+function ThunderIcon({ className }: { className?: string }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#F59E0B" stroke="#F59E0B" strokeWidth="1" strokeLinejoin="round" />
+        </svg>
     );
 }
 
@@ -322,57 +333,32 @@ export default function Dashboard() {
             <div className="flex justify-between items-center p-4 pt-2 pb-2 shrink-0 z-30 bg-transparent">
                 <button
                     onClick={() => router.push("/analytics")}
-                    style={{ 
-                        backgroundColor: '#061830', 
-                        borderColor: '#1d4f8a',
-                        borderStyle: 'solid',
-                        borderWidth: '1.5px',
-                        color: '#ffffff'
-                    }}
-                    className="grid h-[55px] w-[55px] place-items-center rounded-full transition active:scale-95 cursor-pointer hover:opacity-90 shadow-md"
+                    className="btn-global-utility btn-global-utility-accent"
                     aria-label="Zap menu"
                 >
-                    <Zap size={22} className="fill-current" style={{ color: '#ffffff' }} />
+                    <Zap size={22} className="fill-current" />
                 </button>
                 
                 <div className="flex items-center gap-[10px]">
                     <button 
                         onClick={() => router.push("/camera")}
-                        style={{ 
-                            backgroundColor: 'rgba(255, 255, 255, 0.12)', 
-                            borderColor: 'rgba(255, 255, 255, 0.2)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            color: '#ffffff'
-                        }}
-                        className="grid h-[55px] w-[55px] place-items-center rounded-full active:scale-95 transition-all cursor-pointer hover:opacity-80 shadow-md"
+                        className="btn-global-utility"
                         aria-label="Camera"
                     >
-                        <Camera size={20} style={{ color: '#ffffff' }} />
+                        <Camera size={20} />
                     </button>
                     <button 
                         onClick={() => router.push("/notifications")}
-                        style={{ 
-                            backgroundColor: 'rgba(255, 255, 255, 0.12)', 
-                            borderColor: 'rgba(255, 255, 255, 0.2)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            color: '#ffffff'
-                        }}
-                        className="grid h-[55px] w-[55px] place-items-center rounded-full active:scale-95 transition-all cursor-pointer hover:opacity-80 shadow-md"
+                        className="btn-global-utility"
                         aria-label="Notifications"
                     >
-                        <Bell size={20} style={{ color: '#ffffff' }} />
+                        <Bell size={20} />
                     </button>
                     {/* Mascot Avatar */}
                     <button
                         onClick={() => router.push("/profile")}
-                        style={{
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px'
-                        }}
-                        className="w-[55px] h-[55px] rounded-full overflow-hidden relative active:scale-95 transition-all cursor-pointer text-left shrink-0 shadow-md"
+                        className="btn-global-utility overflow-hidden p-0"
+                        style={{ padding: 0 }}
                     >
                         <MascotAvatar className="w-full h-full" />
                     </button>
@@ -383,71 +369,54 @@ export default function Dashboard() {
             <div className="flex-1 overflow-y-auto px-4 pb-28 scrollbar-hide">
 
             {/* Greeting */}
-            <div className="mt-6 font-outfit px-1 shrink-0">
-                <span className="text-zinc-500 text-[15px] font-semibold block">Welcome back</span>
-                <h1 className="text-[32px] font-extrabold text-white mt-1 leading-[1.05] tracking-tight">
-                    {username} ⚡
-                </h1>
+            <div className="mt-8 font-outfit px-3 shrink-0">
+                <span className="text-[#8ba3c4] text-[16px] font-medium block tracking-wide">Welcome back</span>
+                <div className="flex items-center mt-1">
+                    <h1 className="text-[34px] font-extrabold text-white leading-[1.05] tracking-tight mr-3">
+                        Emmanuel
+                    </h1>
+                    <ThunderIcon className="w-[28px] h-[28px] drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+                </div>
             </div>
 
             {/* Action Row (Schedules) */}
-            <div className="mt-5 flex items-center gap-[8px] mb-4">
+            <div className="mt-10 px-3 flex items-center justify-between mb-8 gap-4">
                 <button
                     type="button"
                     onClick={() => setIsModalOpen(true)}
-                    style={{ backgroundColor: '#0a2f5c', color: '#ffffff' }}
-                    className="flex h-[44px] flex-1 items-center justify-center gap-[10px] rounded-full text-[13px] font-semibold transition active:scale-[0.98] cursor-pointer hover:opacity-90 shadow-md"
+                    className="btn-pill-action h-[48px] px-8 text-[14px] flex-grow flex items-center justify-center max-w-[200px]"
                 >
-                    Add Schedules <Plus size={16} style={{ color: '#ffffff' }} />
+                    Add Schedules <Plus size={18} className="ml-1" />
                 </button>
                 
-                {/* Gmail icon */}
-                <button
-                    type="button"
-                    onClick={() => router.push("/connect/gmail")}
-                    style={{ 
-                        backgroundColor: '#1c1c1e',
-                        borderColor: connectedSchedules.includes("gmail") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        opacity: connectedSchedules.includes("gmail") ? 1 : 0.35
-                    }}
-                    className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
-                >
-                    <GmailIcon className="w-[20px] h-[20px]" />
-                </button>
+                <div className="flex items-center gap-3">
+                    {/* Gmail icon */}
+                    <button
+                        type="button"
+                        onClick={() => router.push("/connect/gmail")}
+                        className={`connector-badge ${connectedSchedules.includes("gmail") ? "active" : "inactive"}`}
+                    >
+                        <GmailIcon className="w-[22px] h-[22px]" />
+                    </button>
 
-                {/* Slack icon */}
-                <button
-                    type="button"
-                    onClick={() => router.push("/connect/slack")}
-                    style={{ 
-                        backgroundColor: '#1c1c1e',
-                        borderColor: connectedSchedules.includes("slack") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        opacity: connectedSchedules.includes("slack") ? 1 : 0.35
-                    }}
-                    className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
-                >
-                    <SlackIcon className="w-[20px] h-[20px]" />
-                </button>
-                
-                {/* Plus button inside schedules */}
-                <button
-                    type="button"
-                    onClick={() => router.push("/connect/new")}
-                    style={{ 
-                        backgroundColor: '#062447', 
-                        borderColor: '#1d4f8a',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        color: '#ffffff'
-                    }}
-                    className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full hover:opacity-90 active:scale-95 transition-all shrink-0 cursor-pointer shadow-md"
-                >
-                    <Plus size={18} style={{ color: '#ffffff' }} />
-                </button>
+                    {/* Slack icon */}
+                    <button
+                        type="button"
+                        onClick={() => router.push("/connect/slack")}
+                        className={`connector-badge ${connectedSchedules.includes("slack") ? "active" : "inactive"}`}
+                    >
+                        <SlackIcon className="w-[22px] h-[22px]" />
+                    </button>
+                    
+                    {/* Plus button inside schedules */}
+                    <button
+                        type="button"
+                        onClick={() => router.push("/connect/new")}
+                        className="connector-badge active btn-global-utility-accent"
+                    >
+                        <Plus size={20} />
+                    </button>
+                </div>
             </div>
 
             {/* Calendar Widget or Empty State */}
@@ -484,21 +453,14 @@ export default function Dashboard() {
             )}
 
             {/* Connect Data */}
-            <div className="mb-2">
-                <h2 className="mt-[17px] text-[21px] font-bold text-[#51d4ff] pl-1 font-outfit">Connect Data</h2>
-                <div className="mt-[12px] flex gap-[9px] overflow-x-auto py-2 px-1 scrollbar-hide">
+            <div className="mb-4 mt-8 px-2">
+                <h2 className="text-[20px] font-bold text-[#51d4ff] pl-1 font-outfit mb-4">Connect Data</h2>
+                <div className="flex gap-[12px] overflow-x-auto pb-2 pl-1 scrollbar-hide">
                     {/* Excel */}
                     <button
                         type="button"
                         onClick={() => router.push("/connect/excel")}
-                        style={{ 
-                            backgroundColor: '#1c1c1e',
-                            borderColor: connectedSources.includes("excel") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            opacity: connectedSources.includes("excel") ? 1 : 0.35
-                        }}
-                        className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
+                        className={`connector-badge ${connectedSources.includes("excel") ? "active" : "inactive"}`}
                     >
                         <ExcelIcon className="w-[20px] h-[20px]" />
                     </button>
@@ -506,14 +468,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => router.push("/connect/google")}
-                        style={{ 
-                            backgroundColor: '#1c1c1e',
-                            borderColor: connectedSources.includes("google") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            opacity: connectedSources.includes("google") ? 1 : 0.35
-                        }}
-                        className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
+                        className={`connector-badge ${connectedSources.includes("google") ? "active" : "inactive"}`}
                     >
                         <GoogleIcon className="w-[20px] h-[20px]" />
                     </button>
@@ -521,14 +476,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => router.push("/connect/slack")}
-                        style={{ 
-                            backgroundColor: '#1c1c1e',
-                            borderColor: connectedSources.includes("slack") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            opacity: connectedSources.includes("slack") ? 1 : 0.35
-                        }}
-                        className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
+                        className={`connector-badge ${connectedSources.includes("slack") ? "active" : "inactive"}`}
                     >
                         <SlackIcon className="w-[20px] h-[20px]" />
                     </button>
@@ -536,14 +484,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => router.push("/connect/x")}
-                        style={{ 
-                            backgroundColor: '#1c1c1e',
-                            borderColor: connectedSources.includes("x") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            opacity: connectedSources.includes("x") ? 1 : 0.35
-                        }}
-                        className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
+                        className={`connector-badge ${connectedSources.includes("x") ? "active" : "inactive"}`}
                     >
                         <TwitterXIcon className="w-[20px] h-[20px]" />
                     </button>
@@ -551,14 +492,7 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={() => router.push("/connect/facebook")}
-                        style={{ 
-                            backgroundColor: '#1c1c1e',
-                            borderColor: connectedSources.includes("facebook") ? '#2d7fe0' : 'rgba(255, 255, 255, 0.08)',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            opacity: connectedSources.includes("facebook") ? 1 : 0.35
-                        }}
-                        className="relative flex items-center justify-center h-[43px] w-[43px] rounded-full transition active:scale-95 shrink-0 cursor-pointer hover:opacity-95 shadow-md"
+                        className={`connector-badge ${connectedSources.includes("facebook") ? "active" : "inactive"}`}
                     >
                         <FacebookIcon className="w-[20px] h-[20px]" />
                     </button>
@@ -566,16 +500,9 @@ export default function Dashboard() {
                     <button 
                         type="button" 
                         onClick={() => router.push("/connect/new")}
-                        style={{ 
-                            borderColor: '#1d4f8a', 
-                            backgroundColor: '#062447',
-                            borderStyle: 'solid',
-                            borderWidth: '1px',
-                            color: '#ffffff'
-                        }}
-                        className="grid h-[43px] w-[62px] place-items-center rounded-full text-white shrink-0 hover:opacity-90 transition active:scale-95 cursor-pointer shadow-md"
+                        className="connector-badge active btn-global-utility-accent"
                     >
-                        <Plus size={19} style={{ color: '#ffffff' }} />
+                        <Plus size={19} />
                     </button>
                 </div>
             </div>

@@ -13,8 +13,11 @@
  * Reference: PAL-DOC-003 (AI Architecture) §03, PAL-DOC-002 (MVP) §04
  */
 
-import { getDB } from "./db";
-import { getBusinessBrain, type BusinessBrainSnapshot } from "./businessBrain";
+import { getDB } from "./db.ts";
+import { getBusinessBrain, type BusinessBrainSnapshot } from "./businessBrain.ts";
+import { getActiveDecisions } from "./decisionMemory.ts";
+import { relationshipEngine } from "./relationships/relationshipEngine.ts";
+import type { RelationshipContext } from "./relationships/types.ts";
 
 // ---------------------------------------------------------------------------
 // TypeScript Interfaces
@@ -134,6 +137,18 @@ export interface InvoiceContext {
     status: string;
 }
 
+export interface DecisionContext {
+    id: string;
+    projectId: string | null;
+    title: string;
+    description: string | null;
+    rationale: string | null;
+    impactArea: string | null;
+    status: string;
+    confirmedAt: number | null;
+    createdAt: number;
+}
+
 export interface ContextSummary {
     activeProjects: number;
     overdueItems: number;
@@ -148,6 +163,8 @@ export interface BusinessContext {
     calendar: CalendarEventContext[];
     notifications: NotificationContext[];
     invoices: InvoiceContext[];
+    decisions: DecisionContext[];
+    relationships?: RelationshipContext;
     summary: ContextSummary;
 }
 
@@ -366,6 +383,29 @@ async function fetchInvoicesContext(db: any, userId: string): Promise<InvoiceCon
 }
 
 /**
+ * Fetch active strategic decisions.
+ */
+async function fetchDecisionsContext(userId: string): Promise<DecisionContext[]> {
+    try {
+        const records = await getActiveDecisions(userId);
+        return records.map((d) => ({
+            id: d.id,
+            projectId: d.project_id,
+            title: d.title,
+            description: d.description,
+            rationale: d.rationale,
+            impactArea: d.impact_area,
+            status: d.status,
+            confirmedAt: d.confirmed_at,
+            createdAt: d.created_at,
+        }));
+    } catch (err) {
+        console.warn("ContextEngine: Failed to load Decisions context:", err);
+        return [];
+    }
+}
+
+/**
  * Calculate high-level summary metrics across gathered contexts.
  */
 function computeContextSummary(
@@ -441,7 +481,7 @@ function computeContextSummary(
  * Builds the complete Business Context for a given user.
  *
  * This function serves as PAL's Context Engine, aggregating all data sources
- * (Founder Profile, Business Brain, Projects, Tasks, Calendar, Notifications, Invoices)
+ * (Founder Profile, Business Brain, Projects, Tasks, Calendar, Notifications, Invoices, Decisions)
  * into a single structured object.
  *
  * @param userId - Unique identifier of the authenticated user
@@ -451,7 +491,7 @@ export async function buildBusinessContext(userId: string): Promise<BusinessCont
     const db = await getDB();
 
     // Execute independent data fetches concurrently for optimal performance
-    const [founder, business, projects, tasks, calendar, notifications, invoices] = await Promise.all([
+    const [founder, business, projects, tasks, calendar, notifications, invoices, decisions, relationships] = await Promise.all([
         fetchFounderContext(db, userId),
         fetchBusinessBrainContext(userId),
         fetchProjectsContext(db, userId),
@@ -459,6 +499,8 @@ export async function buildBusinessContext(userId: string): Promise<BusinessCont
         fetchCalendarContext(db, userId),
         fetchNotificationsContext(db, userId),
         fetchInvoicesContext(db, userId),
+        fetchDecisionsContext(userId),
+        relationshipEngine.getRelationshipContext(userId).catch(() => undefined),
     ]);
 
     const summary = computeContextSummary(projects, tasks, business, invoices);
@@ -471,6 +513,8 @@ export async function buildBusinessContext(userId: string): Promise<BusinessCont
         calendar,
         notifications,
         invoices,
+        decisions,
+        relationships,
         summary,
     };
 }

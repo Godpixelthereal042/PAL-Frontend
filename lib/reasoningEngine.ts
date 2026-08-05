@@ -134,6 +134,20 @@ function analyzePriorities(context: BusinessContext): PriorityItem[] {
         }
     }
 
+    // 5. Active Strategic Decisions
+    if (context.decisions) {
+        for (const dec of context.decisions) {
+            if (dec.status.toLowerCase() === "active") {
+                items.push({
+                    title: `Decision: ${dec.title}`,
+                    description: dec.description || dec.rationale || "Active confirmed strategic decision",
+                    priority: "high",
+                    source: "Decision Memory",
+                });
+            }
+        }
+    }
+
     return items;
 }
 

@@ -4,11 +4,8 @@ import { cookies } from "next/headers";
 import crypto from "crypto";
 import { createClient } from "@/lib/supabaseServer";
 import { hasCompletedBusinessBrain } from "@/lib/businessBrain";
-
-function hashPassword(password: string): string {
-    const salt = process.env.AUTH_SALT || "pal_salt_key";
-    return crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-}
+import { verifyPassword, hashPassword } from "@/lib/security/passwordHasher";
+import { getWorkspaceForUser } from "@/lib/security/workspaceContext";
 
 export async function POST(request: Request) {
     try {
@@ -43,8 +40,7 @@ export async function POST(request: Request) {
             let user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
 
             if (!user) {
-                // If user exists in Supabase Auth but not custom users table (e.g. from OAuth), sync it
-                const fullName = data.user.user_metadata?.fullName || "Google User";
+                const fullName = data.user.user_metadata?.fullName || "User";
                 const role = data.user.user_metadata?.role || "Business Owner";
                 await db.run(
                     "INSERT INTO users (id, name, email, password, role, created_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -53,47 +49,11 @@ export async function POST(request: Request) {
                 user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
             }
 
-            // Sync/update profile table
-            await db.run(
-                `INSERT INTO profile (id, fullName, email, companyName, targetAudience, primaryKPI, selectedPersona) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?) 
-                 ON CONFLICT(id) DO UPDATE SET 
-                 fullName = excluded.fullName, 
-                 email = excluded.email, 
-                 selectedPersona = excluded.selectedPersona`,
-                [
-                    userId,
-                    user.name,
-                    normalizedEmail,
-                    "Pal AI",
-                    "Startups & Creatives",
-                    "Customer Engagement Rate",
-                    "growth"
-                ]
-            );
-
-            // Also update the global fallback "current_user"
-            await db.run(
-                `INSERT INTO profile (id, fullName, email, companyName, targetAudience, primaryKPI, selectedPersona) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?) 
-                 ON CONFLICT(id) DO UPDATE SET 
-                 fullName = excluded.fullName, 
-                 email = excluded.email, 
-                 selectedPersona = excluded.selectedPersona`,
-                [
-                    "current_user",
-                    user.name,
-                    normalizedEmail,
-                    "Pal AI",
-                    "Startups & Creatives",
-                    "Customer Engagement Rate",
-                    "growth"
-                ]
-            );
+            const workspace = await getWorkspaceForUser(userId);
 
             const hasBrain = await hasCompletedBusinessBrain(user.id);
             return NextResponse.json({
-                user: { id: user.id, name: user.name, email: user.email, role: user.role },
+                user: { id: user.id, name: user.name, email: user.email, role: user.role, workspaceId: workspace.id },
                 hasCompletedBusinessBrain: hasBrain
             });
         } else {
@@ -104,61 +64,31 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
             }
 
-            const hashedPassword = hashPassword(password);
-            if (user.password !== hashedPassword) {
+            const { valid, needsRehash } = await verifyPassword(password, user.password);
+            if (!valid) {
                 return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
             }
 
+            // Transparent migration to Argon2id if user had legacy PBKDF2 hash
+            if (needsRehash) {
+                const argonHash = await hashPassword(password);
+                await db.run("UPDATE users SET password = ? WHERE id = ?", [argonHash, user.id]);
+            }
+
+            const workspace = await getWorkspaceForUser(user.id);
             const sessionId = crypto.randomBytes(32).toString("hex");
             const expiresAt = nowMs + 1000 * 60 * 60 * 24 * 30; // 30 days
 
             await db.run(
-                "INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)",
-                [sessionId, user.id, expiresAt]
+                "INSERT INTO sessions (id, user_id, workspace_id, expires_at) VALUES (?, ?, ?, ?)",
+                [sessionId, user.id, workspace.id, expiresAt]
             );
 
-            // Update profile table
-            await db.run(
-                `INSERT INTO profile (id, fullName, email, companyName, targetAudience, primaryKPI, selectedPersona) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?) 
-                 ON CONFLICT(id) DO UPDATE SET 
-                 fullName = excluded.fullName, 
-                 email = excluded.email, 
-                 selectedPersona = excluded.selectedPersona`,
-                [
-                    user.id,
-                    user.name,
-                    normalizedEmail,
-                    "Pal AI",
-                    "Startups & Creatives",
-                    "Customer Engagement Rate",
-                    "growth"
-                ]
-            );
-
-            // Also update the global fallback "current_user"
-            await db.run(
-                `INSERT INTO profile (id, fullName, email, companyName, targetAudience, primaryKPI, selectedPersona) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?) 
-                 ON CONFLICT(id) DO UPDATE SET 
-                 fullName = excluded.fullName, 
-                 email = excluded.email, 
-                 selectedPersona = excluded.selectedPersona`,
-                [
-                    "current_user",
-                    user.name,
-                    normalizedEmail,
-                    "Pal AI",
-                    "Startups & Creatives",
-                    "Customer Engagement Rate",
-                    "growth"
-                ]
-            );
-
-            // Set session cookie
+            // Set secure session cookie
             const cookieStore = await cookies();
             cookieStore.set("pal_session_id", sessionId, {
                 httpOnly: true,
+                sameSite: "lax",
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 60 * 24 * 30, // 30 days
                 path: "/"
@@ -166,11 +96,10 @@ export async function POST(request: Request) {
 
             const hasBrain = await hasCompletedBusinessBrain(user.id);
             return NextResponse.json({
-                user: { id: user.id, name: user.name, email: user.email, role: user.role },
+                user: { id: user.id, name: user.name, email: user.email, role: user.role, workspaceId: workspace.id },
                 hasCompletedBusinessBrain: hasBrain
             });
         }
-
     } catch (error: any) {
         console.error("Login Route Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });

@@ -14,24 +14,29 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
-    const filled = name.trim().length > 0 && description.trim().length > 0 && date.trim().length > 0;
+    
+    // PAL predefined brand colors
+    const presetColors = ["#2D7FE0", "#22C55E", "#8B5CF6", "#F97316", "#EF4444"];
+    const [selectedColor, setSelectedColor] = useState(presetColors[0]);
+    const [isCustomColor, setIsCustomColor] = useState(false);
+    
+    const filled = name.trim().length > 0 && description.trim().length > 0 && date.trim().length > 0 && /^#([0-9A-F]{3}){1,2}$/i.test(selectedColor);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (filled) {
-            const projectColors = ["#3b82f6", "#0f172a", "#8b5cf6", "#10b981", "#1e293b"];
-            const randomColor = projectColors[Math.floor(Math.random() * projectColors.length)];
-            
             onAdd({
                 title: name,
                 type: "General",
                 description: description,
                 date: date,
-                color: randomColor
+                color: selectedColor
             });
             setName('');
             setDescription('');
             setDate('');
+            setSelectedColor(presetColors[0]);
+            setIsCustomColor(false);
             onClose();
         }
     };
@@ -116,8 +121,48 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                                     required
                                 />
                             </div>
+                                
+                                {/* Color Identity */}
+                                <div>
+                                    <label className="block text-[13px] font-semibold text-gray-700 mb-2">Folder Identity Color</label>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        {presetColors.map((color) => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedColor(color);
+                                                    setIsCustomColor(false);
+                                                }}
+                                                className={`w-8 h-8 rounded-full shadow-inner transition-transform ${selectedColor === color && !isCustomColor ? 'scale-110 ring-2 ring-offset-2 ring-blue-500' : 'hover:scale-105'}`}
+                                                style={{ backgroundColor: color }}
+                                                aria-label={`Select color ${color}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-3">
+                                        <div className="text-xs font-semibold text-gray-500 w-16">Custom:</div>
+                                        <input
+                                            type="text"
+                                            value={isCustomColor ? selectedColor : ""}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setIsCustomColor(true);
+                                                setSelectedColor(val.startsWith('#') ? val : '#' + val);
+                                            }}
+                                            placeholder="#HEXCODE"
+                                            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[14px] font-medium text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                                        />
+                                        {isCustomColor && /^#([0-9A-F]{3}){1,2}$/i.test(selectedColor) && (
+                                            <div 
+                                                className="w-8 h-8 rounded-full border border-gray-200 shrink-0" 
+                                                style={{ backgroundColor: selectedColor }} 
+                                            />
+                                        )}
+                                    </div>
+                                </div>
 
-                            <button
+                                <button
                                 type="submit"
                                 disabled={!filled}
                                 className={`h-[44px] w-full rounded-full text-xs font-bold uppercase tracking-wider transition-all border-none ${

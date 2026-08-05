@@ -1,117 +1,66 @@
-import { NextResponse } from "next/server";
-import { getDB } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { checkReminderTriggers } from "@/lib/reminders";
+import {
+    getNotifications,
+    processNotifications,
+} from "@/lib/notifications/notificationEngine";
+import {
+    getNotificationPreferences,
+    saveNotificationPreferences,
+} from "@/lib/notifications/notificationPreferences";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         const user = await getCurrentUser();
         if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
         }
+        const userId = user.id;
 
-        const db = await getDB();
-        
-        // Run reminder checks to update alerts
-        await checkReminderTriggers(db);
+        const grouped = await getNotifications(userId);
 
-        const notifications = await db.all("SELECT * FROM notifications ORDER BY id DESC");
-        // Convert isUnread to boolean for frontend consumption
-        const mapped = notifications.map((n: any) => ({
-            ...n,
-            isUnread: n.isUnread === 1
-        }));
-        return NextResponse.json(mapped);
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-}
-
-export async function POST(request: Request) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const db = await getDB();
-        const body = await request.json();
-        const { title, text, time, section, iconType, actionLabel, actionRoute } = body;
-
-        if (!title || !text) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-        }
-
-        const id = String(Date.now());
-        const finalTime = time || "Just now";
-        const finalSection = section || "Today";
-        const finalIconType = iconType || "verified";
-
-        await db.run(
-            `INSERT INTO notifications (id, title, text, time, isUnread, section, iconType, actionLabel, actionRoute) VALUES (?, ?, ?, ?, 1, ?, ?, ?, ?)`,
-            [id, title, text, finalTime, finalSection, finalIconType, actionLabel || null, actionRoute || null]
-        );
-
-        const newNotif = await db.get("SELECT * FROM notifications WHERE id = ?", [id]);
         return NextResponse.json({
-            ...newNotif,
-            isUnread: newNotif.isUnread === 1
-        }, { status: 201 });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-}
-
-export async function PUT(request: Request) {
-    try {
-        const user = await getCurrentUser();
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
-        const db = await getDB();
-        const body = await request.json();
-        const { id, all } = body;
-
-        if (all) {
-            await db.run("UPDATE notifications SET isUnread = 0");
-            return NextResponse.json({ success: true, message: "All notifications marked as read" });
-        }
-
-        if (!id) {
-            return NextResponse.json({ error: "Notification ID is required" }, { status: 400 });
-        }
-
-        await db.run("UPDATE notifications SET isUnread = 0 WHERE id = ?", [id]);
-        const updated = await db.get("SELECT * FROM notifications WHERE id = ?", [id]);
-        return NextResponse.json({
-            ...updated,
-            isUnread: updated.isUnread === 1
+            success: true,
+            ...grouped,
         });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: error.message || "Failed to fetch notifications" },
+            { status: 500 }
+        );
     }
 }
 
-export async function DELETE(request: Request) {
+export async function POST(req: NextRequest) {
     try {
         const user = await getCurrentUser();
         if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+        }
+        const userId = user.id;
+        const body = await req.json();
+        const { action, preferences } = body;
+
+        if (action === "preferences" && preferences) {
+            const updatedPrefs = await saveNotificationPreferences(userId, preferences);
+            return NextResponse.json({ success: true, preferences: updatedPrefs });
         }
 
-        const db = await getDB();
-        const url = new URL(request.url);
-        const id = url.searchParams.get("id");
-
-        if (id) {
-            await db.run("DELETE FROM notifications WHERE id = ?", [id]);
-            return NextResponse.json({ success: true, deletedId: id });
-        } else {
-            await db.run("DELETE FROM notifications");
-            return NextResponse.json({ success: true, message: "All notifications deleted" });
+        if (action === "get_preferences") {
+            const currentPrefs = await getNotificationPreferences(userId);
+            return NextResponse.json({ success: true, preferences: currentPrefs });
         }
+
+        const processed = await processNotifications(userId);
+        return NextResponse.json({
+            success: true,
+            count: processed.length,
+            notifications: processed,
+        });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: error.message || "Failed to process notifications" },
+            { status: 500 }
+        );
     }
 }

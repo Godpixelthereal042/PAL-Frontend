@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getWorkspaceForUser } from "@/lib/security/workspaceContext";
 
 export async function GET() {
     try {
@@ -8,12 +9,15 @@ export async function GET() {
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
+        const workspace = await getWorkspaceForUser(user.id);
         const db = await getDB();
         const projects = await db.all(
             `SELECT * FROM projects 
-             WHERE owner_id = ? 
-                OR id IN (SELECT project_id FROM project_members WHERE user_id = ?)`,
-            [user.id, user.id]
+             WHERE workspace_id = ? AND (
+                owner_id = ? 
+                OR id IN (SELECT project_id FROM project_members WHERE user_id = ?)
+             )`,
+            [workspace.id, user.id, user.id]
         );
         return NextResponse.json(projects);
     } catch (error: any) {
@@ -39,12 +43,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        const workspace = await getWorkspaceForUser(user.id);
         const projectID = id || String(Date.now());
         const projectOwnerId = user.id;
 
         await db.run(
-            `INSERT INTO projects (id, title, type, description, date, color, goal, priority, status, due_date, owner_id) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO projects (id, title, type, description, date, color, goal, priority, status, due_date, owner_id, workspace_id) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 projectID, 
                 title, 
@@ -56,7 +61,8 @@ export async function POST(request: Request) {
                 priority || "medium", 
                 status || "Planning", 
                 due_date || "", 
-                projectOwnerId
+                projectOwnerId,
+                workspace.id
             ]
         );
 

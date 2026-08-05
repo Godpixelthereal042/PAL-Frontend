@@ -4,7 +4,11 @@ import { Home, LayoutGrid, Tag, FileText, Image, Camera, Mic, Send, Receipt, Bar
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import WorkspaceDrawer from "./chat/WorkspaceDrawer";
+import PALVoiceIcon, { VoiceState } from "./chat/PALVoiceIcon";
+import PALLogo from "./ui/PALLogo";
+import { PalLogoIcon } from "@/components/icons";
+import { palBrain, ProjectContext } from "@/lib/brain/palBrain";
 interface Message {
     id: number;
     sender: "user" | "ai";
@@ -261,7 +265,15 @@ export default function ChatScreen() {
     const [isTyping, setIsTyping] = useState(false);
     const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [userName, setUserName] = useState("");
+    const [activeProject, setActiveProject] = useState<ProjectContext | null>(palBrain.getActiveProject());
+
+    useEffect(() => {
+        return palBrain.subscribe(() => {
+            setActiveProject(palBrain.getActiveProject());
+        });
+    }, []);
 
     const stageFile = (file: File, type: string) => {
         const id = Math.random().toString(36).substring(2, 9);
@@ -310,12 +322,11 @@ export default function ChatScreen() {
     const [isRecordingVoiceNote, setIsRecordingVoiceNote] = useState(false);
     const [recordingSeconds, setRecordingSeconds] = useState(0);
     
-    // PAL Live states
+    // PAL Voice Mode states
     const [isLiveModeOpen, setIsLiveModeOpen] = useState(false);
     const [isAlertOpen, setIsAlertOpen] = useState(true);
+    const [voiceState, setVoiceState] = useState<VoiceState>("idle");
     const [isTranscriptVisible, setIsTranscriptVisible] = useState(true);
-    const [liveVoice, setLiveVoice] = useState("Nova (Deep)");
-    const [isVoiceMenuOpen, setIsVoiceMenuOpen] = useState(false);
     const [isVideoActive, setIsVideoActive] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -693,80 +704,22 @@ export default function ChatScreen() {
             
             {/* Header (Fixed) */}
             <div className="flex justify-between items-center pt-2 mb-4 shrink-0 z-30">
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => router.push('/')}
-                        className="w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
-                        style={{ background: 'var(--app-card)', borderColor: 'var(--app-card-border)', color: 'var(--app-text-secondary)' }}
-                        aria-label="Back to home"
-                    >
-                        <Home className="w-5 h-5" style={{ color: 'var(--app-text-secondary)' }} />
-                    </button>
-                    
-                    {/* Model Dropdown Selector */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                            className="flex items-center gap-1 text-sm font-semibold py-1 px-2.5 rounded-lg transition-all cursor-pointer"
-                            style={{ color: 'var(--app-text-secondary)' }}
-                        >
-                            PAL Flash
-                            <svg className="w-3.5 h-3.5 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ color: 'var(--app-text-muted)' }}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        
-                        <AnimatePresence>
-                            {isMoreMenuOpen && (
-                                <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setIsMoreMenuOpen(false)} />
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                        className="absolute left-0 mt-2 w-[185px] rounded-2xl border p-2 shadow-2xl z-50 font-outfit"
-                                        style={{ background: 'var(--app-surface)', borderColor: 'var(--app-card-border)' }}
-                                    >
-                                        <span className="text-[10px] font-bold uppercase px-3 py-1.5 block" style={{ color: 'var(--app-text-muted)' }}>Co-Founder Persona</span>
-                                        <button
-                                            onClick={() => {
-                                                setIsMoreMenuOpen(false);
-                                                alert("Persona switched to PAL Flash! Fast & efficient brainstorming.");
-                                            }}
-                                            className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors flex items-center justify-between"
-                                            style={{ color: 'var(--app-text)', background: 'var(--app-accent-soft)' }}
-                                        >
-                                            <span>⚡ PAL Flash</span>
-                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setIsMoreMenuOpen(false);
-                                                alert("Persona switched to PAL Pro! Deep analytics & reasoning.");
-                                            }}
-                                            className="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors flex items-center justify-between"
-                                            style={{ color: 'var(--app-text-secondary)' }}
-                                        >
-                                            <span>✨ PAL Pro</span>
-                                        </button>
-                                    </motion.div>
-                                </>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-
-                {/* Compose new chat button (Top Right) */}
                 <button
-                    onClick={() => {
-                        setMessages([]); // Set to empty to show greeting UI
-                        setIsAlertOpen(true); // Re-open tip
-                    }}
-                    className="w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
-                    style={{ background: 'var(--app-card)', borderColor: 'var(--app-card-border)', color: 'var(--app-text-secondary)' }}
-                    aria-label="New chat"
+                    onClick={() => setIsDrawerOpen(true)}
+                    className="p-2 -ml-2 text-white hover:text-white/70 transition-colors"
+                    aria-label="Open workspace drawer"
                 >
-                    <PencilSparkIcon />
+                    <Menu className="w-6 h-6" />
+                </button>
+                
+                <PALLogo width={22} height={22} />
+                
+                <button
+                    onClick={() => router.push('/')}
+                    className="p-2 -mr-2 text-white hover:text-white/70 transition-colors"
+                    aria-label="Go to Home Dashboard"
+                >
+                    <Home className="w-6 h-6" />
                 </button>
             </div>
 
@@ -776,35 +729,80 @@ export default function ChatScreen() {
                 className="flex-1 flex flex-col gap-6 overflow-y-auto scrollbar-hide pb-24 pr-1"
             >
                 {messages.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 text-center animate-fade-in my-auto">
-                        <GeminiSpark className="w-12 h-12 mb-5 animate-pulse" />
-                        <h2 className="text-[22px] font-medium tracking-tight text-center font-outfit" style={{ color: 'var(--app-text)' }}>
-                            Hi{userName ? ` ${userName}` : ""}, let's get into it
-                        </h2>
-                        
-                        {/* Recommended prompts */}
-                        <div className="grid grid-cols-2 gap-3 mt-8 w-full max-w-[340px]">
-                            <div
-                                onClick={() => {
-                                    setInputText("Help me brainstorm some revenue models");
-                                }}
-                                className="rounded-2xl border text-left text-xs font-semibold active:scale-95 transition-all cursor-pointer flex flex-col justify-between"
-                                style={{ background: 'var(--app-card)', borderColor: 'var(--app-card-border)', color: 'var(--app-text-secondary)', padding: '16px', minHeight: '92px' }}
-                            >
-                                <span>Brainstorm revenue models</span>
-                                <span className="text-blue-400 self-end text-[10px] font-bold">→</span>
-                            </div>
-                            <div
-                                onClick={() => {
-                                    setInputText("Analyze my startup weekly report");
-                                }}
-                                className="rounded-2xl border text-left text-xs font-semibold active:scale-95 transition-all cursor-pointer flex flex-col justify-between"
-                                style={{ background: 'var(--app-card)', borderColor: 'var(--app-card-border)', color: 'var(--app-text-secondary)', padding: '16px', minHeight: '92px' }}
-                            >
-                                <span>Analyze weekly report</span>
-                                <span className="text-blue-400 self-end text-[10px] font-bold">→</span>
-                            </div>
-                        </div>
+                    <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 text-center animate-fade-in my-auto space-y-4">
+                        <PalLogoIcon size={52} animate={true} className="mb-2" />
+
+                        {activeProject ? (
+                            <>
+                                <div className="space-y-1.5 max-w-[340px]">
+                                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 inline-block">
+                                        Project Workspace • {activeProject.name}
+                                    </span>
+                                    <h2 className="text-xl font-bold tracking-tight text-center font-outfit text-white">
+                                        You&apos;re currently inside <strong className="text-blue-400">{activeProject.name}</strong>.
+                                    </h2>
+                                    <p className="text-xs text-[var(--app-text-secondary)] font-medium">What would you like to work on today?</p>
+                                </div>
+
+                                {/* Project Awareness Badge Stack */}
+                                <div className="flex flex-wrap justify-center gap-1.5 max-w-[340px] pt-1">
+                                    <span className="text-[9.5px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        Sprint: {activeProject.sprint}
+                                    </span>
+                                    <span className="text-[9.5px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                        Due: {activeProject.dueDate}
+                                    </span>
+                                    <span className="text-[9.5px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                        {activeProject.connectedAccounts.length} Connected Accounts
+                                    </span>
+                                </div>
+
+                                {/* Contextual Action Pills */}
+                                <div className="grid grid-cols-2 gap-2 mt-4 w-full max-w-[340px]">
+                                    {[
+                                        { label: "Brainstorm", prompt: `Brainstorm revenue models & growth ideas for ${activeProject.name}` },
+                                        { label: "Product Strategy", prompt: `Review PRD specs and user onboarding for ${activeProject.name}` },
+                                        { label: "Design Review", prompt: `Check latest design reviews and mockups for ${activeProject.name}` },
+                                        { label: "Sprint Planning", prompt: `Summarize outstanding tasks for ${activeProject.sprint} in ${activeProject.name}` },
+                                        { label: "Marketing", prompt: `Review growth strategy and ad performance for ${activeProject.name}` },
+                                        { label: "Investor Pitch", prompt: `Draft Series A pitch deck appendix for ${activeProject.name}` },
+                                    ].map((item, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => setInputText(item.prompt)}
+                                            className="p-3 rounded-2xl border text-left text-xs font-bold active:scale-95 transition-all cursor-pointer bg-[var(--app-card)] border-[var(--app-card-border)] hover:border-blue-500/50 text-zinc-200 hover:text-white flex flex-col justify-between min-h-[72px]"
+                                        >
+                                            <span>{item.label}</span>
+                                            <span className="text-blue-400 self-end text-[10px] font-bold mt-1">→</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h2 className="text-[22px] font-medium tracking-tight text-center font-outfit" style={{ color: 'var(--app-text)' }}>
+                                    Hi{userName ? ` ${userName}` : ""}, let's get into it
+                                </h2>
+                                
+                                <div className="grid grid-cols-2 gap-3 mt-8 w-full max-w-[340px]">
+                                    <div
+                                        onClick={() => setInputText("Help me brainstorm some revenue models")}
+                                        className="rounded-2xl border text-left text-xs font-semibold active:scale-95 transition-all cursor-pointer flex flex-col justify-between p-4 min-h-[92px] bg-[var(--app-card)] border-[var(--app-card-border)] text-[var(--app-text-secondary)]"
+                                    >
+                                        <span>Brainstorm revenue models</span>
+                                        <span className="text-blue-400 self-end text-[10px] font-bold">→</span>
+                                    </div>
+                                    <div
+                                        onClick={() => setInputText("Analyze my startup weekly report")}
+                                        className="rounded-2xl border text-left text-xs font-semibold active:scale-95 transition-all cursor-pointer flex flex-col justify-between p-4 min-h-[92px] bg-[var(--app-card)] border-[var(--app-card-border)] text-[var(--app-text-secondary)]"
+                                    >
+                                        <span>Analyze weekly report</span>
+                                        <span className="text-blue-400 self-end text-[10px] font-bold">→</span>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : (
                     messages.map((msg, index) => {
@@ -1056,8 +1054,8 @@ export default function ChatScreen() {
                 )}
             </div>
 
-            {/* Bottom Input Capsule area (Absolute positioned) */}
-            <div className="absolute bottom-[24px] left-1/2 -translate-x-1/2 w-[90%] max-w-[362px] z-40">
+            {/* Bottom Input Capsule area (Fixed responsive container) */}
+            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-3.5 z-40 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] pointer-events-none">
                 {/* Co-Founder Tip Alert - Exactly styled like screenshot */}
                 <AnimatePresence>
                     {isAlertOpen && (
@@ -1066,7 +1064,7 @@ export default function ChatScreen() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 15, scale: 0.95 }}
                             transition={{ duration: 0.2 }}
-                            className="mb-4 border rounded-3xl p-4 pr-12 relative shadow-2xl text-left"
+                            className="mb-3 border rounded-3xl p-4 pr-12 relative shadow-2xl text-left pointer-events-auto"
                             style={{ background: 'var(--app-card)', borderColor: 'var(--app-card-border)' }}
                         >
                             <span className="text-sm font-semibold block mb-1" style={{ color: 'var(--app-text)' }}>Keep in mind</span>
@@ -1088,7 +1086,7 @@ export default function ChatScreen() {
 
                 <form 
                     onSubmit={handleSendMessage}
-                    className="flex items-center w-full"
+                    className="flex items-center w-full pointer-events-auto"
                 >
                     {/* Gemini-style Input Capsule */}
                     <div 
@@ -1208,16 +1206,30 @@ export default function ChatScreen() {
                                             <>
                                                 <button
                                                     type="button"
-                                                    onClick={startVoiceRecording}
-                                                    className="w-[34px] h-[34px] rounded-full flex items-center justify-center active:scale-95 transition-all cursor-pointer"
+                                                    onClick={() => {
+                                                        const sampleDictations = [
+                                                            "Draft an executive response for Base App auth design review.",
+                                                            "Compare our pricing with yesterday's competitor research.",
+                                                            "Check outstanding invoices and schedule sprint meeting."
+                                                        ];
+                                                        const item = sampleDictations[Math.floor(Math.random() * sampleDictations.length)];
+                                                        setInputText(item);
+                                                        triggerToast("Speech transcribed to input!");
+                                                    }}
+                                                    className="w-[34px] h-[34px] rounded-full flex items-center justify-center active:scale-95 transition-all cursor-pointer hover:text-blue-400"
                                                     style={{ color: 'var(--app-text-muted)' }}
-                                                    aria-label="Voice input"
+                                                    title="Voice Keyboard Transcription"
+                                                    aria-label="Voice Keyboard Transcription"
                                                 >
                                                     <Mic className="w-[18px] h-[18px]" />
                                                 </button>
-                                                <BlueWaveButton onClick={() => setIsLiveModeOpen(true)} />
+                                                <BlueWaveButton onClick={() => {
+                                                    setVoiceState("idle");
+                                                    setIsLiveModeOpen(true);
+                                                    setTimeout(() => setVoiceState("listening"), 500);
+                                                }} />
                                             </>
-                                                                        ) : (
+                                        ) : (
                                             <button
                                                 type="submit"
                                                 disabled={stagedAttachments.some(att => att.isLoading)}
@@ -1238,220 +1250,48 @@ export default function ChatScreen() {
 
             </div>
 
-            {/* PAL Live Voice Mode Overlay */}
+            {/* PAL Voice Mode Composer (replaces standard input when active) */}
             <AnimatePresence>
                 {isLiveModeOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: "100%" }}
+                        initial={{ opacity: 0, y: 100 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: "100%" }}
-                        transition={{ type: "spring", damping: 30, stiffness: 250 }}
-                        className="absolute inset-0 z-50 bg-black text-white flex flex-col font-outfit select-none"
+                        exit={{ opacity: 0, y: 100 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="absolute bottom-0 left-0 right-0 z-50 flex flex-col items-center justify-end pb-6 pt-20 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-auto"
                     >
-                        {/* Video Backdrop Mockup */}
-                        {isVideoActive && (
-                            <div className="absolute inset-0 z-0 bg-[#0f172a] overflow-hidden">
-                                <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.3)_0,transparent_60%)] animate-pulse" />
-                                <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
-                                
-                                <div className="absolute inset-6 border border-white/5 pointer-events-none flex flex-col justify-between p-4">
-                                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400/60" />
-                                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400/60" />
-                                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400/60" />
-                                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400/60" />
-                                    
-                                    <div className="flex justify-between items-center w-full">
-                                        <span className="text-[10px] text-red-500 font-bold flex items-center gap-1.5">
-                                            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                                            REC
-                                        </span>
-                                        <span className="text-[10px] text-white/40 font-mono">1080P 60FPS</span>
-                                    </div>
-                                    
-                                    <div className="self-center w-16 h-16 border border-dashed border-white/20 rounded flex items-center justify-center">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400/40" />
-                                    </div>
-                                    
-                                    <div className="w-full flex justify-between items-end">
-                                        <span className="text-[10px] text-white/40 font-mono">ISO 400</span>
-                                        <span className="text-[10px] text-white/40 font-mono">F 2.8</span>
-                                    </div>
-                                </div>
+                        {/* Center Hovering PAL Voice Icon */}
+                        <div className="mb-6">
+                            <PALVoiceIcon state={voiceState} className="scale-75" />
+                        </div>
+
+                        {/* Bottom Controls Row: Exactly like ChatGPT */}
+                        <div className="flex items-center gap-2 px-4 w-full max-w-md mx-auto">
+                            {/* Ask PAL Input Pill */}
+                            <div className="flex-1 h-12 rounded-full bg-[#2F2F2F] flex items-center px-4 gap-3 cursor-text">
+                                <Plus className="w-5 h-5 text-gray-400" />
+                                <span className="text-gray-400 text-[15px]">Ask PAL</span>
                             </div>
-                        )}
 
-                        {/* Ambient Deep Blue Bottom Glow exactly like the screenshot */}
-                        {!isVideoActive && (
-                            <div className="absolute bottom-0 left-0 right-0 h-1/3 z-0 bg-[radial-gradient(ellipse_at_bottom,rgba(26,115,232,0.25)_0%,transparent_70%)] pointer-events-none" />
-                        )}
-
-                        {/* Top Header */}
-                        <div className="relative z-10 flex justify-between items-center p-4 pt-6 shrink-0">
+                            {/* Microphone Toggle */}
                             <button
-                                onClick={() => {
-                                    setIsLiveModeOpen(false);
-                                    router.push('/');
-                                }}
-                                className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-all cursor-pointer active:scale-95"
-                                aria-label="Back to home"
+                                type="button"
+                                onClick={() => setIsMuted(!isMuted)}
+                                className="w-12 h-12 rounded-full bg-[#2F2F2F] flex items-center justify-center text-white active:scale-95 transition-all shrink-0"
+                                aria-label="Toggle mic"
                             >
-                                <TwoLinesMenu />
+                                {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                             </button>
 
-                            <div className="flex flex-col items-center">
-                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">PAL Live Session</span>
-                                <span className="text-xs text-cyan-400 font-semibold">{liveVoice}</span>
-                            </div>
-
-                            <div className="flex items-center gap-2 relative">
-                                <button
-                                    onClick={() => setIsTranscriptVisible(!isTranscriptVisible)}
-                                    className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
-                                        isTranscriptVisible 
-                                            ? "bg-cyan-500/20 border-cyan-500/30 text-cyan-400" 
-                                            : "bg-white/5 border-white/10 text-gray-300 hover:text-white"
-                                    }`}
-                                    aria-label="Toggle transcript"
-                                >
-                                    <TranscriptIcon />
-                                </button>
-
-                                <button
-                                    onClick={() => setIsVoiceMenuOpen(!isVoiceMenuOpen)}
-                                    className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all cursor-pointer active:scale-95 ${
-                                        isVoiceMenuOpen 
-                                            ? "bg-purple-500/20 border-purple-500/30 text-purple-400" 
-                                            : "bg-white/5 border-white/10 text-gray-300 hover:text-white"
-                                    }`}
-                                    aria-label="Voice settings"
-                                >
-                                    <Sparkles className="w-5 h-5" />
-                                </button>
-                                
-                                <AnimatePresence>
-                                    {isVoiceMenuOpen && (
-                                        <>
-                                            <div className="fixed inset-0 z-40" onClick={() => setIsVoiceMenuOpen(false)} />
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                                className="absolute right-0 top-12 w-[180px] rounded-2xl backdrop-blur-md border p-2 shadow-2xl z-50 text-left font-outfit"
-                                                style={{ background: 'var(--app-surface)', borderColor: 'var(--app-card-border)' }}
-                                            >
-                                                <span className="text-[10px] text-gray-500 font-bold uppercase px-3 py-1.5 block">Select PAL Voice</span>
-                                                {VOICES.map((v) => (
-                                                    <button
-                                                        key={v}
-                                                        onClick={() => {
-                                                            setLiveVoice(v);
-                                                            setIsVoiceMenuOpen(false);
-                                                        }}
-                                                        className={`w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors flex items-center justify-between ${
-                                                            liveVoice === v 
-                                                                ? "bg-blue-600 text-white" 
-                                                                : "text-white hover:bg-white/5"
-                                                        }`}
-                                                    >
-                                                        {v}
-                                                        {liveVoice === v && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                                                    </button>
-                                                ))}
-                                            </motion.div>
-                                        </>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-
-                        {/* Center Area */}
-                        <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-                            {/* Gemini Spark star in center */}
-                            <GeminiSpark className="w-12 h-12 mb-5 animate-pulse" style={{ animationDuration: '3s' }} />
-
-                            <h2 className="text-xl font-medium tracking-tight text-white/95 text-center select-none font-outfit">
-                                Hi Emmanuel, let's get into it
-                            </h2>
-                            <p className="text-xs text-gray-500 mt-1 text-center font-medium">
-                                {isMuted ? "Voice paused" : `Listening on ${liveVoice}...`}
-                            </p>
-
-                            <AnimatePresence>
-                                {isTranscriptVisible && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, height: 120, scale: 1 }}
-                                        exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                                        transition={{ duration: 0.25 }}
-                                        className="w-full max-w-[340px] mt-6 bg-[#161618]/70 border border-white/10 rounded-2xl p-4 text-xs overflow-y-auto scrollbar-hide text-left flex flex-col gap-2.5 backdrop-blur-md shadow-2xl relative z-10"
-                                    >
-                                        <div className="text-gray-500 font-bold uppercase tracking-wider text-[9px]">PAL Live Transcript</div>
-                                        <div className="flex flex-col gap-2 leading-relaxed">
-                                            <p className="text-gray-300"><span className="font-bold text-white">Emmanuel:</span> I want to optimize the marketing budget.</p>
-                                            <p className="text-cyan-300/95 font-medium animate-pulse"><span className="font-bold text-white">PAL:</span> Indeed, that's why we need to audit your recurring SaaS subscriptions. Shall we start with the AWS logs?</p>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Bottom Controls Row: Matches screenshot exactly */}
-                        <div className="relative z-10 p-6 pb-8 shrink-0 flex flex-col items-center bg-gradient-to-t from-black via-black/80 to-transparent">
-                            <div className="flex items-center justify-between w-full max-w-[370px] gap-2 px-2">
-                                {/* 1. Video Camera Toggle */}
-                                <button
-                                    type="button"
-                                    onClick={() => setIsVideoActive(!isVideoActive)}
-                                    className={`w-11 h-11 rounded-full flex items-center justify-center border transition-all cursor-pointer active:scale-95 ${
-                                        isVideoActive 
-                                            ? "bg-green-500/20 border-green-500/30 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.15)]" 
-                                            : "bg-white/5 border border-white/10 text-gray-300 hover:text-white"
-                                    }`}
-                                    aria-label="Toggle camera"
-                                >
-                                    {isVideoActive ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
-                                </button>
-
-                                {/* 2. Screen Share */}
-                                <button
-                                    type="button"
-                                    onClick={() => alert("Screen sharing simulation active! 🖥️")}
-                                    className="w-11 h-11 rounded-full flex items-center justify-center bg-white/5 border border-white/10 text-gray-300 hover:text-white active:scale-95 transition-all cursor-pointer"
-                                    aria-label="Share screen"
-                                >
-                                    <ScreenShareIcon />
-                                </button>
-
-                                {/* 3. Live Wave Pill (Center sound wave) */}
-                                <LiveWavePill isMuted={isMuted} />
-
-                                {/* 4. Microphone Mute Toggle */}
-                                <button
-                                    type="button"
-                                    onClick={() => setIsMuted(!isMuted)}
-                                    className={`w-11 h-11 rounded-full flex items-center justify-center border transition-all cursor-pointer active:scale-95 ${
-                                        isMuted 
-                                            ? "bg-red-500/20 border-red-500/30 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.15)]" 
-                                            : "bg-white/5 border border-white/10 text-gray-300 hover:text-white"
-                                    }`}
-                                    aria-label="Toggle mic"
-                                >
-                                    {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                                </button>
-
-                                {/* 5. End Session Button */}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsLiveModeOpen(false);
-                                        setIsVoiceMenuOpen(false);
-                                    }}
-                                    className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-red-400 active:scale-95 transition-all cursor-pointer"
-                                    aria-label="End session"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
+                            {/* End Session Button (White Circle) */}
+                            <button
+                                type="button"
+                                onClick={() => setIsLiveModeOpen(false)}
+                                className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-black active:scale-95 transition-all shrink-0"
+                                aria-label="End session"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
                         </div>
                     </motion.div>
                 )}
@@ -1639,6 +1479,14 @@ export default function ChatScreen() {
                 onChange={(e) => handleAttachmentUpload(e, "audio")} 
                 style={{ display: "none" }} 
                 accept="audio/*"
+            />
+            <WorkspaceDrawer 
+                isOpen={isDrawerOpen} 
+                onClose={() => setIsDrawerOpen(false)} 
+                onNewChat={() => {
+                    setMessages([]);
+                    setIsAlertOpen(true);
+                }} 
             />
         </div>
     );

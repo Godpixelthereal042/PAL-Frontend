@@ -3,11 +3,8 @@ import { getDB } from "@/lib/db";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import { createClient } from "@/lib/supabaseServer";
-
-function hashPassword(password: string): string {
-    const salt = process.env.AUTH_SALT || "pal_salt_key";
-    return crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-}
+import { hashPassword } from "@/lib/security/passwordHasher";
+import { getWorkspaceForUser } from "@/lib/security/workspaceContext";
 
 export async function POST(request: Request) {
     try {
@@ -54,15 +51,15 @@ export async function POST(request: Request) {
 
             userId = data.user.id;
 
-            // Insert user into custom users table (password empty because handled securely by Supabase)
+            // Insert user into custom users table
             await db.run(
                 "INSERT INTO users (id, name, email, password, role, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                 [userId, fullName, normalizedEmail, "", role || "Business Owner", nowMs]
             );
         } else {
-            // 2. Fall back to local SQLite credentials creation
+            // 2. Fall back to local SQLite credentials creation with Argon2id
             userId = String(Date.now());
-            const hashedPassword = hashPassword(password);
+            const hashedPassword = await hashPassword(password);
 
             // Insert user
             await db.run(
@@ -78,11 +75,10 @@ export async function POST(request: Request) {
                 "INSERT OR REPLACE INTO otp_codes (email, code, expires_at) VALUES (?, ?, ?)",
                 [normalizedEmail, otpCode, otpExpiresAt]
             );
-
-            console.log("\n==================================================");
-            console.log(`[AUTH] Local verification code for ${normalizedEmail} is: ${otpCode}`);
-            console.log("==================================================\n");
         }
+
+        // Provision workspace for new user
+        const workspace = await getWorkspaceForUser(userId);
 
         // Update profile table
         await db.run(

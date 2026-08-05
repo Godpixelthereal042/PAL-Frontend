@@ -9,7 +9,7 @@
  * Reference: PAL-DOC-003 (AI Architecture) §03, PAL-DOC-002 (MVP) §03
  */
 
-import { getDB } from "./db";
+import { getDB } from "./db.ts";
 
 // ---------------------------------------------------------------------------
 // TypeScript Interfaces

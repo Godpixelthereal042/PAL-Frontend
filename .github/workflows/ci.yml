@@ -1,0 +1,37 @@
+name: PAL Executive OS CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  verify:
+    name: Verify & Validate Platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run TypeScript Type Check
+        run: npx tsc --noEmit
+
+      - name: Run ESLint Code Analysis
+        run: npm run lint
+
+      - name: Run Platform Test Suites
+        run: node --test tests/*.test.mjs
+
+      - name: Run Next.js Production Build
+        run: npm run build

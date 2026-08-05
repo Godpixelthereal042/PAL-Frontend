@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  pal-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://pal_user:pal_secure_password@postgres:5432/pal_production
+      - JWT_SECRET=pal_production_jwt_secret_min_32_characters_long
+      - AUDIT_SIGNATURE_SECRET=pal_production_audit_hmac_secret_key
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: pal_user
+      POSTGRES_PASSWORD: pal_secure_password
+      POSTGRES_DB: pal_production
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  postgres_data:

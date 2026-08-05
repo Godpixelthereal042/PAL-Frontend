@@ -133,12 +133,7 @@ export default function CalendarWidget({
 
                             if (isCurrentMonth) {
                                 if (isSelected) {
-                                    dateStyleClass = "text-white font-bold";
-                                    containerStyle = {
-                                        border: "1.5px solid #2d7fe0",
-                                        boxShadow: "0 0 10px rgba(45, 127, 224, 0.4)",
-                                        backgroundColor: "#07244a"
-                                    };
+                                    dateStyleClass = "calendar-day-active";
                                 } else if (hasEventOnDay) {
                                     dateStyleClass = "text-[#8cb4e6] font-bold";
                                     containerStyle = {
@@ -183,12 +178,7 @@ export default function CalendarWidget({
                             let containerStyle = {};
 
                             if (isSelectedTime) {
-                                timeStyleClass = "text-white font-semibold";
-                                containerStyle = {
-                                    border: "1.5px solid #2d7fe0",
-                                    boxShadow: "0 0 10px rgba(45, 127, 224, 0.4)",
-                                    backgroundColor: "#07244a"
-                                };
+                                timeStyleClass = "calendar-time-active";
                             } else if (hasEventAtTime) {
                                 timeStyleClass = "text-zinc-300 font-medium";
                                 containerStyle = {

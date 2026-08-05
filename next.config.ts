@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   devIndicators: false,
   serverExternalPackages: ["sqlite3", "sqlite"],
-} as any;
+  turbopack: {},
+};
 
 export default nextConfig;

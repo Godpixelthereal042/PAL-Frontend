@@ -1,8 +1,10 @@
 "use client";
 
-import { Home, Folder, Telescope, Zap } from "lucide-react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Zap } from "lucide-react";
+import { NavHome, NavProjects, NavResearch } from "@/components/icons";
 
 interface BottomNavProps {
     activePage?: "home" | "chat" | "research" | "projects";
@@ -20,69 +22,50 @@ export default function BottomNav({ activePage }: BottomNavProps) {
     );
 
     return (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[362px] z-50">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] px-3.5 z-50 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] pointer-events-none">
             <nav
-                className="grid h-[77px] grid-cols-[68px_68px_68px_1fr] items-center rounded-full p-[5px] shadow-2xl"
-                style={{
-                    backgroundColor: 'rgba(18, 18, 24, 0.95)',
-                    borderColor: 'rgba(255, 255, 255, 0.08)',
-                    borderStyle: 'solid',
-                    borderWidth: '1px',
-                    color: '#ffffff',
-                }}
+                className="pointer-events-auto flex items-center justify-between h-[66px] rounded-full p-1.5 shadow-2xl backdrop-blur-xl border border-white/10 bg-[#121218]/95 gap-1.5"
             >
                 <Link
                     href="/"
-                    className="grid h-[66px] w-[66px] place-items-center rounded-full transition-all hover:opacity-85"
+                    className="flex-1 max-w-[54px] h-[54px] flex items-center justify-center rounded-full transition-all hover:opacity-85 border border-white/10 min-h-[44px] min-w-[44px]"
                     style={{
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
                         backgroundColor: active === "home" ? '#2d7fe0' : 'rgba(255, 255, 255, 0.05)',
                         color: active === "home" ? '#ffffff' : '#a1a1aa'
                     }}
+                    title="Home"
                 >
-                    <Home className="w-7 h-7" strokeWidth={1.5} style={{ color: active === "home" ? '#ffffff' : '#a1a1aa' }} />
+                    <NavHome size={22} style={{ color: active === "home" ? '#ffffff' : '#a1a1aa' }} />
                 </Link>
 
                 <Link
                     href="/projects"
-                    className="grid h-[66px] w-[66px] place-items-center rounded-full transition-all hover:opacity-85"
+                    className="flex-1 max-w-[54px] h-[54px] flex items-center justify-center rounded-full transition-all hover:opacity-85 border border-white/10 min-h-[44px] min-w-[44px]"
                     style={{
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
                         backgroundColor: active === "projects" ? '#2d7fe0' : 'rgba(255, 255, 255, 0.05)',
                         color: active === "projects" ? '#ffffff' : '#a1a1aa'
                     }}
+                    title="Projects"
                 >
-                    <Folder className="w-[26px] h-[26px]" strokeWidth={1.5} style={{ color: active === "projects" ? '#ffffff' : '#a1a1aa' }} />
+                    <NavProjects size={22} style={{ color: active === "projects" ? '#ffffff' : '#a1a1aa' }} />
                 </Link>
 
                 <Link
                     href="/research"
-                    className="grid h-[66px] w-[66px] place-items-center rounded-full transition-all hover:opacity-85"
+                    className="flex-1 max-w-[54px] h-[54px] flex items-center justify-center rounded-full transition-all hover:opacity-85 border border-white/10 min-h-[44px] min-w-[44px]"
                     style={{
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
                         backgroundColor: active === "research" ? '#2d7fe0' : 'rgba(255, 255, 255, 0.05)',
                         color: active === "research" ? '#ffffff' : '#a1a1aa'
                     }}
+                    title="Research"
                 >
-                    <Telescope className="w-[26px] h-[26px]" strokeWidth={1.5} style={{ color: active === "research" ? '#ffffff' : '#a1a1aa' }} />
+                    <NavResearch size={22} style={{ color: active === "research" ? '#ffffff' : '#a1a1aa' }} />
                 </Link>
 
                 <Link
                     href="/chat"
-                    className="ml-[3px] flex h-[66px] items-center justify-center gap-[8px] px-[20px] rounded-full text-[17px] font-bold active:scale-95 transition-all"
-                    style={{
-                        borderColor: '#48b9ff',
-                        borderStyle: 'solid',
-                        borderWidth: '1.5px',
-                        backgroundColor: '#2d7fe0',
-                        color: '#ffffff'
-                    }}
+                    className="flex-2 h-[54px] flex items-center justify-center gap-2 px-5 rounded-full text-base font-bold active:scale-95 transition-all border border-[#48b9ff] bg-[#2d7fe0] text-white min-h-[44px] shrink-0"
+                    title="Chat"
                 >
                     <span>Chat</span>
                     <Zap className="w-[18px] h-[18px] fill-white" style={{ color: '#ffffff' }} />

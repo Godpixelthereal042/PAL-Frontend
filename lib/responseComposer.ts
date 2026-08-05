@@ -132,6 +132,22 @@ function buildContextBlock(context: BusinessContext): string {
     parts.push(`- Notifications Count: ${notifications.length}`);
     parts.push(`- Invoices Count: ${invoices.length}`);
 
+    if (context.decisions && context.decisions.length > 0) {
+        parts.push(`\n[Active Confirmed Strategic Decisions]`);
+        for (const dec of context.decisions) {
+            parts.push(`  - Decision: ${dec.title}${dec.rationale ? ` (Rationale: ${dec.rationale})` : ""}${dec.impactArea ? ` [Impact Area: ${dec.impactArea}]` : ""}`);
+        }
+    }
+
+    if ((context as any).executiveIntelligence) {
+        const intel = (context as any).executiveIntelligence;
+        parts.push(`\n=== EXECUTIVE INTELLIGENCE SUMMARY ===`);
+        if (intel.topRisk) parts.push(`- Top Risk: ${intel.topRisk.title} (${intel.topRisk.severity}) — ${intel.topRisk.description}`);
+        if (intel.topOpportunity) parts.push(`- Top Opportunity: ${intel.topOpportunity.title} — ${intel.topOpportunity.reason}`);
+        if (intel.keyTrend) parts.push(`- Key Trend: ${intel.keyTrend.metric} (${intel.keyTrend.direction}) — ${intel.keyTrend.description}`);
+        if (intel.topForecast) parts.push(`- Top Forecast: ${intel.topForecast.prediction}`);
+    }
+
     return parts.join("\n");
 }
 
