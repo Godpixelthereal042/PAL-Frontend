@@ -291,7 +291,7 @@ export default function OnboardingScreen() {
         )}
         
         {screen === "business_brain" && (
-          <div className="relative h-[calc(100%_-_58px)] overflow-y-auto scrollbar-hide">
+          <div className="relative h-full flex-1 flex flex-col justify-between overflow-y-auto scrollbar-hide">
             <BusinessBrainConversation
               userProfile={{
                 fullName: fullName || "Emmanuel",
