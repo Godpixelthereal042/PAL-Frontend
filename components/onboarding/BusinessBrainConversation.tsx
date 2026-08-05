@@ -229,7 +229,7 @@ export default function BusinessBrainConversation({ userProfile, onComplete }: B
             </div>
             <h3 className="text-sm font-extrabold text-white">Initializing Business Brain...</h3>
             <p className="text-xs text-slate-400">
-              Ingesting context for <strong className="text-white">{businessName}</strong> $\rightarrow$ Generating Executive Dashboard
+              Ingesting context for <strong className="text-white">{businessName}</strong> → Generating Executive Dashboard
             </p>
           </div>
         )}
